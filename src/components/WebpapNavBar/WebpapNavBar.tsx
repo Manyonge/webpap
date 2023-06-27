@@ -1,26 +1,71 @@
 import styles from "./style.module.css";
 import { Button, Dropdown } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const WebpapNavBar = () => {
+  const { pathname } = useLocation();
+
   const items = [
     {
       key: "1",
-      label: <Link to={"/"}>Home</Link>,
+      label: (
+        <Link to={"/"}>
+          {" "}
+          <Button
+            type={pathname === "/" ? "primary" : "text"}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Home
+          </Button>
+        </Link>
+      ),
     },
     {
       key: "2",
-      label: <Link to={"/pricing"}>Pricing</Link>,
+      label: (
+        <Link to={"/pricing"}>
+          {" "}
+          <Button
+            type={pathname === "/pricing" ? "primary" : "text"}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Pricing
+          </Button>
+        </Link>
+      ),
     },
 
     {
       key: "3",
-      label: <Link to={"/market-place"}>Market Place</Link>,
+      label: (
+        <Link to={"/market-place"}>
+          <Button
+            type={pathname === "/market-place" ? "primary" : "text"}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Market place
+          </Button>
+        </Link>
+      ),
     },
     {
       key: "4",
-      label: <Link to={"/login"}>Retailer Login</Link>,
+      label: (
+        <Link to={"/login"}>
+          {" "}
+          <Button
+            type={pathname === "/login" ? "primary" : "text"}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Retailer Login
+          </Button>
+        </Link>
+      ),
     },
   ];
 
@@ -32,22 +77,31 @@ export const WebpapNavBar = () => {
 
       <div className={styles.WebpapNavLinks}>
         <Link to={"/"}>
-          <Button type="text" size="large">
+          <Button type={pathname === "/" ? "primary" : "text"} size="middle">
             Home
           </Button>
         </Link>
         <Link to={"/pricing"}>
-          <Button type="text" size="large">
+          <Button
+            type={pathname === "/pricing" ? "primary" : "text"}
+            size="middle"
+          >
             Pricing
           </Button>
         </Link>
         <Link to={"/market-place"}>
-          <Button type="text" size="large">
+          <Button
+            type={pathname === "/market-place" ? "primary" : "text"}
+            size="middle"
+          >
             Market place
           </Button>
         </Link>
         <Link to={"/login"}>
-          <Button type="text" size="large">
+          <Button
+            type={pathname === "/login" ? "primary" : "text"}
+            size="middle"
+          >
             Retailer Login
           </Button>
         </Link>
