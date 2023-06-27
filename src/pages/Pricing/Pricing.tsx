@@ -6,7 +6,25 @@ export const Pricing = () => {
     <>
       <WebpapNavBar />
       <div className={`${styles.msgOne} primaryBg`}>
-        <div></div>
+        <div>
+          <div className={styles.transaction}>
+            <p>8%</p>
+            <p>Transaction cost</p>
+          </div>
+          <div className={styles.border}></div>
+          <div className={styles.withdrawal}>
+            <p> 100 KSH </p>
+            <p>Per withdrawal</p>
+          </div>
+        </div>
+        <p>
+          {" "}
+          No <span> subscription fees </span>{" "}
+        </p>
+        <p>
+          {" "}
+          No <span> extra charges </span>{" "}
+        </p>
       </div>
       <div className={styles.msgTwo}>
         <ol className={styles.prosList}>
