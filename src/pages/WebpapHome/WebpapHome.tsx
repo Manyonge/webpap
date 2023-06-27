@@ -1,4 +1,4 @@
-import { WebpapNavBar } from "../../components";
+import { WebpapFooter, WebpapNavBar } from "../../components";
 import styles from "./style.module.css";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
@@ -35,6 +35,7 @@ export const WebpapHome = () => {
         <p>No developers or lines of</p>
         <p>code needed!</p>
       </div>
+      <WebpapFooter />
     </>
   );
 };
