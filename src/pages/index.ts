@@ -1,6 +1,15 @@
-export {NotFound} from './NotFound/NotFound.tsx'
-export {WebpapHome} from './WebpapHome/WebpapHome.tsx'
-export {Pricing} from './Pricing/Pricing.tsx'
-export {MarketPlace} from './MarketPlace/MarketPlace.tsx'
-export {Signup} from './Signup/Signup.tsx'
-export {Login} from './Login/Login.tsx'
+export { NotFound } from "./NotFound/NotFound.tsx";
+export { WebpapHome } from "./WebpapHome/WebpapHome.tsx";
+export { Pricing } from "./Pricing/Pricing.tsx";
+export { MarketPlace } from "./MarketPlace/MarketPlace.tsx";
+export { Signup } from "./Signup/Signup.tsx";
+export { Login } from "./Login/Login.tsx";
+export { Orders } from "./Orders/Orders.tsx";
+export { Customers } from "./Customers/Customers.tsx";
+export { EWallet } from "./EWallet/EWallet.tsx";
+export { SingleOrder } from "./SingleOrder/SingleOrder.tsx";
+export { RetailerAccount } from "./RetailerAccount/RetailerAccount.tsx";
+export { SingleProduct } from "./SingleProduct/SingleProduct.tsx";
+export { UploadedProducts } from "./UploadedProducts/UploadedProducts.tsx";
+export { UploadProduct } from "./UploadProduct/UploadProduct.tsx";
+export { Withdraw } from "./Withdraw/Withdraw.tsx";
