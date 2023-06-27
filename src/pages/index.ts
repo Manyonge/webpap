@@ -13,3 +13,7 @@ export { SingleProduct } from "./SingleProduct/SingleProduct.tsx";
 export { UploadedProducts } from "./UploadedProducts/UploadedProducts.tsx";
 export { UploadProduct } from "./UploadProduct/UploadProduct.tsx";
 export { Withdraw } from "./Withdraw/Withdraw.tsx";
+export { StoreFrontHome } from "./StoreFrontHome/StoreFrontHome.tsx";
+export { ProductView } from "./ProductView/ProductView.tsx";
+export { ShoppingCart } from "./ShoppingCart/ShoppingCart.tsx";
+export { CheckOut } from "./CheckOut/CheckOut.tsx";

@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { AdminLayout, AppLayout } from "../layouts";
+import { AdminLayout, AppLayout, StoreFrontLayout } from "../layouts";
 import {
   Login,
   MarketPlace,
@@ -9,6 +9,7 @@ import {
   WebpapHome,
 } from "../pages";
 import { AdminRoutes } from "./AdminRoutes.tsx";
+import { StoreFrontRoutes } from "./StoreFrontRoutes.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,11 @@ export const router = createBrowserRouter([
         path: ":storeFrontID/admin",
         element: <AdminLayout />,
         children: [...AdminRoutes],
+      },
+      {
+        path: ":storeFrontID",
+        element: <StoreFrontLayout />,
+        children: [...StoreFrontRoutes],
       },
     ],
   },
