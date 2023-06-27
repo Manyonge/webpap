@@ -1,6 +1,10 @@
-export const MarketPlace = () => {
+import { WebpapNavBar } from "../../components";
 
-    return (
-        <p> Market place page</p>
-    )
-}
+export const MarketPlace = () => {
+  return (
+    <>
+      <WebpapNavBar />
+      <p> Market place page</p>
+    </>
+  );
+};

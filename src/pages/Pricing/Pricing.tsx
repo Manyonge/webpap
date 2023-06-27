@@ -1,6 +1,10 @@
-export const Pricing = () => {
+import { WebpapNavBar } from "../../components";
 
-    return (
-        <p> Pricing page</p>
-    )
-}
+export const Pricing = () => {
+  return (
+    <>
+      <WebpapNavBar />
+      <p> Pricing page</p>
+    </>
+  );
+};

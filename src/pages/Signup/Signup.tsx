@@ -1,6 +1,10 @@
-export const Signup = () => {
+import { WebpapNavBar } from "../../components";
 
-    return (
-        <p>Sign up page</p>
-    )
-}
+export const Signup = () => {
+  return (
+    <>
+      <WebpapNavBar />
+      <p>Sign up page</p>
+    </>
+  );
+};

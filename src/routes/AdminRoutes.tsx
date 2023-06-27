@@ -1,4 +1,4 @@
-import { AdminDashboard } from "../pages/AdminDashboard/AdminDashboard.tsx";
+import { AdminDashboard } from "../pages/Admin/AdminDashboard/AdminDashboard.tsx";
 import {
   Customers,
   EWallet,

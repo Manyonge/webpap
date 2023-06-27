@@ -1,6 +1,10 @@
-export const WebpapHome = () => {
+import { WebpapNavBar } from "../../components";
 
-    return (
-        <h1>Webpap home page</h1>
-    )
-}
+export const WebpapHome = () => {
+  return (
+    <>
+      <WebpapNavBar />
+      <h1>Webpap home page</h1>
+    </>
+  );
+};
