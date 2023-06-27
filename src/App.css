@@ -1,0 +1,10 @@
+/*package components*/
+.Link{
+    text-decoration: none;
+    color: black;
+}
+
+/*background colors*/
+.primaryBg{
+    background-color: rgba(165, 126, 93, 1);
+}

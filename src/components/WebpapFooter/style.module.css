@@ -1,0 +1,29 @@
+.WebpapFooter {
+  height: 200px;
+  background-color: rgba(0, 0, 0, 0.78);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.WebpapFooter * {
+  color: white;
+  text-decoration: none;
+  margin-bottom: 5px;
+}
+
+.iconsSection {
+  margin-top: 10px;
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+@media (min-width: 900px) {
+  .iconsSection {
+    width: 10%;
+  }
+}
