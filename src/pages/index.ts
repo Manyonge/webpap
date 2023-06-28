@@ -1,6 +1,6 @@
 export { NotFound } from "./NotFound/NotFound.tsx";
 export { WebpapHome } from "./WebpapHome.tsx";
-export { Pricing } from "./Pricing/Pricing.tsx";
+export { Pricing } from "./Pricing.tsx";
 export { MarketPlace } from "./MarketPlace/MarketPlace.tsx";
 export { Signup } from "./Signup/Signup.tsx";
 export { Login } from "./Login/Login.tsx";
