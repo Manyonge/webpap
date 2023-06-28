@@ -1,0 +1,60 @@
+.SignupPage > p {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+@media (min-width: 900px) {
+  .SignupPage > p {
+    font-size: 1.5rem;
+  }
+}
+
+.PersonalDetails {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  margin: 50px auto 0;
+  border-radius: 10px;
+}
+
+.PersonalDetails p:nth-child(1) {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: red;
+}
+
+.PersonalContent {
+  display: flex;
+  flex-direction: row;
+}
+
+.PersonalColOne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: auto;
+}
+
+.PersonalDetail p:nth-child(2) {
+  text-align: center;
+  color: red;
+}
+
+.PersonalColTwo,
+.PersonalColThree {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+
+  align-items: center;
+}
+
+.BusinessDetails {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  width: 80%;
+  margin: 50px auto 300px;
+}

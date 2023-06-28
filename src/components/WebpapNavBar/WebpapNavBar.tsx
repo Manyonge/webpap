@@ -55,6 +55,21 @@ export const WebpapNavBar = () => {
     {
       key: "4",
       label: (
+        <Link to={"/sign-up"}>
+          {" "}
+          <Button
+            type={pathname === "/sign-up" ? "primary" : "text"}
+            size="small"
+            style={{ width: "100%" }}
+          >
+            Retailer Sign up
+          </Button>
+        </Link>
+      ),
+    },
+    {
+      key: "5",
+      label: (
         <Link to={"/login"}>
           {" "}
           <Button
@@ -97,6 +112,16 @@ export const WebpapNavBar = () => {
             Market place
           </Button>
         </Link>
+
+        <Link to={"/sign-up"}>
+          <Button
+            type={pathname === "/sign-up" ? "primary" : "text"}
+            size="middle"
+          >
+            Retailer Sign up
+          </Button>
+        </Link>
+
         <Link to={"/login"}>
           <Button
             type={pathname === "/login" ? "primary" : "text"}
