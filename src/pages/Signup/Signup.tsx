@@ -1,5 +1,4 @@
 import { WebpapFooter, WebpapNavBar } from "../../components";
-import styles from "./style.module.css";
 import { Form, message, Upload, UploadFile, UploadProps } from "antd";
 import type { RcFile } from "antd/es/upload";
 import { UploadChangeParam } from "antd/es/upload";
@@ -62,18 +61,19 @@ export const Signup = () => {
   };
 
   return (
-    <div className={styles.SignupPage}>
+    <div>
       <WebpapNavBar />
-      <p>Create your retailer account</p>
+      <p className="text-center font-bold text-lg md:text-xl mt-6">
+        Create your retailer account
+      </p>
 
       <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
-        <div className={styles.PersonalDetails}>
+        <div className="">
           <p>Personal details</p>
-          <div className={styles.PersonalColOne}>
+          <div>
             <Upload
               name="passportPhoto"
               listType="picture-circle"
-              className={styles.PassportPhoto}
               showUploadList={false}
               action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
               beforeUpload={beforeUpload}
@@ -95,13 +95,13 @@ export const Signup = () => {
             Upload a clear passport
             <br /> photo of yourself{" "}
           </p>
-          <div className={styles.PersonalContent}>
-            <div className={styles.PersonalColTwo}>hello</div>
-            <div className={styles.PersonalColThree}>hello</div>
+          <div>
+            <div>hello</div>
+            <div>hello</div>
           </div>
         </div>
 
-        <div className={styles.BusinessDetails}>hello</div>
+        <div>hello</div>
       </Form>
 
       <WebpapFooter />

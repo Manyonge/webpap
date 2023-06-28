@@ -25,3 +25,10 @@ p {
   background: #888; /* Set the color of the scrollbar thumb */
   border-radius: 10px;
 }
+
+/*button classes*/
+
+.btn-primary {
+  background-color: rgba(165, 126, 93, 1);
+  color: white;
+}

@@ -12,13 +12,13 @@ export const WebpapNavBar = () => {
       label: (
         <Link to={"/"}>
           {" "}
-          <Button
-            type={pathname === "/" ? "primary" : "text"}
-            size="small"
-            style={{ width: "100%" }}
+          <button
+            className={`px-5 py-1 rounded-md text-sm w-full  ${
+              pathname === "/" ? "btn-primary" : ""
+            }`}
           >
             Home
-          </Button>
+          </button>
         </Link>
       ),
     },
@@ -27,13 +27,13 @@ export const WebpapNavBar = () => {
       label: (
         <Link to={"/pricing"}>
           {" "}
-          <Button
-            type={pathname === "/pricing" ? "primary" : "text"}
-            size="small"
-            style={{ width: "100%" }}
+          <button
+            className={`px-5 py-1 rounded-md text-sm w-full ${
+              pathname === "/pricing" ? "btn-primary" : ""
+            }`}
           >
             Pricing
-          </Button>
+          </button>
         </Link>
       ),
     },
@@ -42,13 +42,13 @@ export const WebpapNavBar = () => {
       key: "3",
       label: (
         <Link to={"/market-place"}>
-          <Button
-            type={pathname === "/market-place" ? "primary" : "text"}
-            size="small"
-            style={{ width: "100%" }}
+          <button
+            className={`px-5 py-1 rounded-md text-sm w-full  ${
+              pathname === "/market-place" ? "btn-primary" : ""
+            }`}
           >
             Market place
-          </Button>
+          </button>
         </Link>
       ),
     },
@@ -57,13 +57,13 @@ export const WebpapNavBar = () => {
       label: (
         <Link to={"/sign-up"}>
           {" "}
-          <Button
-            type={pathname === "/sign-up" ? "primary" : "text"}
-            size="small"
-            style={{ width: "100%" }}
+          <button
+            className={`px-5 py-1 rounded-md text-sm w-full ${
+              pathname === "/sign-up" ? "btn-primary" : ""
+            }`}
           >
             Retailer Sign up
-          </Button>
+          </button>
         </Link>
       ),
     },
@@ -72,13 +72,13 @@ export const WebpapNavBar = () => {
       label: (
         <Link to={"/login"}>
           {" "}
-          <Button
-            type={pathname === "/login" ? "primary" : "text"}
-            size="small"
-            style={{ width: "100%" }}
+          <button
+            className={`px-5 py-1 rounded-md text-sm w-full  ${
+              pathname === "/login" ? "btn-primary" : ""
+            }`}
           >
             Retailer Login
-          </Button>
+          </button>
         </Link>
       ),
     },
@@ -86,49 +86,57 @@ export const WebpapNavBar = () => {
 
   return (
     <div className={styles.WebpapNavBar}>
-      <Link to={"/"} className={styles.WebpapLogo}>
+      <Link to={"/"} className="font-bold md:text-lg">
         Webpap
       </Link>
 
       <div className={styles.WebpapNavLinks}>
         <Link to={"/"}>
-          <Button type={pathname === "/" ? "primary" : "text"} size="middle">
+          <button
+            className={`px-5 py-1 rounded-md text-sm  ${
+              pathname === "/" ? "btn-primary" : ""
+            }`}
+          >
             Home
-          </Button>
+          </button>
         </Link>
         <Link to={"/pricing"}>
-          <Button
-            type={pathname === "/pricing" ? "primary" : "text"}
-            size="middle"
+          <button
+            className={`px-5 py-1 rounded-md text-sm  ${
+              pathname === "/pricing" ? "btn-primary" : ""
+            }`}
           >
             Pricing
-          </Button>
+          </button>
         </Link>
         <Link to={"/market-place"}>
-          <Button
-            type={pathname === "/market-place" ? "primary" : "text"}
-            size="middle"
+          <button
+            className={`px-5 py-1 rounded-md text-sm  ${
+              pathname === "/market-place" ? "btn-primary" : ""
+            }`}
           >
             Market place
-          </Button>
+          </button>
         </Link>
 
         <Link to={"/sign-up"}>
-          <Button
-            type={pathname === "/sign-up" ? "primary" : "text"}
-            size="middle"
+          <button
+            className={`px-5 py-1 rounded-md text-sm  ${
+              pathname === "/sign-up" ? "btn-primary" : ""
+            }`}
           >
             Retailer Sign up
-          </Button>
+          </button>
         </Link>
 
         <Link to={"/login"}>
-          <Button
-            type={pathname === "/login" ? "primary" : "text"}
-            size="middle"
+          <button
+            className={`px-5 py-1 rounded-md text-sm  ${
+              pathname === "/login" ? "btn-primary" : ""
+            }`}
           >
             Retailer Login
-          </Button>
+          </button>
         </Link>
       </div>
 
