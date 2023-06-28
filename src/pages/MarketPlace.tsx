@@ -1,5 +1,4 @@
-import { WebpapFooter, WebpapNavBar } from "../../components";
-import styles from "./style.module.css";
+import { WebpapFooter, WebpapNavBar } from "../components";
 import { Link } from "react-router-dom";
 
 const retailers = [
@@ -62,9 +61,16 @@ const RetailerPaper = (props: {
   const { storeFrontID, description, imageURL } = props;
   return (
     <Link to={`/${storeFrontID}`} className={"Link"}>
-      <div className={styles.RetailerPaper}>
-        <img src={imageURL} />
-        <p> {description} </p>
+      <div className=" w-40 md:w-60 shadow-md rounded-lg mx-auto">
+        <img
+          src={imageURL}
+          className="w-40 md:w-60 h-36 md:h-48 rounded-lg object-cover "
+        />
+
+        <p className="text-center text-sm md:text-base/5 my-3">
+          {" "}
+          {description}{" "}
+        </p>
       </div>
     </Link>
   );
@@ -74,7 +80,8 @@ export const MarketPlace = () => {
   return (
     <>
       <WebpapNavBar />
-      <div className={styles.gridContainer}>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 pt-4 px-3 md:px-4 pb-40">
         {retailers.map(({ imageURL, description, storeFrontID }) => (
           <RetailerPaper
             imageURL={imageURL}
@@ -83,6 +90,7 @@ export const MarketPlace = () => {
           />
         ))}
       </div>
+
       <WebpapFooter />
     </>
   );
