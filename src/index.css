@@ -1,3 +1,34 @@
-p{
-    margin: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+p {
+  margin: 0;
+}
+
+/* For WebKit-based browsers (e.g., Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 5px; /* Set the width of the scrollbar */
+}
+
+@media (min-width: 900px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Set the background color of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Set the color of the scrollbar thumb */
+  border-radius: 10px;
+}
+
+/*button classes*/
+
+.btn-primary {
+  background-color: rgba(165, 126, 93, 1);
+  color: white;
 }

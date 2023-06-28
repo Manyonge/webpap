@@ -1,10 +1,15 @@
 /*package components*/
-.Link{
-    text-decoration: none;
-    color: black;
+.Link {
+  text-decoration: none;
+  color: black;
 }
 
 /*background colors*/
-.primaryBg{
-    background-color: rgba(165, 126, 93, 1);
+.primaryBg {
+  background-color: rgba(165, 126, 93, 1);
+}
+
+/*div styles*/
+.Paper {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
