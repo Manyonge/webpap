@@ -1,39 +1,43 @@
 import { WebpapFooter, WebpapNavBar } from "../../components";
-import styles from "./style.module.css";
-import { Button } from "antd";
 import { Link } from "react-router-dom";
 
 export const WebpapHome = () => {
   return (
     <>
       <WebpapNavBar />
-      <div className={`${styles.msgOne} primaryBg`}>
-        <p>Instantly sell your clothing </p>
-        <p>and footwear products on</p>
-        <p>the web!</p>
+      <div
+        className="h-72   primaryBg flex justify-center items-center
+       flex-col"
+      >
+        <p className="text-white  mb-2 text-center text-lg md:text-2xl text-[#fff] ">
+          Instantly sell your clothing <br /> and footwear products on <br />
+          the web!{" "}
+        </p>
+
         <Link to={"/sign-up"}>
-          <Button
-            className={styles.getStarted}
-            type="primary"
-            size="large"
-            shape="round"
-          >
+          <button className=" md:text-md text-sm text-[#fff] border rounded-full px-2 py-1 ">
             {" "}
             Get Started{" "}
-          </Button>
+          </button>
         </Link>
       </div>
 
-      <div className={styles.msgTwo}>
-        <p>Get your own e-commerce</p>
-        <p>website, receive orders and</p>
-        <p>payments in your sleep!</p>
+      <div className="h-72 flex justify-center items-center ">
+        <p className="text-center text-lg md:text-2xl  ">
+          Get your own e-commerce
+          <br />
+          website, receive orders and
+          <br />
+          payments in your sleep!
+        </p>
       </div>
 
-      <div className={`${styles.msgThree} primaryBg`}>
-        <p>No Startup costs</p>
-        <p>No developers or lines of</p>
-        <p>code needed!</p>
+      <div className="primaryBg h-72 flex justify-center items-center ">
+        <p className=" text-[#fff] text-center text-lg md:text-2xl">
+          No Startup costs
+          <br />
+          No developers or lines of code needed!
+        </p>
       </div>
       <WebpapFooter />
     </>
