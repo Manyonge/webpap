@@ -1,2 +1,2 @@
-export { WebpapNavBar } from "./WebpapNavBar/WebpapNavBar.tsx";
-export { WebpapFooter } from "./WebpapFooter/WebpapFooter.tsx";
+export { WebpapNavBar } from "./WebpapNavBar.tsx";
+export { WebpapFooter } from "./WebpapFooter.tsx";

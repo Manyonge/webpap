@@ -1,4 +1,3 @@
-import styles from "./style.module.css";
 import { Button, Dropdown } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
@@ -85,12 +84,12 @@ export const WebpapNavBar = () => {
   ];
 
   return (
-    <div className={styles.WebpapNavBar}>
+    <div className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-0 h-10 md:h-12 sticky top-0 Paper ">
       <Link to={"/"} className="font-bold md:text-lg">
         Webpap
       </Link>
 
-      <div className={styles.WebpapNavLinks}>
+      <div className="md:flex flex-row hidden ">
         <Link to={"/"}>
           <button
             className={`px-5 py-1 rounded-md text-sm  ${
@@ -140,11 +139,7 @@ export const WebpapNavBar = () => {
         </Link>
       </div>
 
-      <Dropdown
-        menu={{ items }}
-        trigger={["click"]}
-        className={styles.WebpapDropdown}
-      >
+      <Dropdown menu={{ items }} trigger={["click"]} className="md:hidden">
         <Button type="text" icon={<MenuOutlined />} />
       </Dropdown>
     </div>
