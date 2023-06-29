@@ -6,6 +6,7 @@ export default {
       primary: "rgba(165, 126, 93, 1)",
     },
     width: {
+      "w-full": "width:100%;",
       "230px": "230px",
       "280px": "280px",
       "400px": "400px",

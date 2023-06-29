@@ -10,10 +10,10 @@
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "deploy": "pnpm build && firebase deploy"
-
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
+    "@radix-ui/react-popover": "1.0.6",
     "antd": "^5.6.3",
     "firebase": "^9.23.0",
     "react": "^18.2.0",

@@ -12,7 +12,7 @@ export const Login = () => {
   return (
     <>
       <WebpapNavBar />
-      <div className="flex flex-col items-center justify-center shadow-lg mx-auto my-44 w-280px md:w-400px rounded-md ">
+      <div className="flex flex-col items-center justify-center shadow-lg mx-auto mt-44 mb-60 w-280px md:w-400px rounded-md ">
         <p className="font-bold text-lg md:text-xl  ">Login</p>
         <p className="my-1">Welcome back admin!</p>
 

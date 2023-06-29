@@ -1,8 +1,5 @@
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 export const AppLayout = () => {
-
-    return (
-        <Outlet/>
-    )
-}
+  return <Outlet />;
+};
