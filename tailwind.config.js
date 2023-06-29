@@ -4,13 +4,10 @@ export default {
   theme: {
     colors: {
       primary: "rgba(165, 126, 93, 1)",
+      error: "red",
+      link: "blue",
     },
-    width: {
-      "w-full": "width:100%;",
-      "230px": "230px",
-      "280px": "280px",
-      "400px": "400px",
-    },
+
     screens: {
       sm: "480px",
       md: "768px",
