@@ -7,6 +7,7 @@ import { ConfigProvider, ThemeConfig } from "antd";
 const theme: ThemeConfig = {
   token: {
     colorPrimary: "rgba(165, 126, 93, 1)",
+    fontFamily: "poppins",
   },
 };
 

@@ -5,6 +5,11 @@ export default {
     colors: {
       primary: "rgba(165, 126, 93, 1)",
     },
+    width: {
+      "230px": "230px",
+      "280px": "280px",
+      "400px": "400px",
+    },
     screens: {
       sm: "480px",
       md: "768px",

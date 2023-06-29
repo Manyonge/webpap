@@ -1,4 +1,4 @@
-import { WebpapFooter, WebpapNavBar } from "../components";
+  import { WebpapFooter, WebpapNavBar } from "../components";
 import { Link } from "react-router-dom";
 
 const retailers = [
