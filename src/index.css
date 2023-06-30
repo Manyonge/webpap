@@ -11,9 +11,16 @@ p {
   width: 5px; /* Set the width of the scrollbar */
 }
 
+@media (max-width: 900px) {
+  ::-webkit-scrollbar {
+    height: 2px;
+  }
+}
+
 @media (min-width: 900px) {
   ::-webkit-scrollbar {
     width: 10px;
+    height: 2px;
   }
 }
 
@@ -31,4 +38,18 @@ p {
 .btn-primary {
   background-color: rgba(165, 126, 93, 1);
   color: white;
+}
+
+table {
+  text-align: center;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid grey;
+}
+
+tr:nth-of-type(even) {
+  background-color: lightgrey;
 }
