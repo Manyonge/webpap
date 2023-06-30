@@ -57,10 +57,21 @@ export const Navbar = (props: {
     { label: "Shopping cart", path: `${storeFrontID}/shopping-cart` },
   ];
 
+  const determineHomePath = () => {
+    if (routesRole === "admin") {
+      return { label: storeFrontID, path: `/${storeFrontID}/admin` };
+    }
+
+    if (routesRole === "storeFront") {
+      return { label: storeFrontID, path: `/${storeFrontID}` };
+    }
+    return { label: "Webpap", path: "/" };
+  };
+
   return (
     <div className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4 h-10 md:h-12 sticky top-0 Paper ">
-      <Link to={"/"} className="font-bold md:text-lg">
-        Webpap
+      <Link to={determineHomePath().path} className="font-bold md:text-lg">
+        {determineHomePath().label}
       </Link>
 
       {routesRole === "app" && (
