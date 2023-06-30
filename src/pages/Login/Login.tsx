@@ -1,7 +1,7 @@
-import { WebpapFooter, WebpapNavBar } from "../../components";
-import { Formik } from "formik";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import {WebpapFooter, WebpapNavBar} from "../../components";
+import {Formik} from "formik";
+import {useState} from "react";
+import {Link} from "react-router-dom";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,7 +87,7 @@ export const Login = () => {
                   className="mr-2 w-3 h-3   "
                 />
 
-                <label for="show-password" className="text-sm">
+                <label htmlFor="show-password" className="text-sm">
                   Show password{" "}
                 </label>
               </div>
