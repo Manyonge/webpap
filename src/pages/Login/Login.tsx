@@ -1,7 +1,7 @@
-import {WebpapFooter, WebpapNavBar} from "../../components";
-import {Formik} from "formik";
-import {useState} from "react";
-import {Link} from "react-router-dom";
+import { Navbar, WebpapFooter } from "../../components";
+import { Formik } from "formik";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +29,7 @@ export const Login = () => {
 
   return (
     <>
-      <WebpapNavBar />
+      <Navbar routesRole="app" />
       <div className="flex flex-col items-center justify-center shadow-lg w-3/4 md:w-3/5 mx-auto mt-44 mb-60 rounded-md ">
         <p className="font-bold text-lg md:text-xl  ">Login</p>
         <p className="my-1">Welcome back admin!</p>

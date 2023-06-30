@@ -1,10 +1,10 @@
-import { WebpapFooter, WebpapNavBar } from "../components";
+import { Navbar, WebpapFooter } from "../components";
 import { Link } from "react-router-dom";
 
 export const WebpapHome = () => {
   return (
     <>
-      <WebpapNavBar />
+      <Navbar routesRole="app" />
 
       <div
         className="h-72 primaryBg flex justify-center items-center

@@ -1,9 +1,9 @@
-import { WebpapFooter, WebpapNavBar } from "../components";
+import { Navbar, WebpapFooter } from "../components";
 
 export const Pricing = () => {
   return (
     <>
-      <WebpapNavBar />
+      <Navbar routesRole="app" />
       <div className="flex flex-col justify-center items-center h-72 primaryBg text-[#fff]">
         <div className="flex flex-row items-center mb-4 ">
           <div>
