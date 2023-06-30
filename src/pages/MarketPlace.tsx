@@ -1,4 +1,4 @@
-import { WebpapFooter, WebpapNavBar } from "../components";
+import { Navbar, WebpapFooter } from "../components";
 import { Link } from "react-router-dom";
 
 const retailers = [
@@ -79,7 +79,7 @@ const RetailerPaper = (props: {
 export const MarketPlace = () => {
   return (
     <>
-      <WebpapNavBar />
+      <Navbar routesRole="app" />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 pt-4 px-3 md:px-4 pb-40">
         {retailers.map(({ imageURL, description, storeFrontID }) => (
