@@ -40,6 +40,8 @@ p {
   color: white;
 }
 
+/*table styles*/
+
 table {
   text-align: center;
   border-collapse: collapse;
@@ -48,6 +50,13 @@ table {
 th,
 td {
   border: 1px solid grey;
+}
+
+@media (max-width: 900px) {
+  th,
+  td {
+    font-size: 0.8rem;
+  }
 }
 
 tr:nth-of-type(even) {
