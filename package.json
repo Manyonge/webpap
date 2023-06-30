@@ -8,12 +8,15 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "pnpm build && firebase deploy"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
+    "@radix-ui/react-popover": "1.0.6",
     "antd": "^5.6.3",
     "firebase": "^9.23.0",
+    "formik": "^2.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",

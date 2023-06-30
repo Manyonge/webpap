@@ -81,7 +81,7 @@ export const MarketPlace = () => {
     <>
       <WebpapNavBar />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 pt-4 px-3 md:px-4 pb-40">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 pt-4 px-3 md:px-4 pb-40">
         {retailers.map(({ imageURL, description, storeFrontID }) => (
           <RetailerPaper
             imageURL={imageURL}

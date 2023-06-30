@@ -4,7 +4,10 @@ export default {
   theme: {
     colors: {
       primary: "rgba(165, 126, 93, 1)",
+      error: "red",
+      link: "blue",
     },
+
     screens: {
       sm: "480px",
       md: "768px",
