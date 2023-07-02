@@ -6,6 +6,11 @@ export default {
       primary: "rgba(165, 126, 93, 1)",
       error: "red",
       link: "blue",
+      success: "#428541",
+      warning: "#D6A476",
+    },
+    data: {
+      checked: 'ui~="checked"',
     },
 
     screens: {

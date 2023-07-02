@@ -7,3 +7,13 @@ export interface Order {
   orderId: string;
   isFulFilled: boolean;
 }
+
+export interface Product {
+  name: string;
+  price: number;
+  size: string;
+  stock: number;
+  isHidden: boolean;
+  productId: string;
+  productImage: string;
+}

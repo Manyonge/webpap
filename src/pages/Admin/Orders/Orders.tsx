@@ -255,7 +255,7 @@ export const Orders = () => {
 
       <button
         onClick={handleScrollToTop}
-        className="  bg-primary rounded-full shadow-2xl fixed bottom-32 px-3 py-2 text-[#fff]  right-10"
+        className="  bg-primary rounded-full shadow-2xl fixed bottom-32 px-3 py-3 text-[#fff] flex flex-row items-center justify-center  right-10"
       >
         <UpOutlined />
       </button>
