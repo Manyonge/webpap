@@ -69,7 +69,7 @@ export const Navbar = (props: {
   };
 
   return (
-    <div className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4 h-10 md:h-12 sticky top-0 Paper ">
+    <div className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4 h-10 md:h-12 sticky top-0 shadow-lg ">
       <Link to={determineHomePath().path} className="font-bold md:text-lg">
         {determineHomePath().label}
       </Link>
