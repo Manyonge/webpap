@@ -8,6 +8,7 @@ export default {
       link: "blue",
       success: "#428541",
       warning: "#D6A476",
+      white: "#fff",
     },
     data: {
       checked: 'ui~="checked"',

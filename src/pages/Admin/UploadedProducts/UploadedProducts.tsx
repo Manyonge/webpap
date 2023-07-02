@@ -34,6 +34,7 @@ const ProductPaper = (props: { product: Product }) => {
             {" "}
             Hidden{" "}
           </label>
+
           <Switch.Root
             checked={hiddenChecked}
             id={"hide-switch"}
