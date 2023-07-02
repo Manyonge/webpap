@@ -17,7 +17,7 @@ export const StoreFrontLayout = () => {
   };
 
   return (
-    <div className="h-screen ">
+    <>
       <div
         className="flex flex-row justify-between items-center pl-5 pr-5
       md:pr-4 h-10 md:h-12 sticky top-0 shadow-lg
@@ -87,6 +87,6 @@ export const StoreFrontLayout = () => {
       </div>
 
       <Outlet />
-    </div>
+    </>
   );
 };
