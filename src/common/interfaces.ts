@@ -20,3 +20,9 @@ export interface Product {
   productId: string;
   productImage: string;
 }
+
+export interface CartItem {
+  product: Product;
+  orderId: string;
+  quantity: number;
+}
