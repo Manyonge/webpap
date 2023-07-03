@@ -10,6 +10,9 @@ export interface Order {
 
 export interface Product {
   name: string;
+  category: string;
+  condition: string;
+  description: string;
   price: number;
   size: string;
   stock: number;

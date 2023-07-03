@@ -4,7 +4,7 @@ export default {
   theme: {
     colors: {
       primary: "rgba(165, 126, 93, 1)",
-      error: "red",
+      error: "#890404",
       link: "blue",
       success: "#428541",
       warning: "#D6A476",
