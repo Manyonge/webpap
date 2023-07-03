@@ -11,7 +11,7 @@ const ProductCard = (props: { product: Product }) => {
   const { product } = props;
   return (
     <div className="rounded-md shadow-lg hover:shadow-xl mx-auto ">
-      <Link to={`${product.productId}`}>
+      <Link to={`product/${product.productId}`}>
         <img
           src={product.productImage}
           className="object-cover w-full h-42 rounded-tr-lg rounded-tl-lg"
@@ -122,7 +122,7 @@ export const StoreFrontHome = () => {
   ]);
 
   return (
-    <div className="px-4 md:px-6">
+    <div className="px-4 md:px-6 pb-44">
       <div className="mt-10 flex flex-row items-center justify-between ">
         <div className="  flex-col items-center justify-center mr-4  ">
           <img

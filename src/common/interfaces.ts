@@ -10,10 +10,19 @@ export interface Order {
 
 export interface Product {
   name: string;
+  category: string;
+  condition: string;
+  description: string;
   price: number;
   size: string;
   stock: number;
   isHidden: boolean;
   productId: string;
   productImage: string;
+}
+
+export interface CartItem {
+  product: Product;
+  orderId: string;
+  quantity: number;
 }

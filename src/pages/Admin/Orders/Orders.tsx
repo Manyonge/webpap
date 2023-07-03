@@ -1,10 +1,10 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { Order } from "../../../common";
+import { CartItem } from "../../../common";
 import { Link } from "react-router-dom";
 import { RightOutlined, UpOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
-const OrderPaper = (props: { order: Order }) => {
+const OrderPaper = (props: { order: CartItem }) => {
   // TODO get orders from within this component and have a fulfillementStatus prop be passed so it can be used to get the types of orders needed
   const { order } = props;
   return (
@@ -43,7 +43,7 @@ const OrderPaper = (props: { order: Order }) => {
 export const Orders = () => {
   const [selectedTab, setSelectedTab] = useState("allProducts");
 
-  const [allOrders, setAllOrders] = useState<Order[]>([
+  const [allOrders, setAllOrders] = useState<CartItem[]>([
     {
       isFulFilled: true,
       amountPaid: 4000,

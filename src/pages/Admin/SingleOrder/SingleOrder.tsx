@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Order } from "../../../common";
+import { CartItem } from "../../../common";
 import { LeftOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 
 export const SingleOrder = () => {
-  const [order, setOrder] = useState<Order>({
+  const [order, setOrder] = useState<CartItem>({
     productPhoto:
       "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
     productName: "Jordan 1 lows",
