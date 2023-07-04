@@ -1,7 +1,7 @@
 import { Navbar } from "../../components";
 import { Formik } from "formik";
 import { useState } from "react";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const personalDetailsCol = [
   {
@@ -9,18 +9,21 @@ const personalDetailsCol = [
     id: "fullName",
     name: "fullName",
     htmlFor: "fullName",
+    type: "text",
   },
   {
     label: "Phone",
     id: "phoneNumber",
     name: "phoneNumber",
     htmlFor: "phoneNumber",
+    type: "text",
   },
   {
     label: "ID Number",
     id: "idNumber",
     name: "idNumber",
     htmlFor: "idNumber",
+    type: "number",
   },
 ];
 
@@ -30,18 +33,21 @@ const businessDetailsCol = [
     id: "businessName",
     name: "businessName",
     htmlFor: "businessName",
+    type: "text",
   },
   {
     label: "Username",
     id: "userName",
     name: "userName",
     htmlFor: "userName",
+    type: "text",
   },
   {
     label: "Login email",
     id: "loginEmail",
     name: "loginEmail",
     htmlFor: "loginEmail",
+    type: "email",
   },
 
   {
@@ -49,6 +55,7 @@ const businessDetailsCol = [
     id: "password",
     name: "password",
     htmlFor: "password",
+    type: "text",
   },
 ];
 
@@ -93,7 +100,7 @@ export const Signup = () => {
   return (
     <div>
       <Navbar routesRole="app" />
-      <p className="text-center font-bold text-lg md:text-xl mt-6 mb-8">
+      <p className="text-center font-bold text-lg md:text-2xl mt-6 mb-8">
         Create your retailer account
       </p>
 
@@ -133,7 +140,11 @@ export const Signup = () => {
               {!passportPhoto && (
                 <>
                   <label htmlFor="passport-photo">
-                    <div className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-primary mx-auto text-[#fff] flex flex-col items-center justify-center pt-3 mt-2 ">
+                    <div
+                      className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
+                      flex flex-col items-center justify-center border-2 border-dashed border-black  my-2 "
+                    >
+                      <PlusOutlined />
                       <p className="text-center">
                         Passport
                         <br /> photo
@@ -150,13 +161,15 @@ export const Signup = () => {
               )}
 
               <div className="flex flex-col items-center justify-center pb-3  ">
-                {personalDetailsCol.map(({ label, id, name }) => (
+                {personalDetailsCol.map(({ label, id, name, type }) => (
                   <input
                     key={id}
                     placeholder={label}
                     id={id}
                     name={name}
-                    className="border pl-2 rounded-md my-2  outline-none"
+                    type={type}
+                    className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
+                     focus:outline-primary"
                   />
                 ))}
               </div>
@@ -183,7 +196,12 @@ export const Signup = () => {
               {!businessLogo && (
                 <>
                   <label htmlFor="business-logo">
-                    <div className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-primary mx-auto text-[#fff] flex flex-col items-center justify-center pt-3 mt-2 ">
+                    <div
+                      className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
+                      flex flex-col items-center justify-center border-2 border-dashed border-black  my-2 "
+                    >
+                      <PlusOutlined />
+
                       <p className="text-center">
                         Business
                         <br /> logo
@@ -200,13 +218,15 @@ export const Signup = () => {
               )}
 
               <div className="flex flex-col items-center justify-center pb-3  ">
-                {businessDetailsCol.map(({ label, id, name }) => (
+                {businessDetailsCol.map(({ label, id, name, type }) => (
                   <input
                     id={id}
                     key={id}
                     placeholder={label}
                     name={name}
-                    className="border pl-2 rounded-md my-2  outline-none"
+                    type={type}
+                    className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
+                     focus:outline-primary"
                   />
                 ))}
               </div>
@@ -214,7 +234,8 @@ export const Signup = () => {
 
             <button
               type="submit"
-              className="bg-primary text-[#fff] mx-auto mt-6 mb-40 w-3/4 rounded-lg "
+              className="bg-primary text-[#fff] mx-auto mt-10
+               mb-40 w-3/4 py-1.5 rounded-xl shadow-lg"
             >
               {" "}
               Submit{" "}

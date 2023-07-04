@@ -3,9 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
 
-export const Navbar = (props: {
-  routesRole: "app" | "storeFront" | "admin";
-}) => {
+export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   const { routesRole } = props;
   const { pathname } = useLocation();
   const { storeFrontID } = useParams();
@@ -52,24 +50,19 @@ export const Navbar = (props: {
     { label: "Products", path: `/${storeFrontID}/admin/products` },
   ];
 
-  const storeFrontRoutes = [
-    { label: "Home", path: `${storeFrontID}` },
-    { label: "Shopping cart", path: `${storeFrontID}/shopping-cart` },
-  ];
-
   const determineHomePath = () => {
     if (routesRole === "admin") {
       return { label: storeFrontID, path: `/${storeFrontID}/admin` };
     }
 
-    if (routesRole === "storeFront") {
-      return { label: storeFrontID, path: `/${storeFrontID}` };
-    }
     return { label: "Webpap", path: "/" };
   };
 
   return (
-    <div className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4 h-10 md:h-12 sticky top-0 shadow-lg ">
+    <div
+      className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4
+     bg-white h-10 md:h-12 sticky top-0 shadow-lg "
+    >
       <Link to={determineHomePath().path} className="font-bold md:text-lg">
         {determineHomePath().label}
       </Link>
@@ -93,22 +86,6 @@ export const Navbar = (props: {
       {routesRole === "admin" && (
         <div className="md:flex flex-row hidden ">
           {adminRoutes.map(({ label, path }) => (
-            <Link to={path} key={path}>
-              <button
-                className={`px-5 py-1 rounded-md text-sm  ${
-                  pathname === path ? "btn-primary" : ""
-                }`}
-              >
-                {label}
-              </button>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {routesRole === "storeFront" && (
-        <div className="md:flex flex-row hidden ">
-          {storeFrontRoutes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
                 className={`px-5 py-1 rounded-md text-sm  ${
@@ -148,20 +125,6 @@ export const Navbar = (props: {
 
             {routesRole === "app" &&
               appRoutes.map(({ label, path }) => (
-                <Link to={path} key={path}>
-                  <div
-                    onClick={handlePopover}
-                    className={`px-5 py-1 w- rounded-md text-sm w-full text-center  ${
-                      pathname === path ? "btn-primary" : ""
-                    }`}
-                  >
-                    {label}
-                  </div>
-                </Link>
-              ))}
-
-            {routesRole === "storeFront" &&
-              storeFrontRoutes.map(({ label, path }) => (
                 <Link to={path} key={path}>
                   <div
                     onClick={handlePopover}

@@ -9,6 +9,9 @@ export default {
       success: "#428541",
       warning: "#D6A476",
       white: "#fff",
+      grey: "grey",
+      lightGrey: "lightGrey",
+      black: "#000",
     },
     data: {
       checked: 'ui~="checked"',
