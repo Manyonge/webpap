@@ -11,8 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-/src/firebase.ts
+
 /.env
+/src/supabase.ts
 
 # Editor directories and files
 .vscode/*

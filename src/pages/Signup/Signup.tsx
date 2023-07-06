@@ -4,14 +4,7 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Retailer } from "../../common";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "../../contexts/AppContext.tsx";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../../firebase";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  serverTimestamp,
-} from "firebase/firestore";
+import { supabase } from "../../supabase.ts";
 
 const personalDetailsCol = [
   {
@@ -71,16 +64,13 @@ export const Signup = () => {
 
   useEffect(() => {
     const test = async () => {
-      try {
-        console.log("getting data");
-        const querySnapshot = await getDocs(collection(db, "users"));
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
-        });
-      } catch (e) {
-        throw e;
-      }
+      const response = await supabase.from("users").select();
+      console.log({ response });
+
+      const { error } = await supabase
+        .from("users")
+        .insert({ name: "Denmark" });
+      console.log(error);
     };
     test();
   }, []);
@@ -113,34 +103,6 @@ export const Signup = () => {
         showToast("Please fill in all fields");
         return;
       }
-    }
-
-    try {
-      const passportStorageRef = ref(
-        storage,
-        `${data.fullName}-passport-photo`,
-      );
-      const passportSnapshot = await uploadBytes(
-        passportStorageRef,
-        passportPhoto,
-      );
-      const passportUrl = await getDownloadURL(passportSnapshot.ref);
-
-      const logoStorageRef = ref(storage, `${data.fullName}-logo-photo`);
-      const logoSnapshot = await uploadBytes(logoStorageRef, businessLogo);
-      const logoUrl = await getDownloadURL(logoSnapshot.ref);
-
-      data.passportPhoto = passportUrl;
-      data.businessLogo = logoUrl;
-      data.timeStamp = serverTimestamp();
-      console.log({ passportUrl, logoUrl });
-      console.log("adding doc");
-      console.log(data);
-      const docRef = await addDoc(collection(db, "retailers"), data);
-      console.log("added");
-      console.log(docRef.id);
-    } catch (e) {
-      throw e;
     }
   };
 
