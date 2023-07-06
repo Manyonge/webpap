@@ -26,3 +26,15 @@ export interface CartItem {
   orderId: string;
   quantity: number;
 }
+
+export interface Retailer {
+  passportPhoto?: File | string;
+  businessLogo?: File | string;
+  fullName: string;
+  phoneNumber: string;
+  idNumber: string;
+  businessName: string;
+  loginEmail: string;
+  password: string;
+  timeStamp: any;
+}
