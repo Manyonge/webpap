@@ -33,11 +33,14 @@ p {
   border-radius: 10px;
 }
 
-/*button classes*/
+/*button styles*/
 
 .btn-primary {
   background-color: rgba(165, 126, 93, 1);
   color: white;
+}
+button:hover {
+  opacity: 0.9;
 }
 
 /*table styles*/
