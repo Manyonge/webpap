@@ -9,6 +9,8 @@ export interface Order {
 }
 
 export interface Product {
+  retailerId: string | number;
+  storeFrontId: string;
   name: string;
   category: string;
   condition: string;
@@ -17,8 +19,8 @@ export interface Product {
   size: string;
   stock: number;
   isHidden: boolean;
-  productId: string;
-  productImage: string;
+  id: number | string;
+  productImages: { url: string | boolean }[];
 }
 
 export interface CartItem {
