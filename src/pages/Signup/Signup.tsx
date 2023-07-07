@@ -1,10 +1,9 @@
 import { Navbar } from "../../components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Retailer } from "../../common";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "../../contexts/AppContext.tsx";
-import { supabase } from "../../supabase.ts";
 
 const personalDetailsCol = [
   {
@@ -61,19 +60,19 @@ export const Signup = () => {
   const [businessLogo, setBusinessLogo] = useState(null);
   const { register, watch } = useForm<Retailer>();
   const { showToast } = useAppContext();
-
-  useEffect(() => {
-    const test = async () => {
-      const response = await supabase.from("users").select();
-      console.log({ response });
-
-      const { error } = await supabase
-        .from("users")
-        .insert({ name: "Denmark" });
-      console.log(error);
-    };
-    test();
-  }, []);
+  //
+  // useEffect(() => {
+  //   const test = async () => {
+  //     const response = await supabase.from("testing").select();
+  //     console.log({ response });
+  //
+  //     const { error } = await supabase
+  //       .from("testing")
+  //       .insert({ name: "Manyonge" });
+  //     console.log(error);
+  //   };
+  //   test();
+  // }, []);
 
   const handlePassportPhoto = (value: any) => {
     setPassportPhoto(value.target.files[0]);
