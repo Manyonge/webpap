@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { AdminLayout, AppLayout, StoreFrontLayout } from "../layouts";
 import {
   Login,
@@ -10,42 +10,7 @@ import {
 } from "../pages";
 import { AdminRoutes } from "./AdminRoutes.tsx";
 import { StoreFrontRoutes } from "./StoreFrontRoutes.tsx";
-import { useEffect, useState } from "react";
-import { supabase } from "../supabase.ts";
-import { useAppContext } from "../contexts/AppContext.tsx";
-import { PostgrestError } from "@supabase/supabase-js";
-
-const RequireAuth = (props: { children: any }) => {
-  const { children } = props;
-  const [isSessionExpired, setIsSessionExpired] = useState(false);
-  const { showToast } = useAppContext();
-
-  const handleError = (error: PostgrestError | any | null) => {
-    if (error) {
-      showToast(error.message);
-      throw new Error(error);
-    }
-  };
-  useEffect(() => {
-    const authenticate = async () => {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
-
-      handleError(sessionError);
-
-      if (sessionData.session?.expires_at) {
-        setIsSessionExpired(
-          Math.floor(Date.now() / 1000) > sessionData.session?.expires_at,
-        );
-      }
-    };
-    authenticate().then();
-  }, []);
-
-  if (isSessionExpired) return <Navigate to={"/login"} />;
-
-  return children;
-};
+import { RequireAuth } from "../components";
 
 export const router = createBrowserRouter([
   {
