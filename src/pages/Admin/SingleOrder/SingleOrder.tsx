@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CartItem } from "../../../common";
+import { CartItem } from "../../../common/interfaces";
 import { LeftOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 

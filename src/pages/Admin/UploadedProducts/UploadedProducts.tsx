@@ -1,7 +1,7 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { LinkOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { Product } from "../../../common";
+import { Product } from "../../../common/interfaces";
 import { Link } from "react-router-dom";
 import * as Switch from "@radix-ui/react-switch";
 

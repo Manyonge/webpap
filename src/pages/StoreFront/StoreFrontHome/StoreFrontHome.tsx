@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
-import { Product } from "../../../common";
+import { Product } from "../../../common/interfaces";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;

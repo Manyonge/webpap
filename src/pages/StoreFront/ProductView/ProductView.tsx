@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { Product } from "../../../common";
+import { Product } from "../../../common/interfaces";
 
 const Carousel = (props: { images: string[] }) => {
   const { images } = props;

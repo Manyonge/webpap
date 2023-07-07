@@ -1,5 +1,5 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { CartItem } from "../../../common";
+import { CartItem } from "../../../common/interfaces";
 import { Link } from "react-router-dom";
 import { RightOutlined, UpOutlined } from "@ant-design/icons";
 import { useState } from "react";

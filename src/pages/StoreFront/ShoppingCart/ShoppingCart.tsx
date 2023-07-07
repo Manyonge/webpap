@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
-import { CartItem } from "../../../common";
+import { CartItem } from "../../../common/interfaces";
 import { useState } from "react";
 
 const OrderPaper = (props: { order: CartItem }) => {

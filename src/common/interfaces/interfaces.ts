@@ -28,6 +28,7 @@ export interface CartItem {
 }
 
 export interface Retailer {
+  [index: string]: any;
   passportPhoto?: File | string;
   businessLogo?: File | string;
   fullName: string;
@@ -35,6 +36,6 @@ export interface Retailer {
   idNumber: string;
   businessName: string;
   loginEmail: string;
-  password: string;
-  timeStamp: any;
+  password?: string;
+  id: number;
 }

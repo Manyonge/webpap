@@ -1,9 +1,12 @@
 import { Navbar } from "../../components";
 import { useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { Retailer } from "../../common";
+import { Retailer } from "../../common/interfaces";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "../../contexts/AppContext.tsx";
+import { supabase } from "../../supabase.ts";
+import { PostgrestError } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 const personalDetailsCol = [
   {
@@ -59,20 +62,10 @@ export const Signup = () => {
   const [passportPhoto, setPassportPhoto] = useState(null);
   const [businessLogo, setBusinessLogo] = useState(null);
   const { register, watch } = useForm<Retailer>();
+  const [disableSubmit, setDisableSubmit] = useState(false);
+  const [message, setMessage] = useState("Submit");
   const { showToast } = useAppContext();
-  //
-  // useEffect(() => {
-  //   const test = async () => {
-  //     const response = await supabase.from("testing").select();
-  //     console.log({ response });
-  //
-  //     const { error } = await supabase
-  //       .from("testing")
-  //       .insert({ name: "Manyonge" });
-  //     console.log(error);
-  //   };
-  //   test();
-  // }, []);
+  const navigate = useNavigate();
 
   const handlePassportPhoto = (value: any) => {
     setPassportPhoto(value.target.files[0]);
@@ -90,18 +83,83 @@ export const Signup = () => {
     setBusinessLogo(null);
   };
 
+  const handleError = (error: PostgrestError | any | null) => {
+    if (error) {
+      showToast(error.message);
+      throw error;
+    }
+  };
+
+  const uploadPhoto = async (photo: File, fileName: string) => {
+    const { data: pathData, error: pathError } = await supabase.storage
+      .from("webpap storage")
+      .upload(fileName, photo);
+
+    handleError(pathError);
+
+    const { data: urlData } = supabase.storage
+      .from("webpap storage")
+      .getPublicUrl(pathData?.path as string);
+
+    return urlData.publicUrl;
+  };
+
   const onSubmit = async (e: any) => {
     e?.preventDefault();
+
     const data: Retailer = watch();
+
     if (passportPhoto === null || businessLogo === null) {
       showToast("You have not included all photos");
       return;
     }
+
     for (const key in data) {
       if (data[key] === "") {
         showToast("Please fill in all fields");
         return;
       }
+    }
+
+    setDisableSubmit(true);
+    setMessage("Creating user");
+
+    const { data: userData, error: userError } = await supabase.auth.signUp({
+      email: data.loginEmail,
+      password: data.password as string,
+    });
+
+    handleError(userError);
+
+    setMessage("uploading passport");
+
+    const passportUrl = await uploadPhoto(
+      passportPhoto,
+      `passport photos/${userData.user?.id}-passport-photo`,
+    );
+
+    setMessage("Uploading logo");
+
+    const logoUrl = await uploadPhoto(
+      businessLogo,
+      `business logos/${userData.user?.id}-business-logo`,
+    );
+
+    data.passportPhoto = passportUrl;
+    data.businessLogo = logoUrl;
+    delete data.password;
+    setMessage("Creating retailer");
+
+    const { status } = await supabase.from("retailers").insert([data]);
+
+    setMessage("Done");
+    setDisableSubmit(false);
+
+    if (status === 201) {
+      showToast("Account created successfully !");
+      navigate("/login");
+    } else {
+      showToast("There was an error");
     }
   };
 
@@ -231,11 +289,12 @@ export const Signup = () => {
 
         <button
           type="submit"
+          disabled={disableSubmit}
           className="bg-primary text-[#fff] mx-auto mt-10
                mb-40 w-3/4 py-1.5 rounded-xl shadow-lg"
         >
           {" "}
-          Submit{" "}
+          {message}
         </button>
       </form>
     </div>
