@@ -10,6 +10,7 @@ import {
 } from "../pages";
 import { AdminRoutes } from "./AdminRoutes.tsx";
 import { StoreFrontRoutes } from "./StoreFrontRoutes.tsx";
+import { RequireAuth } from "../components";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,8 @@ export const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <WebpapHome /> },
+      { path: "404", element: <NotFound /> },
+
       {
         path: "pricing",
         element: <Pricing />,
@@ -36,7 +39,11 @@ export const router = createBrowserRouter([
       },
       {
         path: ":storeFrontID/admin",
-        element: <AdminLayout />,
+        element: (
+          <RequireAuth>
+            <AdminLayout />
+          </RequireAuth>
+        ),
         children: [...AdminRoutes],
       },
       {

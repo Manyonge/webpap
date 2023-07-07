@@ -1,9 +1,18 @@
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  Outlet,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import * as Popover from "@radix-ui/react-popover";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { useGetRetailer } from "../../common/hooks";
 
 export const StoreFrontLayout = () => {
+  const { retailerError } = useGetRetailer();
+
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { storeFrontID } = useParams();
   const { pathname } = useLocation();
@@ -15,6 +24,8 @@ export const StoreFrontLayout = () => {
   const handlePopover = () => {
     setPopoverOpen(!popoverOpen);
   };
+
+  if (retailerError) return <Navigate to={"/404"} />;
 
   return (
     <>

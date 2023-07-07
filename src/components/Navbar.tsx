@@ -1,12 +1,14 @@
 import { MenuOutlined } from "@ant-design/icons";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
+import { supabase } from "../supabase.ts";
 
 export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   const { routesRole } = props;
   const { pathname } = useLocation();
   const { storeFrontID } = useParams();
+  const navigate = useNavigate();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -58,6 +60,11 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
     return { label: "Webpap", path: "/" };
   };
 
+  const handleLogOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error === null) navigate("/login");
+  };
+
   return (
     <div
       className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4
@@ -96,6 +103,14 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
               </button>
             </Link>
           ))}
+
+          <button
+            onClick={handleLogOut}
+            className={`px-5 py-1 rounded-md text-sm hover:bg-primary hover:text-white`}
+          >
+            {" "}
+            Log out{" "}
+          </button>
         </div>
       )}
 
@@ -109,20 +124,29 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content className="flex flex-col bg-[#fff]  px-2 py-1 rounded-lg  mt-2.5 shadow-lg mr-2 ">
-            {routesRole === "admin" &&
-              adminRoutes.map(({ label, path }) => (
-                <Link to={path} key={path}>
-                  <div
-                    onClick={handlePopover}
-                    className={`px-5 py-1 w- rounded-md text-sm w-full text-center  ${
-                      pathname === path ? "btn-primary" : ""
-                    }`}
-                  >
-                    {label}
-                  </div>
-                </Link>
-              ))}
-
+            {routesRole === "admin" && (
+              <div>
+                {adminRoutes.map(({ label, path }) => (
+                  <Link to={path} key={path}>
+                    <div
+                      onClick={handlePopover}
+                      className={`px-5 py-1 w- rounded-md text-sm w-full text-center  ${
+                        pathname === path ? "btn-primary" : ""
+                      }`}
+                    >
+                      {label}
+                    </div>
+                  </Link>
+                ))}
+                <button
+                  onClick={handleLogOut}
+                  className={`px-5 py-1 w- rounded-md text-sm w-full text-center hover:bg-primary hover:text-white`}
+                >
+                  {" "}
+                  Log out{" "}
+                </button>
+              </div>
+            )}
             {routesRole === "app" &&
               appRoutes.map(({ label, path }) => (
                 <Link to={path} key={path}>

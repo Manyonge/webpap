@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetRetailer } from "../../../common/hooks";
 
 export const AdminDashboard = () => {
+  const { retailer } = useGetRetailer();
+
   const [currentRevenue, setCurrentRevenue] = useState(`${100} KSH`);
   const [currentProducts, setCurrentProducts] = useState(100);
   const [currentOrders, setCurrentOrders] = useState(100);
@@ -37,9 +40,11 @@ export const AdminDashboard = () => {
   return (
     <>
       <img
-        src="https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62"
+        src={retailer?.businessLogo as string}
         alt="your business logo"
-        className="mx-auto my-7 w-28 h-28 md:w-32 md:h-32 rounded-full"
+        className="mx-auto my-7 w-28 h-28 md:w-32 md:h-32 rounded-full
+        text-center
+        "
       />
 
       <p className="text-center font-bold mb-4 text-lg md:text-xl">

@@ -86,7 +86,7 @@ export const Signup = () => {
   const handleError = (error: PostgrestError | any | null) => {
     if (error) {
       showToast(error.message);
-      throw error;
+      throw new Error(error);
     }
   };
 
@@ -130,6 +130,7 @@ export const Signup = () => {
     });
 
     handleError(userError);
+    userData.user ? (data.id = userData.user?.id) : null;
 
     setMessage("uploading passport");
 

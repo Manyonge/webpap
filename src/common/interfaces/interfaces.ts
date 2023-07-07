@@ -37,5 +37,5 @@ export interface Retailer {
   businessName: string;
   loginEmail: string;
   password?: string;
-  id: number;
+  id: number | string | null;
 }

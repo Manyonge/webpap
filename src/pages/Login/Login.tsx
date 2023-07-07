@@ -1,30 +1,53 @@
 import { Navbar, WebpapFooter } from "../../components";
-import { Formik } from "formik";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { supabase } from "../../supabase.ts";
+import { useAppContext } from "../../contexts/AppContext.tsx";
+import { PostgrestError } from "@supabase/supabase-js";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const { register, watch } = useForm();
+  const { showToast } = useAppContext();
+  const navigate = useNavigate();
   const handleShowPassword = (value: any) => {
     setShowPassword(value.target.checked);
   };
-  const validateForm = (values: { email: string; password: string }) => {
-    const errors: any = {};
-    if (!values.email) {
-      errors.email = "Required";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-      errors.email = "Invalid email address";
+
+  const handleError = (error: PostgrestError | any | null) => {
+    if (error) {
+      showToast(error.message);
+      throw new Error(error);
     }
-    return errors;
   };
 
-  const onSubmit = (
-    values: { email: string; password: string },
-    { setSubmitting }: any,
-  ) => {
-    console.log(values);
-    setSubmitting(false);
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+    const formData = watch();
+
+    const { data: user, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+    handleError(authError);
+
+    if (user) {
+      const { data: retailer } = await supabase
+        .from("retailers")
+        .select()
+        .eq("id", user.user?.id)
+        .single();
+      if (retailer) navigate(`/${retailer.businessName}/admin`);
+    }
+
+    // const { data: sessionData } = await supabase.auth.getSession();
+    // console.log(sessionData);
+    // console.log(
+    //   Math.floor(Date.now() / 1000) > sessionData.session?.expires_at,
+    // );
   };
 
   return (
@@ -37,89 +60,57 @@ export const Login = () => {
         <p className="font-bold text-lg md:text-2xl  ">Login</p>
         <p className="my-1 md:text-lg ">Welcome back admin!</p>
 
-        <Formik
-          initialValues={{ email: "", password: "" }}
-          validate={validateForm}
+        <form
+          className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
           onSubmit={onSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form
-              className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
-              onSubmit={handleSubmit}
-            >
-              <input
-                name="email"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.email}
-                placeholder="Email"
-                className="border-2 border-primary rounded-md 
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary "
-              />
-              <p className="text-sm text-error mb-4 ">
-                {errors.email && touched.email && errors.email}
-              </p>
+          <input
+            placeholder="Email"
+            {...register("email", { required: true })}
+            className="border-2 border-primary rounded-md 
+                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
+                  mb-5"
+          />
 
-              <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                placeholder="Password"
-                className="border-2 border-primary rounded-md
+          <input
+            {...register("password", { required: true })}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="border-2 border-primary rounded-md
                   py-2 md:py-2.5 pl-2 md:pl-3 w-full focus:outline-primary
                   focus:outline-primary "
-              />
+          />
 
-              <p className="text-sm text-error mb-4 ">
-                {errors.password && touched.password && errors.password}
-              </p>
+          <div className="flex flex-row items-center justify-start mr-auto ">
+            <input
+              type={"checkbox"}
+              id="show-password"
+              onChange={handleShowPassword}
+              className="mr-2 w-4 h-4"
+            />
 
-              <div className="flex flex-row items-center justify-start mr-auto ">
-                <input
-                  type={"checkbox"}
-                  id="show-password"
-                  onChange={handleShowPassword}
-                  className="mr-2 w-4 h-4"
-                />
+            <label htmlFor="show-password" className="text-sm">
+              Show password{" "}
+            </label>
+          </div>
 
-                <label htmlFor="show-password" className="text-sm">
-                  Show password{" "}
-                </label>
-              </div>
-
-              {errors.password && touched.password && errors.password}
-
-              <button
-                disabled={isSubmitting}
-                type="submit"
-                className="bg-[#A57E5D] text-[#fff] py-1 md:py-0.5 w-full
+          <button
+            type="submit"
+            className="bg-[#A57E5D] text-[#fff] py-1 md:py-0.5 w-full
                   rounded-lg border w-230px md:text-lg mt-4 shadow-lg "
-              >
-                Login
-              </button>
+          >
+            Login
+          </button>
 
-              <p className="text-sm md:text-base text-center mt-2 mb-10">
-                Don't have an account?
-                <br className="md:hidden" />
-                <Link to={"/sign-up"} className="text-link">
-                  {" "}
-                  sign up{" "}
-                </Link>
-              </p>
-            </form>
-          )}
-        </Formik>
+          <p className="text-sm md:text-base text-center mt-2 mb-10">
+            Don't have an account?
+            <br className="md:hidden" />
+            <Link to={"/sign-up"} className="text-link">
+              {" "}
+              sign up{" "}
+            </Link>
+          </p>
+        </form>
       </div>
       <WebpapFooter />
     </>
