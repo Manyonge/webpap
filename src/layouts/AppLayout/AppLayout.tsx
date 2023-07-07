@@ -3,13 +3,15 @@ import * as Toast from "@radix-ui/react-toast";
 import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext } from "../../contexts/AppContext.tsx";
+import { SeverityColorEnum } from "../../common/enums";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-
-  const showToast = (message: string) => {
+  const [severityColor, setSeverityColor] = useState("bg-white");
+  const showToast = (message: string, severity?: SeverityColorEnum) => {
     setMessage(message);
+    severity ? setSeverityColor(severity) : null;
     setOpen(true);
   };
 
@@ -18,7 +20,7 @@ export const AppLayout = () => {
       <Outlet />
       <Toast.Provider swipeDirection="right" duration={4000}>
         <Toast.Root
-          className="ToastRoot flex flex-row items-center justify-between"
+          className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
           open={open}
           onOpenChange={setOpen}
         >
