@@ -10,7 +10,7 @@ import {
 } from "../pages";
 import { AdminRoutes } from "./AdminRoutes.tsx";
 import { StoreFrontRoutes } from "./StoreFrontRoutes.tsx";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabase.ts";
 import { useAppContext } from "../contexts/AppContext.tsx";
 import { PostgrestError } from "@supabase/supabase-js";
@@ -54,6 +54,8 @@ export const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <WebpapHome /> },
+      { path: "404", element: <NotFound /> },
+
       {
         path: "pricing",
         element: <Pricing />,
