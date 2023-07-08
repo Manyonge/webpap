@@ -2,15 +2,54 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { LinkOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { Product } from "../../../common/interfaces";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import * as Switch from "@radix-ui/react-switch";
+import { useQuery, useQueryClient } from "react-query";
+import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { SeverityColorEnum } from "../../../common/enums";
 
 const ProductPaper = (props: { product: Product }) => {
   const { product } = props;
+
+  const { storeFrontID } = useParams();
+  const { showToast } = useAppContext();
+
   const [hiddenChecked, setHiddenChecked] = useState(product.isHidden);
-  const handleCheckHidden = () => {
+  const queryClient = useQueryClient();
+  const handleHideProduct = async () => {
     product.isHidden = !hiddenChecked;
     setHiddenChecked(!hiddenChecked);
+    const { error } = await supabase
+      .from("products")
+      .update({ isHidden: !hiddenChecked })
+      .eq("id", product.id);
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+  };
+  const handleCopyLink = async () => {
+    const domain = window.location.hostname;
+    await navigator.clipboard.writeText(
+      `${domain}/${storeFrontID}/products/${product.id}`,
+    );
+    showToast("Link copied to clipboard");
+  };
+
+  const handleDeleteProduct = async () => {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", product.id);
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    await queryClient.invalidateQueries("allProducts");
+    await queryClient.invalidateQueries("soldProducts");
+    await queryClient.invalidateQueries("hiddenProducts");
+    showToast("Product deleted successfully", SeverityColorEnum.Success);
   };
 
   return (
@@ -22,11 +61,15 @@ const ProductPaper = (props: { product: Product }) => {
       <div className="flex flex-row items-center justify-between mb-4 ">
         <p
           className={`${
-            product.stock < 1 ? "text-error" : "text-[#428541]"
+            parseInt(product.stock as string) < 1
+              ? "text-error"
+              : "text-[#428541]"
           } text-sm`}
         >
           {" "}
-          {`${product.stock < 1 ? "SOLD OUT" : "IN STOCK"}`}{" "}
+          {`${
+            parseInt(product.stock as string) < 1 ? "SOLD OUT" : "IN STOCK"
+          }`}{" "}
         </p>
 
         <div className="flex flex-row items-center justify-between  w-1/3">
@@ -45,7 +88,7 @@ const ProductPaper = (props: { product: Product }) => {
             `}
           >
             <Switch.Thumb
-              onClick={handleCheckHidden}
+              onClick={handleHideProduct}
               className={`block h-4 w-4 bg-[#fff] rounded-full shadow-lg
               transition-transform duration-100 
               ${product.isHidden ? "translate-x-3/4  " : "translate-x-0"}
@@ -56,11 +99,11 @@ const ProductPaper = (props: { product: Product }) => {
       </div>
 
       <Link
-        to={`${product.productId}`}
+        to={`${product.id}`}
         className="flex flex-row items-center justify-between mb-4 "
       >
         <img
-          src={product.productImage}
+          src={product.productImages[0]}
           className="h-16 w-16 rounded-md object-cover "
         />
 
@@ -71,10 +114,17 @@ const ProductPaper = (props: { product: Product }) => {
       </Link>
 
       <div className="mx-auto mt-2 flex flex-row items-center justify-center w-max ">
-        <button className=" mr-4 rounded-full shadow-lg border-[grey] border text-[grey] text-sm px-2 py-0.5">
+        <button
+          onClick={handleCopyLink}
+          className=" mr-4 rounded-full shadow-lg
+        border-[grey] border text-[grey] text-sm px-2 py-0.5"
+        >
           <LinkOutlined /> Copy link
         </button>
-        <button className=" ml-4 rounded-full shadow-lg border-error border text-error text-sm px-2 py-0.5">
+        <button
+          onClick={handleDeleteProduct}
+          className=" ml-4 rounded-full shadow-lg border-error border text-error text-sm px-2 py-0.5"
+        >
           {" "}
           Delete
         </button>
@@ -82,74 +132,87 @@ const ProductPaper = (props: { product: Product }) => {
     </div>
   );
 };
-
 export const UploadedProducts = () => {
   const [selectedTab, setSelectedTab] = useState("allProducts");
-  const [allProducts, setAllProducts] = useState([
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 0,
-      isHidden: true,
-      productId: "ifidu",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "dufi",
-    },
-  ]);
-  const [soldProducts, setSoldProducts] = useState([
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 0,
-      isHidden: false,
-      productId: "fi",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 0,
-      isHidden: false,
-      productId: "iufidu",
-    },
-  ]);
+  const { storeFrontID } = useParams();
+  const { showToast } = useAppContext();
+  const fetchAllProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select()
+      .eq("storeFrontId", storeFrontID)
+      .order("created_at", { ascending: false });
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const fetchSoldProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select()
+      .eq("storeFrontId", storeFrontID)
+      .eq("stock", 0)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+
+    return data;
+  };
+
+  const fetchHiddenProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select()
+      .eq("storeFrontId", storeFrontID)
+      .eq("isHidden", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+
+    return data;
+  };
+
+  const allProductsQuery = useQuery(
+    ["allProducts", selectedTab],
+    fetchAllProducts,
+    { enabled: selectedTab === "allProducts" },
+  );
+  const soldProductsQuery = useQuery(
+    ["soldProducts", selectedTab],
+    fetchSoldProducts,
+    { enabled: selectedTab === "soldProducts" },
+  );
+
+  const hiddenProductsQuery = useQuery(
+    ["hiddenProducts", selectedTab],
+    fetchHiddenProducts,
+    { enabled: selectedTab === "hiddenProducts" },
+  );
 
   const tabs = [
     {
       label: "All",
       value: "allProducts",
-      products: allProducts,
+      products: allProductsQuery.data,
     },
     {
       label: "Sold out",
       value: "soldProducts",
-      products: soldProducts,
+      products: soldProductsQuery.data,
+    },
+    {
+      label: "Hidden",
+      value: "hiddenProducts",
+      products: hiddenProductsQuery.data,
     },
   ];
 
@@ -169,13 +232,10 @@ export const UploadedProducts = () => {
         className=" px-2 md:px-10 mt-10 flex flex-col items-center justify-center  "
         defaultValue="allProducts"
       >
-        <Tabs.List
-          className="border-b shrink-0 mb-4 flex"
-          defaultValue="allProducts"
-        >
-          {tabs.map(({ label, value }) => (
+        <Tabs.List className="shrink-0 mb-4 flex" defaultValue="allProducts">
+          {tabs.map(({ label, value }, index) => (
             <Tabs.Trigger
-              key={value}
+              key={index}
               className={`${
                 selectedTab === value
                   ? "font-bold bg-primary text-[#fff] rounded-lg"
@@ -189,10 +249,10 @@ export const UploadedProducts = () => {
           ))}
         </Tabs.List>
 
-        {tabs.map(({ value, products }) => (
-          <Tabs.Content key={value} className="w-full focus: " value={value}>
-            {products.map((product) => (
-              <ProductPaper key={value} product={product} />
+        {tabs.map(({ value, products }, index) => (
+          <Tabs.Content key={index} className="w-full focus: " value={value}>
+            {products?.map((product, index) => (
+              <ProductPaper key={index} product={product} />
             ))}
           </Tabs.Content>
         ))}
@@ -201,7 +261,10 @@ export const UploadedProducts = () => {
       <Link to={"upload"}>
         <button
           onClick={handleScrollToTop}
-          className="  bg-primary rounded-full shadow-2xl fixed bottom-32 px-3 py-3 text-[#fff] flex flex-row items-center justify-center  right-10"
+          className="  bg-primary rounded-full shadow-2xl
+           fixed bottom-32
+           px-3 py-3 text-[#fff] flex flex-row items-center
+            justify-center  right-10"
         >
           <PlusOutlined />
         </button>
