@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { supabase } from "../../supabase.ts";
 import { useAppContext } from "../../contexts/AppContext.tsx";
 import { PostgrestError } from "@supabase/supabase-js";
+import { SeverityColorEnum } from "../../common/enums";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +18,7 @@ export const Login = () => {
 
   const handleError = (error: PostgrestError | any | null) => {
     if (error) {
-      showToast(error.message);
+      showToast(error.message, SeverityColorEnum.Error);
       throw new Error(error);
     }
   };
@@ -42,12 +43,6 @@ export const Login = () => {
         .single();
       if (retailer) navigate(`/${retailer.businessName}/admin`);
     }
-
-    // const { data: sessionData } = await supabase.auth.getSession();
-    // console.log(sessionData);
-    // console.log(
-    //   Math.floor(Date.now() / 1000) > sessionData.session?.expires_at,
-    // );
   };
 
   return (

@@ -4,15 +4,19 @@ import { ImageInput } from "../../../components";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
 import { uploadPhoto } from "../../../services";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { SeverityColorEnum } from "../../../common/enums";
 
 export const UploadProduct = () => {
   const { storeFrontID } = useParams();
   const { retailer } = useGetRetailer();
   const { register, watch } = useForm<Product>();
   const [message, setMessage] = useState("Upload Product");
+  const navigate = useNavigate();
+  const { showToast } = useAppContext();
 
   const [productImages, setProductImages] = useState<
     { url: string | boolean }[]
@@ -52,21 +56,29 @@ export const UploadProduct = () => {
 
     setMessage("Uploading photos...");
 
+    const uploadedImages = [];
+
     for (const i in productImages) {
       const publicUrl = await uploadPhoto(
         productImages[i].url,
-        `product images/${formData.name}-img-${i + 1}`,
+        `product images/${formData.name}-${retailer?.id}-${i + 1}-img.png`,
       );
-      productImages[i].url = publicUrl;
+      uploadedImages.push(publicUrl);
     }
-    formData.productImages = productImages;
+    formData.productImages = uploadedImages;
     formData.isHidden = false;
-    formData.retailerId = retailer?.id as number;
+    formData.price = parseInt(formData.price as string);
+    formData.stock = parseInt(formData.stock as string);
+    formData.retailerId = retailer?.id as string;
     formData.storeFrontId = storeFrontID as string;
 
     setMessage("Uploading product...");
-    const { data, error } = await supabase.from("products").insert([formData]);
-    console.log({ data, error });
+    const { error } = await supabase.from("products").insert([formData]);
+    if (error === null) {
+      setMessage("Done");
+      showToast("Product uploaded successfully", SeverityColorEnum.Success);
+      navigate(`/${storeFrontID}/admin/products`);
+    }
   };
 
   return (

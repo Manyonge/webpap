@@ -9,18 +9,18 @@ export interface Order {
 }
 
 export interface Product {
-  retailerId: string | number;
+  retailerId: string;
   storeFrontId: string;
   name: string;
   category: string;
   condition: string;
   description: string;
-  price: number;
+  price: number | string;
   size: string;
-  stock: number;
+  stock: number | string;
   isHidden: boolean;
   id: number | string;
-  productImages: { url: string | boolean }[];
+  productImages: string[];
 }
 
 export interface CartItem {

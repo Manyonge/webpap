@@ -185,7 +185,8 @@ export const Signup = () => {
               <label htmlFor="passport-photo">
                 <div
                   className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
-                      flex flex-col items-center justify-center border-2 border-dashed border-black  my-2 "
+                      flex flex-col items-center justify-center border-2
+                       border-dashed border-black  my-2  "
                 >
                   <PlusOutlined />
                   <p className="text-center">
