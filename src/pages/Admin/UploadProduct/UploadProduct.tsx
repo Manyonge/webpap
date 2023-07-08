@@ -9,6 +9,8 @@ import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../../common/enums";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useQuery, useQueryClient } from "react-query";
 
 export const UploadProduct = () => {
   const { storeFrontID } = useParams();
@@ -38,16 +40,116 @@ export const UploadProduct = () => {
     },
   ]);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogPurpose, setDialogPurpose] = useState<
+    "" | "category" | "size" | "condition"
+  >("");
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from("product categories")
+      .select()
+      .eq("storeFrontId", storeFrontID);
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+  const fetchConditions = async () => {
+    const { data, error } = await supabase
+      .from("product conditions")
+      .select()
+      .eq("storeFrontId", storeFrontID);
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const fetchSizes = async () => {
+    const { data, error } = await supabase
+      .from("product sizes")
+      .select()
+      .eq("storeFrontId", storeFrontID);
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const queryClient = useQueryClient();
+  const categoryQuery = useQuery(["category"], fetchCategories, {
+    enabled: retailer !== undefined,
+  });
+  const sizeQuery = useQuery(["size"], fetchSizes, {
+    enabled: retailer !== undefined,
+  });
+  const conditionQuery = useQuery(["condition"], fetchConditions, {
+    enabled: retailer !== undefined,
+  });
+
+  const handleDialog = () => {
+    setDialogOpen(!dialogOpen);
+    setDialogPurpose("");
+  };
+
   const handleAddCategory = async () => {
-    return;
+    setDialogOpen(true);
+    setDialogPurpose("category");
   };
 
   const handleAddSize = async () => {
-    return;
+    setDialogOpen(true);
+    setDialogPurpose("size");
   };
 
   const handleAddCondition = async () => {
-    return;
+    setDialogOpen(true);
+    setDialogPurpose("condition");
+  };
+
+  const uploadData = async (tableName: string, data: any) => {
+    const { error } = await supabase.from(tableName).insert([data]);
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    showToast(`${dialogPurpose} added successfully`, SeverityColorEnum.Success);
+    setDialogOpen(false);
+    await queryClient.invalidateQueries(dialogPurpose);
+  };
+
+  const handleDialogSubmit = async (e: any) => {
+    e.preventDefault();
+    const inputElement: HTMLInputElement | null = document.querySelector(
+      `input[name="popoverPurpose"]`,
+    );
+    switch (dialogPurpose) {
+      case "category":
+        await uploadData("product categories", {
+          storeFrontId: storeFrontID,
+          retailerId: retailer?.id,
+          category: inputElement?.value,
+        });
+        break;
+      case "condition":
+        await uploadData("product conditions", {
+          storeFrontId: storeFrontID,
+          retailerId: retailer?.id,
+          condition: inputElement?.value,
+        });
+        break;
+      case "size":
+        await uploadData("product sizes", {
+          storeFrontId: storeFrontID,
+          retailerId: retailer?.id,
+          size: inputElement?.value,
+        });
+        break;
+    }
   };
 
   const handleSubmit = async (e: any) => {
@@ -110,13 +212,19 @@ export const UploadProduct = () => {
             <option value="" defaultChecked hidden>
               Category
             </option>
-            <option>Air jordan 2</option>
-            <option>Air jordan 1</option>
-            <option>Air jordan 1</option>
+            {categoryQuery.data !== undefined && categoryQuery.data?.length > 0
+              ? categoryQuery.data.map(({ category, id }) => (
+                  <option value={category} key={id}>
+                    {" "}
+                    {category}{" "}
+                  </option>
+                ))
+              : null}
           </select>
 
           <button
-            onClick={handleAddCategory}
+            onClick={() => handleAddCategory()}
+            type="button"
             className="border border-primary outline-none
              rounded-md shadow-lg text-sm w-5/12
           flex flex-row items-center justify-center px-2
@@ -143,13 +251,19 @@ export const UploadProduct = () => {
             <option value="" defaultChecked hidden>
               Size
             </option>
-            <option>EUR 42</option>
-            <option>EUR 42</option>
-            <option>EUR 42</option>
+            {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
+              ? sizeQuery.data.map(({ size, id }) => (
+                  <option value={size} key={id}>
+                    {" "}
+                    {size}{" "}
+                  </option>
+                ))
+              : null}
           </select>
 
           <button
             onClick={handleAddSize}
+            type="button"
             className="border border-primary
              outline-none rounded-md
               shadow-lg text-sm w-5/12
@@ -170,12 +284,20 @@ export const UploadProduct = () => {
             <option value="" defaultChecked hidden>
               Condition
             </option>
-            <option>Brand new</option>
-            <option>Pre-owned</option>
+            {conditionQuery.data !== undefined &&
+            conditionQuery.data?.length > 0
+              ? conditionQuery.data.map(({ condition, id }) => (
+                  <option value={condition} key={id}>
+                    {" "}
+                    {condition}{" "}
+                  </option>
+                ))
+              : null}
           </select>
 
           <button
             onClick={handleAddCondition}
+            type="button"
             className="border border-primary
              outline-none rounded-md
               shadow-lg text-sm w-5/12
@@ -222,6 +344,47 @@ export const UploadProduct = () => {
           {message}
         </button>
       </form>
+
+      <Dialog.Root open={dialogOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            onClick={handleDialog}
+            className="DialogOverlay opacity-30
+            fixed inset-0 bg-black "
+          />
+          <Dialog.Content
+            className="DialogContent bg-white rounded-lg shadow-lg
+           fixed top-1/2 left-1/2 focus:outline-none
+            py-4 px-7
+            "
+          >
+            <Dialog.Title className="text-center text-lg mb-3">
+              {" "}
+              {`Add new ${dialogPurpose}`}{" "}
+            </Dialog.Title>
+            <form
+              onSubmit={handleDialogSubmit}
+              className="
+            flex flex-col items-center justify-center "
+            >
+              <input
+                className="border-2 outline-primary border-primary
+                rounded-lg pl-2"
+                name="popoverPurpose"
+              />
+              <br />
+              <button
+                className="bg-primary text-white px-3 py-1 flex
+               flex-row items-center justify-center rounded-lg w-full"
+                type="submit"
+              >
+                {" "}
+                <PlusOutlined /> Add{" "}
+              </button>
+            </form>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };
