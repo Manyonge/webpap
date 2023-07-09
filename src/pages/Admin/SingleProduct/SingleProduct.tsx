@@ -65,6 +65,9 @@ export const SingleProduct = () => {
       if (data?.productImages[i] !== "") {
         productImages[i].url = data?.productImages[i];
       }
+      if (data?.productImages[i] === "") {
+        productImages[i].url = false;
+      }
     }
 
     setValue("name", data?.name as string);
@@ -209,7 +212,7 @@ export const SingleProduct = () => {
       }
     }
     formData.productImages = uploadedImages as string[];
-    formData.isHidden = false;
+    formData.isHidden = productQuery?.data?.isHidden as boolean;
     formData.price = parseInt(formData.price as string);
     formData.stock = parseInt(formData.stock as string);
     formData.retailerId = retailer?.id as string;
@@ -241,6 +244,9 @@ export const SingleProduct = () => {
               key={index}
               forEditing={true}
               productImages={productImages}
+              imageName={`product images/${productQuery?.data?.name}-${
+                retailer?.id
+              }-${index + 1}-img.png`}
             />
           ))}
         </div>
