@@ -1,6 +1,5 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { ImageInput } from "../../../components";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
 import { uploadPhoto } from "../../../services";
@@ -20,25 +19,7 @@ export const UploadProduct = () => {
   const navigate = useNavigate();
   const { showToast } = useAppContext();
 
-  const [productImages, setProductImages] = useState<
-    { url: string | boolean }[]
-  >([
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-  ]);
+  const [chosenImages, setChosenImages] = useState<File[]>([]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogPurpose, setDialogPurpose] = useState<
@@ -122,6 +103,16 @@ export const UploadProduct = () => {
     await queryClient.invalidateQueries(dialogPurpose);
   };
 
+  const handleFileChange = (e: any) => {
+    if (chosenImages.length < 5) {
+      setChosenImages((prevState) => [...prevState, e.target.files[0]]);
+    }
+  };
+
+  const handleDeleteFile = (image: any) => {
+    const remainingImages = chosenImages.filter((photo) => photo !== image);
+    setChosenImages(remainingImages);
+  };
   const handleDialogSubmit = async (e: any) => {
     e.preventDefault();
     const inputElement: HTMLInputElement | null = document.querySelector(
@@ -160,9 +151,9 @@ export const UploadProduct = () => {
 
     const uploadedImages = [];
 
-    for (const i in productImages) {
+    for (const i in chosenImages) {
       const publicUrl = await uploadPhoto(
-        productImages[i].url,
+        chosenImages[i],
         `product images/${formData.name}-${retailer?.id}-${i + 1}-img.png`,
       );
       uploadedImages.push(publicUrl);
@@ -188,15 +179,56 @@ export const UploadProduct = () => {
       <p className="text-center text-lg font-bold">Upload a product</p>
 
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-row items-center overflow-x-auto  overflow-y-hidden my-6">
-          {productImages.map((productImage, index) => (
-            <ImageInput
-              setProductImages={setProductImages}
-              url={productImage.url as unknown as Blob}
-              index={index}
-              key={index}
-            />
-          ))}
+        <div
+          className="flex flex-row items-center
+         overflow-x-auto  overflow-y-hidden my-6"
+        >
+          {chosenImages.length < 5 && (
+            <div
+              className=" rounded-md border-2
+            border-dashed border-[grey]
+       bg-[lightGrey] flex flex-row
+        items-center justify-center mr-4  "
+            >
+              <label
+                className="w-32 h-32  flex flex-row items-center justify-center "
+                htmlFor="image-input"
+              >
+                <PlusOutlined />
+              </label>
+              <input
+                type="file"
+                id="image-input"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </div>
+          )}
+
+          {chosenImages.length > 0 &&
+            chosenImages.map((image, index) => (
+              <div
+                key={index}
+                className="mr-1  flex flex-shrink-0  items-center
+              justify-between relative  w-36 h-36"
+              >
+                <img
+                  className=" w-32 h-32  object-cover "
+                  src={URL.createObjectURL(image)}
+                />
+
+                <button
+                  onClick={() => handleDeleteFile(image)}
+                  type={"button"}
+                  className="absolute top-0 right-0  bg-white
+        shadow-lg  rounded-full p-1
+         flex flex-col items-start justify-center
+         "
+                >
+                  <DeleteOutlined />
+                </button>
+              </div>
+            ))}
         </div>
 
         <p className="font-bold text-sm mb-2"> Product details</p>
