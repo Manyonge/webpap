@@ -10,6 +10,7 @@ import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../../common/enums";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useQuery, useQueryClient } from "react-query";
+import { v4 as uuidv4 } from "uuid";
 
 export const UploadProduct = () => {
   const { storeFrontID } = useParams();
@@ -146,18 +147,40 @@ export const UploadProduct = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const formData = watch();
+    if (chosenImages.length === 0) {
+      showToast("You have not selected any images", SeverityColorEnum.Error);
+      return;
+    }
+
+    if (
+      formData.category === "" ||
+      formData.stock === "" ||
+      formData.price === "" ||
+      formData.description === "" ||
+      formData.condition === "" ||
+      formData.size === "" ||
+      formData.name === ""
+    ) {
+      showToast("Please fill in all details", SeverityColorEnum.Error);
+      return;
+    }
 
     setMessage("Uploading photos...");
 
     const uploadedImages = [];
 
     for (const i in chosenImages) {
+      const uniqueId = uuidv4();
       const publicUrl = await uploadPhoto(
         chosenImages[i],
-        `product images/${formData.name}-${retailer?.id}-${i + 1}-img.png`,
+        `product images/${uniqueId}-product-photo.jpg`,
       );
-      uploadedImages.push(publicUrl);
+      uploadedImages.push({
+        url: publicUrl,
+        fileName: `product images/${uniqueId}-product-photo.jpg`,
+      });
     }
+    console.log(uploadedImages);
     formData.productImages = uploadedImages;
     formData.isHidden = false;
     formData.price = parseInt(formData.price as string);

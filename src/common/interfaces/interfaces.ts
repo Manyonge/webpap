@@ -20,7 +20,7 @@ export interface Product {
   stock: number | string;
   isHidden: boolean;
   id: number | string;
-  productImages: string[];
+  productImages: { url: string; fileName: string }[];
 }
 
 export interface CartItem {

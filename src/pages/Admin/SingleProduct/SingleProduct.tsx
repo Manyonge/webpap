@@ -1,17 +1,17 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { ImageInput } from "../../../components";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
-import { uploadPhoto } from "../../../services";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../../common/enums";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient, UseQueryResult } from "react-query";
 import { PostgrestError } from "@supabase/supabase-js";
+import { uploadPhoto } from "../../../services";
+import { v4 as uuidv4 } from "uuid";
 
 export const SingleProduct = () => {
   const { storeFrontID } = useParams();
@@ -21,31 +21,25 @@ export const SingleProduct = () => {
   const navigate = useNavigate();
   const { showToast } = useAppContext();
 
-  const [productImages, setProductImages] = useState<
-    { url: string | boolean }[]
-  >([
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-    {
-      url: false,
-    },
-  ]);
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogPurpose, setDialogPurpose] = useState<
     "" | "category" | "size" | "condition"
   >("");
   const { productID } = useParams();
+
+  const fetchPhotos = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("productImages")
+      .eq("id", productID)
+      .single();
+
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
 
   const fetchProduct = async () => {
     const {
@@ -59,15 +53,6 @@ export const SingleProduct = () => {
     if (error) {
       showToast(error.message);
       throw new Error(error.message);
-    }
-
-    for (const i in data?.productImages) {
-      if (data?.productImages[i] !== "") {
-        productImages[i].url = data?.productImages[i];
-      }
-      if (data?.productImages[i] === "") {
-        productImages[i].url = false;
-      }
     }
 
     setValue("name", data?.name as string);
@@ -113,6 +98,7 @@ export const SingleProduct = () => {
       showToast(error.message, SeverityColorEnum.Error);
       throw new Error(error.message);
     }
+
     return data;
   };
 
@@ -127,6 +113,12 @@ export const SingleProduct = () => {
     enabled: retailer !== undefined,
   });
   const productQuery = useQuery(["product"], fetchProduct);
+
+  const photosQuery: UseQueryResult<
+    { productImages: { url: string; fileName: string }[] },
+    PostgrestError
+  > = useQuery(["photos"], fetchPhotos);
+
   const handleDialog = () => {
     setDialogOpen(!dialogOpen);
     setDialogPurpose("");
@@ -188,30 +180,76 @@ export const SingleProduct = () => {
     }
   };
 
+  const handleFileChange = async (e: any) => {
+    const uniqueId = uuidv4();
+    const publicUrl = await uploadPhoto(
+      e.target.files[0],
+      `product images/${uniqueId}-product-photo.jpg`,
+    );
+    const images = photosQuery.data?.productImages;
+    images?.push({
+      url: publicUrl,
+      fileName: `product images/${uniqueId}-product-photo.jpg`,
+    });
+
+    const { error } = await supabase
+      .from("products")
+      .update({ productImages: images })
+      .eq("id", productID);
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    await queryClient.invalidateQueries("photos");
+  };
+  const handleDeleteFile = async (fileName: string) => {
+    const newPhotos = photosQuery.data?.productImages.filter(
+      (image) => image.fileName !== fileName,
+    );
+    const { error } = await supabase
+      .from("products")
+      .update({ productImages: newPhotos })
+      .eq("id", productID);
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+
+    const { error: storageError } = await supabase.storage
+      .from("webpap storage")
+      .remove([`product images/${fileName}`]);
+
+    if (storageError) {
+      showToast(storageError.message, SeverityColorEnum.Error);
+      throw new Error(storageError.message);
+    }
+
+    await queryClient.invalidateQueries("photos");
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const formData = watch();
-
-    setMessage("Uploading photos...");
-
-    const uploadedImages = [];
-
-    for (const i in productImages) {
-      if (!productImages[i].url) {
-        showToast("You must select 5 photos", SeverityColorEnum.Error);
-        return;
-      }
-      if (typeof productImages[i].url === "string")
-        uploadedImages.push(productImages[i].url);
-      if (typeof productImages[i].url !== "string") {
-        const publicUrl = await uploadPhoto(
-          productImages[i].url,
-          `product images/${formData.name}-${retailer?.id}-${i + 1}-img.png`,
-        );
-        uploadedImages.push(publicUrl);
-      }
+    if (photosQuery.data?.productImages.length === 0) {
+      showToast("You have not selected any images", SeverityColorEnum.Error);
+      return;
     }
-    formData.productImages = uploadedImages as string[];
+
+    if (
+      formData.category === "" ||
+      formData.stock === "" ||
+      formData.price === "" ||
+      formData.description === "" ||
+      formData.condition === "" ||
+      formData.size === "" ||
+      formData.name === ""
+    ) {
+      showToast("Please fill in all details", SeverityColorEnum.Error);
+      return;
+    }
+
     formData.isHidden = productQuery?.data?.isHidden as boolean;
     formData.price = parseInt(formData.price as string);
     formData.stock = parseInt(formData.stock as string);
@@ -225,7 +263,7 @@ export const SingleProduct = () => {
       .eq("id", productID);
     if (error === null) {
       setMessage("Done");
-      showToast("Product uploaded successfully", SeverityColorEnum.Success);
+      showToast("Product updated successfully", SeverityColorEnum.Success);
       navigate(`/${storeFrontID}/admin/products`);
     }
   };
@@ -236,19 +274,52 @@ export const SingleProduct = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="flex flex-row items-center overflow-x-auto  overflow-y-hidden my-6">
-          {productImages.map((productImage, index) => (
-            <ImageInput
-              setProductImages={setProductImages}
-              url={productImage.url as unknown as Blob}
-              index={index}
-              key={index}
-              forEditing={true}
-              productImages={productImages}
-              imageName={`product images/${productQuery?.data?.name}-${
-                retailer?.id
-              }-${index + 1}-img.png`}
-            />
-          ))}
+          {photosQuery.data !== undefined &&
+          photosQuery.data?.productImages?.length < 5 ? (
+            <div
+              className=" rounded-md border-2
+            border-dashed border-[grey]
+       bg-[lightGrey] flex flex-row
+        items-center justify-center mr-4  "
+            >
+              <label
+                className="w-32 h-32  flex flex-row items-center justify-center "
+                htmlFor="image-input"
+              >
+                <PlusOutlined />
+              </label>
+              <input
+                type="file"
+                id="image-input"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </div>
+          ) : null}
+
+          {photosQuery.data !== undefined &&
+          photosQuery?.data?.productImages?.length > 0
+            ? photosQuery.data?.productImages?.map((image, index) => (
+                <div
+                  key={index}
+                  className="mr-1  flex flex-shrink-0  items-center
+              justify-between relative  w-36 h-36"
+                >
+                  <img className=" w-32 h-32  object-cover " src={image.url} />
+
+                  <button
+                    onClick={() => handleDeleteFile(image.fileName)}
+                    type={"button"}
+                    className="absolute top-0 right-0  bg-white
+        shadow-lg  rounded-full p-1
+         flex flex-col items-start justify-center
+         "
+                  >
+                    <DeleteOutlined />
+                  </button>
+                </div>
+              ))
+            : null}
         </div>
 
         <p className="font-bold text-sm mb-2"> Product details</p>

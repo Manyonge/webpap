@@ -38,6 +38,19 @@ const ProductPaper = (props: { product: Product }) => {
   };
 
   const handleDeleteProduct = async () => {
+    const photos = [];
+    for (const i in product.productImages) {
+      photos.push(product.productImages[i].fileName);
+    }
+    const { error: storageError } = await supabase.storage
+      .from("webpap storage")
+      .remove(photos);
+
+    if (storageError) {
+      showToast(storageError.message, SeverityColorEnum.Error);
+      throw new Error(storageError.message);
+    }
+
     const { error } = await supabase
       .from("products")
       .delete()
@@ -102,10 +115,16 @@ const ProductPaper = (props: { product: Product }) => {
         to={`${product.id}`}
         className="flex flex-row items-center justify-between mb-4 "
       >
-        <img
-          src={product.productImages[0]}
-          className="h-16 w-16 rounded-md object-cover "
-        />
+        {product.productImages.length > 0 && (
+          <img
+            src={product.productImages[0].url}
+            className="h-16 w-16 rounded-md object-cover "
+          />
+        )}
+
+        {product.productImages.length === 0 && (
+          <p className="text-error text-sm ">No Images added</p>
+        )}
 
         <p className="font-bold text-center text-sm"> {product.name} </p>
         <p className="font-bold text-center text-sm"> {product.price} </p>
