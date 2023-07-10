@@ -65,3 +65,25 @@ td {
 tr:nth-of-type(even) {
   background-color: lightgrey;
 }
+
+
+/*img styles*/
+
+@keyframes pulse-animation {
+  0% {
+    background-color: #eaeaea;
+  }
+  50% {
+    background-color: #f5f5f5;
+  }
+  100% {
+    background-color: #eaeaea;
+  }
+}
+
+
+
+img{
+  background-color: #eaeaea;
+  animation: pulse-animation 1.5s infinite;
+}

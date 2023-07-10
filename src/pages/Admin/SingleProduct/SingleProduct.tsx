@@ -303,15 +303,15 @@ export const SingleProduct = () => {
                 <div
                   key={index}
                   className="mr-1  flex flex-shrink-0  items-center
-              justify-between relative  w-36 h-36"
+              justify-between relative  w-36 h-36 "
                 >
-                  <img className=" w-32 h-32  object-cover " src={image.url} />
+                  <img className=" w-32 h-32  object-cover  " src={image.url} />
 
                   <button
                     onClick={() => handleDeleteFile(image.fileName)}
                     type={"button"}
                     className="absolute top-0 right-0  bg-white
-        shadow-lg  rounded-full p-1
+        shadow-lg  rounded-full p-1 
          flex flex-col items-start justify-center
          "
                   >
