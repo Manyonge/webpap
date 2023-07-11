@@ -4,17 +4,19 @@ import {
   TwitterCircleFilled,
 } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
 import { Product } from "../../../common/interfaces";
+import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
   return (
     <div className="rounded-md shadow-lg hover:shadow-xl mx-auto ">
-      <Link to={`product/${product.productId}`}>
+      <Link to={`product/${product.id}`}>
         <img
-          src={product.productImage}
-          className="object-cover w-full h-42 rounded-tr-lg rounded-tl-lg"
+          src={product.productImages[0].url}
+          className="object-cover w-64 h-52 rounded-tr-lg rounded-tl-lg"
         />
       </Link>
       <p className="pl-2 mt-1 text-sm sm:text-lg "> {product.name} </p>
@@ -48,78 +50,39 @@ const ProductCard = (props: { product: Product }) => {
 
 export const StoreFrontHome = () => {
   const { storeFrontID } = useParams();
-  const [products, setProducts] = useState([
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 0,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-    {
-      name: "Jordan 1s",
-      productImage:
-        "https://hustle.imgix.net/a0ugvj7ynvo1x2hcig88jxiffhvoxti5.jpeg?fit=crop&w=512&h=512",
-      price: 2500,
-      size: "42 EUR",
-      stock: 1,
-      isHidden: false,
-      productId: "iufiduf",
-    },
-  ]);
+
+  const { showToast } = useAppContext();
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase.from("product categories").select();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const fetchSizes = async () => {
+    const { data, error } = await supabase.from("product sizes").select();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase.from("products").select();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const productsQuery = useQuery(["products"], fetchProducts);
+  const categoriesQuery = useQuery(["categories"], fetchProducts);
+  const sizesQuery = useQuery(["sizes"], fetchProducts);
 
   return (
     <div className="px-4 md:px-6 pb-44">
@@ -157,9 +120,12 @@ export const StoreFrontHome = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-7">
-        {products.map((product) => (
-          <ProductCard product={product} />
-        ))}
+        {productsQuery?.data !== undefined && productsQuery.data.length > 0
+          ? productsQuery.data.map((product) => {
+              if (product.productImages.length > 0)
+                return <ProductCard product={product} />;
+            })
+          : null}
       </div>
     </div>
   );
