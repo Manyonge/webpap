@@ -1,3 +1,5 @@
+
+
 /*package components*/
 .Link {
   text-decoration: none;
@@ -16,6 +18,7 @@
 
 /*radix-ui styles*/
 
+/*toast styles*/
 .ToastViewport {
   --viewport-padding: 25px;
   position: fixed;
@@ -50,9 +53,7 @@
 .ToastRoot[data-state="closed"] {
   animation: hide 100ms ease-in;
 }
-.ToastRoot[data-swipe="move"] {
-  transform: translateX(var(--radix-toast-swipe-move-x));
-}
+
 .ToastRoot[data-swipe="cancel"] {
   transform: translateX(0);
   transition: transform 200ms ease-out;
@@ -79,14 +80,6 @@
   }
 }
 
-@keyframes swipeOut {
-  from {
-    transform: translateX(var(--radix-toast-swipe-end-x));
-  }
-  to {
-    transform: translateX(calc(100% + var(--viewport-padding)));
-  }
-}
 
 .ToastTitle {
   grid-area: title;
@@ -104,4 +97,32 @@
 
 .ToastAction {
   grid-area: action;
+}
+
+
+/*dialog styles*/
+
+.DialogContent {
+  transform: translate(-50%, -50%);
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes contentShow {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }

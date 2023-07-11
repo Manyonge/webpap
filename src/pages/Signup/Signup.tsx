@@ -7,6 +7,7 @@ import { useAppContext } from "../../contexts/AppContext.tsx";
 import { supabase } from "../../supabase.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { uploadPhoto } from "../../services";
 
 const personalDetailsCol = [
   {
@@ -88,20 +89,6 @@ export const Signup = () => {
       showToast(error.message);
       throw new Error(error);
     }
-  };
-
-  const uploadPhoto = async (photo: File, fileName: string) => {
-    const { data: pathData, error: pathError } = await supabase.storage
-      .from("webpap storage")
-      .upload(fileName, photo);
-
-    handleError(pathError);
-
-    const { data: urlData } = supabase.storage
-      .from("webpap storage")
-      .getPublicUrl(pathData?.path as string);
-
-    return urlData.publicUrl;
   };
 
   const onSubmit = async (e: any) => {
@@ -198,7 +185,8 @@ export const Signup = () => {
               <label htmlFor="passport-photo">
                 <div
                   className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
-                      flex flex-col items-center justify-center border-2 border-dashed border-black  my-2 "
+                      flex flex-col items-center justify-center border-2
+                       border-dashed border-black  my-2  "
                 >
                   <PlusOutlined />
                   <p className="text-center">

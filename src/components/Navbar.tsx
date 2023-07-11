@@ -75,7 +75,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       </Link>
 
       {routesRole === "app" && (
-        <div className="md:flex flex-row hidden ">
+        <div className="lg:flex flex-row hidden ">
           {appRoutes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
@@ -91,7 +91,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       )}
 
       {routesRole === "admin" && (
-        <div className="md:flex flex-row hidden ">
+        <div className="lg:flex flex-row hidden ">
           {adminRoutes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
@@ -119,7 +119,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
         open={popoverOpen}
         onOpenChange={handlePopover}
       >
-        <Popover.Trigger className="md:hidden ">
+        <Popover.Trigger className="lg:hidden ">
           <MenuOutlined />
         </Popover.Trigger>
         <Popover.Portal>

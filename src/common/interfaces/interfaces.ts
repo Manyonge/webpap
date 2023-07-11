@@ -9,16 +9,18 @@ export interface Order {
 }
 
 export interface Product {
+  retailerId: string;
+  storeFrontId: string;
   name: string;
   category: string;
   condition: string;
   description: string;
-  price: number;
+  price: number | string;
   size: string;
-  stock: number;
+  stock: number | string;
   isHidden: boolean;
-  productId: string;
-  productImage: string;
+  id: number | string;
+  productImages: { url: string; fileName: string }[];
 }
 
 export interface CartItem {
