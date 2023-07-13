@@ -15,8 +15,26 @@ export const AppLayout = () => {
     setOpen(true);
   };
 
+  const supabaseApi = async (requestFn: any) => {
+    try {
+      const { data, error } = await requestFn();
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    } catch (e: any) {
+      if (!navigator.onLine) {
+        showToast(
+          "You seem to have lost your connection",
+          SeverityColorEnum.Error,
+        );
+      }
+      showToast(e.message, SeverityColorEnum.Error);
+    }
+  };
+
   return (
-    <AppContext.Provider value={{ showToast }}>
+    <AppContext.Provider value={{ showToast, supabaseApi }}>
       <Outlet />
       <Toast.Provider swipeDirection="right" duration={4000}>
         <Toast.Root
