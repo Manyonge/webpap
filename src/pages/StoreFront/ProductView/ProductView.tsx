@@ -2,6 +2,10 @@ import { Link, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { Product } from "../../../common/interfaces";
+import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
+import { PostgrestError } from "@supabase/supabase-js";
 
 const Carousel = (props: { images: string[] }) => {
   const { images } = props;
@@ -32,7 +36,8 @@ const Carousel = (props: { images: string[] }) => {
 };
 
 export const ProductView = () => {
-  const { storeFrontID } = useParams();
+  const { storeFrontID, productID } = useParams();
+
   const [product, setProduct] = useState<Product>({
     name: "Jordan 1s",
     productImage:
@@ -46,7 +51,24 @@ export const ProductView = () => {
     condition: "Pre-loved",
     description: "This is the product description",
   });
+  const { showToast } = useAppContext();
+  const fetchProduct = async () => {
+    const {
+      data,
+      error,
+    }: { data: Product | null; error: PostgrestError | null } = await supabase
+      .from("products")
+      .select()
+      .eq("id", productID)
+      .single();
 
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+  const productQuery = useQuery(["product"], fetchProduct);
   return (
     <div className="px-2 pt-6 pb-40">
       <Link
@@ -63,18 +85,12 @@ export const ProductView = () => {
         <p> {product.name} </p>
         <p> {product.category} </p>
 
-        <Carousel
-          images={[
-            product.productImage,
-            "https://hustle.imgix.net/x99jvx63y75bn9gczee3mtttqk5ee11q.jpeg?fit=crop&w=512&h=512",
-            "https://hustle.imgix.net/rs3zafa5ykpu3zbf1zy9iqhoxcf85znc.jpeg?fit=crop&w=512&h=512",
-            "https://hustle.imgix.net/nxw7dx2msa7884wqwy926dms4oyepe7k.jpeg?fit=crop&w=512&h=512",
-            "https://hustle.imgix.net/nxw7dx2msa7884wqwy926dms4oyepe7k.jpeg?fit=crop&w=512&h=512",
-          ]}
-        />
+        {productQuery.data !== undefined && (
+          <Carousel images={productQuery.data} />
+        )}
 
         <div className="flex flex-row items-center justify-between">
-          <p> {`Size: ${product.size}`} </p>
+          <p> {`Size: ${productQuery.data?.size}`} </p>
           <p> {`Condition: ${product.condition}`} </p>
         </div>
 
