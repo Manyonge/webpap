@@ -41,3 +41,9 @@ export interface Retailer {
   password?: string;
   id: number | string | null;
 }
+
+export interface ShoppingCart {
+  productIds: string[];
+  numberOfItems: number;
+  totalPrice: number;
+}
