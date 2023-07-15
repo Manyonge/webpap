@@ -180,7 +180,6 @@ export const UploadProduct = () => {
         fileName: `product images/${uniqueId}-product-photo.jpg`,
       });
     }
-    console.log(uploadedImages);
     formData.productImages = uploadedImages;
     formData.isHidden = false;
     formData.price = parseInt(formData.price as string);

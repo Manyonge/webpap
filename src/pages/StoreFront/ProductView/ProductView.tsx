@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { Product } from "../../../common/interfaces";
+import { useEffect, useState } from "react";
+import { Product, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { useQuery } from "react-query";
@@ -38,9 +38,37 @@ const Carousel = (props: {
 };
 
 export const ProductView = () => {
-  const { storeFrontID, productID } = useParams();
-
+  const params = useParams();
+  const storeFrontID = params.storeFrontID as string;
+  const productID = params.productID as string;
   const { showToast } = useAppContext();
+  const [isInCart, setIsInCart] = useState(false);
+  const [currentCart, setCurrentCart] = useState<ShoppingCart>();
+
+  useEffect(() => {
+    const storageCart = localStorage.getItem("shoppingCart");
+    console.log({ storageCart });
+    if (storageCart) {
+      const cart: ShoppingCart = JSON.parse(storageCart);
+      setCurrentCart(cart);
+      const product = cart.products.find(
+        (product) => product.id === parseInt(productID),
+      );
+      if (product) {
+        setIsInCart(true);
+      } else {
+        setIsInCart(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentCart) {
+      localStorage.setItem("shoppingCart", JSON.stringify(currentCart));
+    }
+    console.log(localStorage.getItem("shoppingCart"));
+  }, [currentCart]);
+
   const fetchProduct = async () => {
     const {
       data,
@@ -55,10 +83,37 @@ export const ProductView = () => {
       showToast(error.message);
       throw new Error(error.message);
     }
-    console.log(data);
     return data;
   };
   const productQuery = useQuery(["product"], fetchProduct);
+
+  const handleAddToCart = async (product: Product | undefined | null) => {
+    if (currentCart) {
+      const temp: ShoppingCart = JSON.parse(JSON.stringify(currentCart));
+      temp.products.push(product as Product);
+      temp.totalPrice += product?.price as number;
+      setCurrentCart(temp);
+      setIsInCart(true);
+    } else {
+      setCurrentCart({
+        totalPrice: product?.price as number,
+        products: [product as Product],
+      });
+      setIsInCart(true);
+    }
+  };
+
+  const handleRemoveFromCart = async (product: Product | undefined) => {
+    if (currentCart) {
+      const temp = JSON.parse(JSON.stringify(currentCart));
+      temp.products = temp.products.filter(
+        (product: Product) => product.id !== parseInt(productID),
+      );
+      temp.totalPrice = (temp.totalPrice - product?.price) as number;
+      setCurrentCart(temp);
+      setIsInCart(false);
+    }
+  };
 
   if (productQuery.isLoading) return <></>;
 
@@ -101,14 +156,25 @@ export const ProductView = () => {
             </button>
           )}
 
-          {productQuery.data?.stock > 0 && (
+          {isInCart && (
+            <button
+              className=" ml-auto rounded-full py-1 px-3
+        bg-error text-white text-sm mb-2 "
+              onClick={() => handleRemoveFromCart(productQuery?.data)}
+            >
+              Remove from cart
+            </button>
+          )}
+
+          {productQuery.data?.stock > 0 && !isInCart ? (
             <button
               className="  rounded-full py-1 px-3
         bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
+              onClick={() => handleAddToCart(productQuery.data)}
             >
               ADD TO BAG
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
