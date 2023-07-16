@@ -4,13 +4,67 @@ import {
   TwitterCircleFilled,
 } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
-import { Product } from "../../../common/interfaces";
+import { Product, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
+  const [isInCart, setIsInCart] = useState(false);
+  const [currentCart, setCurrentCart] = useState<ShoppingCart>();
+
+  useEffect(() => {
+    const storageCart = localStorage.getItem("shoppingCart");
+    if (storageCart) {
+      const cart: ShoppingCart = JSON.parse(storageCart);
+      setCurrentCart(cart);
+      const foundProduct = cart.products.find(
+        (item) => item.id === parseInt(product.id as string),
+      );
+      if (foundProduct) {
+        setIsInCart(true);
+      } else {
+        setIsInCart(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentCart) {
+      localStorage.setItem("shoppingCart", JSON.stringify(currentCart));
+    }
+  }, [currentCart]);
+
+  const handleAddToCart = async (product: Product) => {
+    if (currentCart) {
+      const temp: ShoppingCart = JSON.parse(JSON.stringify(currentCart));
+      temp.products.push(product as Product);
+      temp.totalPrice += product?.price as number;
+      setCurrentCart(temp);
+      setIsInCart(true);
+    } else {
+      setCurrentCart({
+        totalPrice: product?.price as number,
+        products: [product as Product],
+      });
+      setIsInCart(true);
+    }
+  };
+
+  const handleRemoveFromCart = async (product: Product) => {
+    if (currentCart) {
+      const temp = JSON.parse(JSON.stringify(currentCart));
+      temp.products = temp.products.filter(
+        (item: Product) => item.id !== parseInt(product.id as string),
+      );
+      temp.totalPrice = temp.totalPrice - product?.price;
+      setCurrentCart(temp);
+      setIsInCart(false);
+    }
+  };
+
   return (
     <div className="rounded-md shadow-lg hover:shadow-xl mx-auto ">
       <Link to={`product/${product.id}`}>
@@ -26,21 +80,32 @@ const ProductCard = (props: { product: Product }) => {
         <p className="text-sm sm:text-lg"> {product.size} </p>
       </div>
       <div className="flex flex-row items-center justify-center">
-        {product.stock < 1 && (
+        {parseInt(product.stock as string) < 1 && !isInCart ? (
           <button
             className=" mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm mb-2 "
           >
             SOLD OUT
           </button>
-        )}
+        ) : null}
 
-        {product.stock > 0 && (
+        {parseInt(product.stock as string) > 0 && !isInCart ? (
           <button
+            onClick={() => handleAddToCart(product)}
             className=" mx-auto rounded-full py-1 px-3
         bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
           >
             ADD TO BAG
+          </button>
+        ) : null}
+
+        {isInCart && (
+          <button
+            className=" ml-auto rounded-full py-1 px-3
+        bg-error text-white text-sm mb-2 "
+            onClick={() => handleRemoveFromCart(product)}
+          >
+            Remove from cart
           </button>
         )}
       </div>
@@ -81,8 +146,8 @@ export const StoreFrontHome = () => {
   };
 
   const productsQuery = useQuery(["products"], fetchProducts);
-  const categoriesQuery = useQuery(["categories"], fetchProducts);
-  const sizesQuery = useQuery(["sizes"], fetchProducts);
+  const categoriesQuery = useQuery(["categories"], fetchCategories);
+  const sizesQuery = useQuery(["sizes"], fetchSizes);
 
   return (
     <div className="px-4 md:px-6 pb-44">
@@ -108,14 +173,25 @@ export const StoreFrontHome = () => {
       <div className="flex flex-row items-center justify-center my-5">
         <select className="mr-4 outline-none border border-primary rounded-full pl-1 ">
           <option className="hidden">size</option>
-          <option> EUR 42 </option>
-          <option> EUR 42 </option>
+          {sizesQuery.data !== undefined && sizesQuery.data.length > 0
+            ? sizesQuery.data.map(({ size }, index) => (
+                <option key={index} value={size}>
+                  {size}
+                </option>
+              ))
+            : null}
         </select>
 
         <select className="mr-4 outline-none border border-primary rounded-full pl-1 ">
           <option className="hidden">Category</option>
-          <option> Jordans </option>
-          <option> Jordans </option>
+          {categoriesQuery.data !== undefined && categoriesQuery.data.length > 0
+            ? categoriesQuery.data.map(({ category }, index) => (
+                <option key={index} value={category}>
+                  {" "}
+                  {category}{" "}
+                </option>
+              ))
+            : null}
         </select>
       </div>
 
@@ -123,7 +199,7 @@ export const StoreFrontHome = () => {
         {productsQuery?.data !== undefined && productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
               if (product.productImages.length > 0)
-                return <ProductCard product={product} />;
+                return <ProductCard product={product} key={product.id} />;
             })
           : null}
       </div>

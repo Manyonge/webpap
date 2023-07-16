@@ -47,7 +47,6 @@ export const ProductView = () => {
 
   useEffect(() => {
     const storageCart = localStorage.getItem("shoppingCart");
-    console.log({ storageCart });
     if (storageCart) {
       const cart: ShoppingCart = JSON.parse(storageCart);
       setCurrentCart(cart);
@@ -66,7 +65,6 @@ export const ProductView = () => {
     if (currentCart) {
       localStorage.setItem("shoppingCart", JSON.stringify(currentCart));
     }
-    console.log(localStorage.getItem("shoppingCart"));
   }, [currentCart]);
 
   const fetchProduct = async () => {
