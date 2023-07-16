@@ -15,7 +15,7 @@ export interface Product {
   category: string;
   condition: string;
   description: string;
-  price: number | string;
+  price: number;
   size: string;
   stock: number | string;
   isHidden: boolean;
@@ -40,4 +40,9 @@ export interface Retailer {
   loginEmail: string;
   password?: string;
   id: number | string | null;
+}
+
+export interface ShoppingCart {
+  products: Product[];
+  totalPrice: number;
 }

@@ -1,4 +1,9 @@
-import { CheckOut, ProductView, ShoppingCart, StoreFrontHome } from "../pages";
+import {
+  CheckOut,
+  ProductView,
+  ShoppingCartPage,
+  StoreFrontHome,
+} from "../pages";
 
 export const StoreFrontRoutes = [
   {
@@ -11,7 +16,7 @@ export const StoreFrontRoutes = [
   },
   {
     path: "shopping-cart",
-    element: <ShoppingCart />,
+    element: <ShoppingCartPage />,
   },
   {
     path: "checkout",

@@ -32,7 +32,6 @@ export const Login = () => {
         email: formData.email,
         password: formData.password,
       });
-
     handleError(authError);
 
     if (user) {
