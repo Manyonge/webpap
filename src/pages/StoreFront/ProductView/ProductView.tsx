@@ -101,13 +101,15 @@ export const ProductView = () => {
     }
   };
 
-  const handleRemoveFromCart = async (product: Product | undefined) => {
+  const handleRemoveFromCart = async (product: Product | undefined | null) => {
     if (currentCart) {
       const temp = JSON.parse(JSON.stringify(currentCart));
       temp.products = temp.products.filter(
         (product: Product) => product.id !== parseInt(productID),
       );
-      temp.totalPrice = (temp.totalPrice - product?.price) as number;
+      if (product?.price) {
+        temp.totalPrice = temp.totalPrice - product?.price;
+      }
       setCurrentCart(temp);
       setIsInCart(false);
     }
@@ -145,7 +147,7 @@ export const ProductView = () => {
         <div className="flex flex-row items-center justify-between">
           <p> {productQuery.data?.price} </p>
 
-          {productQuery.data?.stock < 1 && (
+          {parseInt(productQuery.data?.stock as string) < 1 && (
             <button
               className=" mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm mb-2 "
@@ -164,7 +166,7 @@ export const ProductView = () => {
             </button>
           )}
 
-          {productQuery.data?.stock > 0 && !isInCart ? (
+          {parseInt(productQuery.data?.stock as string) > 0 && !isInCart ? (
             <button
               className="  rounded-full py-1 px-3
         bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
