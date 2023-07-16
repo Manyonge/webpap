@@ -15,5 +15,5 @@ export { UploadProduct } from "./Admin/UploadProduct/UploadProduct.tsx";
 export { Withdraw } from "./Admin/Withdraw/Withdraw.tsx";
 export { StoreFrontHome } from "./StoreFront/StoreFrontHome/StoreFrontHome.tsx";
 export { ProductView } from "./StoreFront/ProductView/ProductView.tsx";
-export { ShoppingCart } from "./StoreFront/ShoppingCart/ShoppingCart.tsx";
+export { ShoppingCartPage } from "./StoreFront/ShoppingCart/ShoppingCartPage.tsx";
 export { CheckOut } from "./StoreFront/CheckOut/CheckOut.tsx";
