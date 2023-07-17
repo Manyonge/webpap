@@ -8,6 +8,14 @@ const Carousel = (props: { images: string[] }) => {
   const { images } = props;
 
   const [currentImage, setCurrentImage] = useState(images[0]);
+  us;
+
+  useEffect(() => {
+    console.log(currentImage);
+    if (!currentImage) {
+      setCurrentImage(images[0]);
+    }
+  }, []);
 
   const handleChangeImage = (image: string) => {
     setCurrentImage(image);
@@ -53,13 +61,19 @@ export const CheckOut = () => {
       setShoppingCart(temp);
       const images = [];
       for (const i in temp.products) {
-        images.push(temp.products[i].productImages[1].url);
+        images.push(temp.products[i].productImages[0].url);
       }
       setCartImages(images);
     } else {
       localStorage.setItem("shoppingCart", JSON.stringify(shoppingCart));
     }
   }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const data = watch();
+    console.log(data);
+  };
 
   return (
     <div className="px-10 pb-40">
@@ -86,7 +100,7 @@ export const CheckOut = () => {
         <p> {`${shoppingCart.totalPrice} KSH`} </p>
       </div>
 
-      <form>
+      <form className="flex flex-col items-center " onSubmit={handleSubmit}>
         <input
           placeholder="Full name"
           {...register("customerName")}
@@ -111,13 +125,33 @@ export const CheckOut = () => {
                   mb-5"
         />
 
-        <input
-          placeholder="Full name"
-          {...register("customerName")}
+        <textarea
+          placeholder="delivery notes"
+          {...register("deliveryNotes")}
           className="border-2 border-primary rounded-md
                  py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
                   mb-5"
         />
+
+        <input
+          placeholder="M-PESA number"
+          {...register("mpesaNumber")}
+          className="border-2 border-primary rounded-md
+                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
+                  mb-5"
+        />
+        <p className="text-center text-grey text-sms">
+          This number will be prompted for payment
+        </p>
+
+        <button
+          type="submit"
+          className="bg-success text-white shadow-lg rounded-lg
+          w-full py-1"
+        >
+          {" "}
+          {`PAY KSH ${shoppingCart.totalPrice}`}{" "}
+        </button>
       </form>
     </div>
   );
