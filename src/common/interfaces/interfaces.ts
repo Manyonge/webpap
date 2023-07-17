@@ -46,3 +46,13 @@ export interface ShoppingCart {
   products: Product[];
   totalPrice: number;
 }
+
+export interface Order {
+  customerName: string;
+  customerPhoneNumber: string;
+  customerEmailAddress: string;
+  deliveryNotes: string;
+  pickupLocation: string | null;
+  pickupAgent: string | null;
+  mpesaNumber: string;
+}
