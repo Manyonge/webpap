@@ -120,6 +120,8 @@ export const CheckOutPage = () => {
       name: data.customerName,
       phoneNumber: data.customerPhoneNumber,
       emailAddress: data.customerEmailAddress,
+      storeFrontId: storeFrontID,
+      retailerId: retailerQuery.data?.id as string,
     };
 
     const delivery: Delivery = {
@@ -128,7 +130,6 @@ export const CheckOutPage = () => {
     };
 
     if (isPaymentConfirmed) {
-      console.log(data);
       //reduce product's stock
       for (const i in shoppingCart.products) {
         const newStock = parseInt(shoppingCart.products[i].stock as string) - 1;

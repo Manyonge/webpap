@@ -37,6 +37,8 @@ export interface Customer {
   name: string;
   phoneNumber: string;
   emailAddress: string;
+  storeFrontId: string;
+  retailerId: string;
 }
 
 export interface Delivery {
