@@ -16,4 +16,4 @@ export { Withdraw } from "./Admin/Withdraw/Withdraw.tsx";
 export { StoreFrontHome } from "./StoreFront/StoreFrontHome/StoreFrontHome.tsx";
 export { ProductView } from "./StoreFront/ProductView/ProductView.tsx";
 export { ShoppingCartPage } from "./StoreFront/ShoppingCart/ShoppingCartPage.tsx";
-export { CheckOut } from "./StoreFront/CheckOut/CheckOut.tsx";
+export { CheckOutPage } from "./StoreFront/CheckOut/CheckOutPage.tsx";

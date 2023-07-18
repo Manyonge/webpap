@@ -1,13 +1,3 @@
-export interface Order {
-  amountPaid: number;
-  customerName: string;
-  orderTime: string;
-  productName: string;
-  productPhoto: string;
-  orderId: string;
-  isFulFilled: boolean;
-}
-
 export interface Product {
   retailerId: string;
   storeFrontId: string;
@@ -39,7 +29,19 @@ export interface Retailer {
   businessName: string;
   loginEmail: string;
   password?: string;
+  walletBalance: number;
   id: number | string | null;
+}
+
+export interface Customer {
+  name: string;
+  phoneNumber: string;
+  emailAddress: string;
+}
+
+export interface Delivery {
+  pickupLocation: string;
+  pickupAgent: string;
 }
 
 export interface ShoppingCart {
@@ -47,12 +49,20 @@ export interface ShoppingCart {
   totalPrice: number;
 }
 
-export interface Order {
+export interface CheckOut {
   customerName: string;
   customerPhoneNumber: string;
   customerEmailAddress: string;
-  deliveryNotes: string;
-  pickupLocation: string | null;
-  pickupAgent: string | null;
   mpesaNumber: string;
+  deliveryNotes: string;
+  pickupAgent: string;
+  pickupLocation: string;
+}
+export interface Order {
+  id?: number;
+  storeFrontId: string;
+  retailerId: string;
+  product: Product;
+  customer: Customer;
+  delivery: Delivery;
 }

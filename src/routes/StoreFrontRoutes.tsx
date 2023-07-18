@@ -1,5 +1,5 @@
 import {
-  CheckOut,
+  CheckOutPage,
   ProductView,
   ShoppingCartPage,
   StoreFrontHome,
@@ -20,6 +20,6 @@ export const StoreFrontRoutes = [
   },
   {
     path: "checkout",
-    element: <CheckOut />,
+    element: <CheckOutPage />,
   },
 ];
