@@ -52,8 +52,8 @@ export const AdminDashboard = () => {
       </p>
 
       <div className="px-4 mx-auto md:w-10/12 grid grid-cols-2 gap-6 md:gap-10  ">
-        {currentStats.map(({ label, value, info, route }) => (
-          <Link to={route}>
+        {currentStats.map(({ label, value, info, route }, index) => (
+          <Link to={route} key={index}>
             <div className="rounded-lg shadow-lg hover:shadow-xl h-40 ">
               <div className="bg-primary text-[#fff] h-3/5 md:h-3/4 rounded-tr-lg rounded-tl-lg py-4 ">
                 <p className="text-[#fff] text-center text-3xl md:text-6xl font-bold ">

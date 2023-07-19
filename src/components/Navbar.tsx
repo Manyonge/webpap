@@ -105,7 +105,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
 
           <button
             onClick={handleLogOut}
-            className={`px-5 py-1 rounded-md text-sm hover:bg-primary hover:text-white`}
+            className={`px-5 py-1 rounded-md text-sm hover:bg-error hover:text-white`}
           >
             {" "}
             Log out{" "}
@@ -139,7 +139,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
                 ))}
                 <button
                   onClick={handleLogOut}
-                  className={`px-5 py-1 w- rounded-md text-sm w-full text-center hover:bg-primary hover:text-white`}
+                  className={`px-5 py-1 w- rounded-md text-sm w-full text-center hover:bg-error hover:text-white`}
                 >
                   {" "}
                   Log out{" "}

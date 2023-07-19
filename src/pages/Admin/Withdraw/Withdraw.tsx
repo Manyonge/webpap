@@ -1,30 +1,87 @@
-import { useState } from "react";
+import { Retailer, Withdrawal } from "../../../common/interfaces";
+import { PostgrestError } from "@supabase/supabase-js";
+import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
+import { useForm } from "react-hook-form";
+import { SeverityColorEnum } from "../../../common/enums";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const Withdraw = () => {
-  const [walletBalance, setWalletBalance] = useState(10000);
+  const { watch, register } = useForm<Withdrawal>();
+  const isWithdrawalConfirmed = true;
+  const { showToast } = useAppContext();
+  const fetchRetailer = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const {
+      data,
+      error,
+    }: { data: Retailer | null; error: null | PostgrestError } = await supabase
+      .from("retailers")
+      .select()
+      .eq("id", sessionData.session?.user.id)
+      .single();
+
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const retailerQuery = useQuery("retailer", fetchRetailer);
+  const navigate = useNavigate();
+  const params = useParams();
+  const storeFrontID = params.storeFrontID as string;
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const data = watch();
+    if (isWithdrawalConfirmed && retailerQuery.data) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const update = {
+        walletBalance: retailerQuery.data.walletBalance - data.amount,
+      };
+      const { error } = await supabase
+        .from("retailers")
+        .update(update)
+        .eq("id", sessionData.session?.user.id);
+      if (error) {
+        showToast(error.message, SeverityColorEnum.Error);
+        throw new Error(error.message);
+      }
+    }
+    showToast("withdrawal made successfully", SeverityColorEnum.Success);
+    navigate(`/${storeFrontID}/admin/wallet`);
+  };
+
   return (
     <>
-      <div className="flex flex-row items-center justify-between bg-primary rounded-lg w-10/12 text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl ">
+      <div
+        className="flex flex-row items-center justify-between bg-primary rounded-lg w-10/12
+       text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl "
+      >
         <p> Your wallet balance </p>
-        <p> {`${walletBalance} KSH `} </p>
+        <p> {`${retailerQuery.data?.walletBalance} KSH `} </p>
       </div>
 
-      <form className="flex flex-col items-center justify-center shadow-lg rounded-lg w-10/12 mx-auto py-10 ">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center justify-center
+      shadow-lg rounded-lg w-10/12 mx-auto py-10 "
+      >
         <label className="text-sm text-[lightGrey] mt-2" htmlFor="amount">
           {" "}
           * 100 KSH per withdrawal{" "}
         </label>
         <input
           className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
-          id="amount"
-          name="amount"
+          {...register("amount")}
           placeholder="Enter withdrawal amount"
         />
 
         <input
           className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
-          id="mpesaNumber"
-          name="mpesaNumber"
+          {...register("mpesaNumber")}
           placeholder="Enter M-PESA Number"
         />
 
@@ -33,8 +90,7 @@ export const Withdraw = () => {
         </label>
         <input
           className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
-          id="mpesaName"
-          name="mpesaName"
+          {...register("mpesaName")}
           placeholder="Enter M-PESA Name"
         />
 

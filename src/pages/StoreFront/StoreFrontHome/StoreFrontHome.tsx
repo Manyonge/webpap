@@ -65,6 +65,8 @@ const ProductCard = (props: { product: Product }) => {
     }
   };
 
+  if (product.isHidden) return <></>;
+
   return (
     <div className="rounded-md shadow-lg hover:shadow-xl mx-auto ">
       <Link to={`product/${product.id}`}>

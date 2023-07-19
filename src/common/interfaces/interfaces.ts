@@ -33,6 +33,12 @@ export interface Retailer {
   id: number | string | null;
 }
 
+export interface Withdrawal {
+  amount: number;
+  mpesaNumber: number;
+  mpesaName: string;
+}
+
 export interface Customer {
   name: string;
   phoneNumber: string;
