@@ -9,43 +9,80 @@ import {
   UploadProduct,
   Withdraw,
 } from "../pages";
+import { RequireAuth } from "../components";
 
 export const AdminRoutes = [
   {
     index: true,
-    element: <AdminDashboard />,
+    element: (
+      <RequireAuth>
+        <AdminDashboard />
+      </RequireAuth>
+    ),
   },
   {
     path: "customers",
-    element: <Customers />,
+    element: (
+      <RequireAuth>
+        <Customers />
+      </RequireAuth>
+    ),
   },
   {
     path: "orders",
-    element: <Orders />,
+    element: (
+      <RequireAuth>
+        <Orders />
+      </RequireAuth>
+    ),
   },
   {
     path: "orders/:orderID",
-    element: <SingleOrder />,
+    element: (
+      <RequireAuth>
+        <SingleOrder />
+      </RequireAuth>
+    ),
   },
   {
     path: "wallet",
-    element: <EWallet />,
+    element: (
+      <RequireAuth>
+        <EWallet />
+      </RequireAuth>
+    ),
   },
   {
     path: "wallet/withdraw",
-    element: <Withdraw />,
+    element: (
+      <RequireAuth>
+        <Withdraw />
+      </RequireAuth>
+    ),
   },
 
   {
     path: "products",
-    element: <UploadedProducts />,
+    element: (
+      <RequireAuth>
+        <UploadedProducts />
+      </RequireAuth>
+    ),
   },
   {
     path: "products/:productID",
-    element: <SingleProduct />,
+    element: (
+      <RequireAuth>
+        <SingleProduct />
+      </RequireAuth>
+    ),
   },
   {
     path: "products/upload",
-    element: <UploadProduct />,
+    element: (
+      <RequireAuth>
+        <UploadProduct />
+      </RequireAuth>
+    ),
   },
 ];

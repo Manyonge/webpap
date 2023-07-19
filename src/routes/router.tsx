@@ -10,7 +10,6 @@ import {
 } from "../pages";
 import { AdminRoutes } from "./AdminRoutes.tsx";
 import { StoreFrontRoutes } from "./StoreFrontRoutes.tsx";
-import { RequireAuth } from "../components";
 
 export const router = createBrowserRouter([
   {
@@ -39,11 +38,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ":storeFrontID/admin",
-        element: (
-          <RequireAuth>
-            <AdminLayout />
-          </RequireAuth>
-        ),
+        element: <AdminLayout />,
         children: [...AdminRoutes],
       },
       {
