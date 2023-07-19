@@ -36,6 +36,16 @@ export const Withdraw = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = watch();
+
+    if (
+      data.amount === "" ||
+      data.mpesaName === "" ||
+      data.mpesaNumber === ""
+    ) {
+      showToast("please fill in all details", SeverityColorEnum.Error);
+      return;
+    }
+
     if (isWithdrawalConfirmed && retailerQuery.data) {
       const { data: sessionData } = await supabase.auth.getSession();
       const update = {
@@ -58,7 +68,7 @@ export const Withdraw = () => {
     <>
       <div
         className="flex flex-row items-center justify-between bg-primary rounded-lg w-10/12
-       text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl "
+       text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl shadow-lg "
       >
         <p> Your wallet balance </p>
         <p> {`${retailerQuery.data?.walletBalance} KSH `} </p>
@@ -74,13 +84,17 @@ export const Withdraw = () => {
           * 100 KSH per withdrawal{" "}
         </label>
         <input
-          className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
+          type="number"
+          className="outline-none border border-primary rounded-md
+          mb-4 px-2 py-2 w-9/12"
           {...register("amount")}
           placeholder="Enter withdrawal amount"
         />
 
         <input
-          className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
+          type="number"
+          className="outline-none border border-primary rounded-md
+          mb-4 px-2 py-2 w-9/12"
           {...register("mpesaNumber")}
           placeholder="Enter M-PESA Number"
         />
@@ -89,14 +103,15 @@ export const Withdraw = () => {
           * Use exact order
         </label>
         <input
-          className="outline-none border border-primary rounded-md mb-4 px-2 py-2 "
+          className="outline-none border border-primary rounded-md
+          mb-4 px-2 py-2 w-9/12"
           {...register("mpesaName")}
           placeholder="Enter M-PESA Name"
         />
 
         <button
           type="submit"
-          className="w-56 rounded-full shadow-lg hover:bg-opacity-95 text-[#fff] bg-[#428541]  border"
+          className="w-9/12 rounded-full shadow-lg hover:bg-opacity-95 text-[#fff] bg-[#428541]  border"
         >
           {" "}
           Withdraw{" "}
