@@ -168,6 +168,7 @@ export const CheckOutPage = () => {
           retailerId: retailerQuery.data?.id as string,
           storeFrontId: storeFrontID,
           product: shoppingCart.products[i],
+          isFulfilled: false,
           delivery,
           customer,
         };

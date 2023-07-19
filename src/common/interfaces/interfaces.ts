@@ -62,11 +62,11 @@ export interface CheckOut {
 }
 export interface Order {
   id?: number;
-  storeFrontId: string;
-  retailerId: string;
+  storeFrontId?: string;
+  retailerId?: string;
   product: Product;
   customer: Customer;
   delivery: Delivery;
   isFulfilled: boolean;
-  created_at: string;
+  created_at?: string;
 }

@@ -48,7 +48,6 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
     { label: "Customers", path: `/${storeFrontID}/admin/customers` },
     { label: "Orders", path: `/${storeFrontID}/admin/orders` },
     { label: "Wallet", path: `/${storeFrontID}/admin/wallet` },
-    { label: "Account", path: `/${storeFrontID}/admin/account` },
     { label: "Products", path: `/${storeFrontID}/admin/products` },
   ];
 

@@ -3,7 +3,6 @@ import {
   Customers,
   EWallet,
   Orders,
-  RetailerAccount,
   SingleOrder,
   SingleProduct,
   UploadedProducts,
@@ -36,10 +35,7 @@ export const AdminRoutes = [
     path: "wallet/withdraw",
     element: <Withdraw />,
   },
-  {
-    path: "account",
-    element: <RetailerAccount />,
-  },
+
   {
     path: "products",
     element: <UploadedProducts />,

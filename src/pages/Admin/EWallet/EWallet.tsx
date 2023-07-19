@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "../../../supabase.ts";
+import { PostgrestError } from "@supabase/supabase-js";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
 
 export const EWallet = () => {
   const now = new Date();
-  const [walletBalance, setWallletBalance] = useState(10000);
 
   const [transactions, setTransacions] = useState([
     {
@@ -12,6 +15,30 @@ export const EWallet = () => {
       amount: 50000,
     },
   ]);
+  const { showToast } = useAppContext();
+  const fetchRetailer = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    const {
+      data,
+      error,
+    }: {
+      data: { walletBalance: number } | null;
+      error: null | PostgrestError;
+    } = await supabase
+      .from("retailers")
+      .select("walletBalance")
+      .eq("id", sessionData.session?.user.id)
+      .single();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    console.log(data);
+    return data;
+  };
+
+  const balanceQuery = useQuery("balance", fetchRetailer);
 
   return (
     <>
@@ -21,7 +48,7 @@ export const EWallet = () => {
             Wallet balance
           </p>
           <p className=" leading-7  font-bold text-lg md:text-2xl">
-            {`${walletBalance} KSH`}
+            {`${balanceQuery.data?.walletBalance.toLocaleString()} KSH`}
           </p>
         </div>
 
