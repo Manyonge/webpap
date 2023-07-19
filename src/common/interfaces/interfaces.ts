@@ -70,3 +70,11 @@ export interface Order {
   isFulfilled: boolean;
   created_at?: string;
 }
+
+export interface Transaction {
+  transactionType: string;
+  transactionDate: string;
+  amount: number;
+  storeFrontId?: string;
+  retailerId?: string;
+}

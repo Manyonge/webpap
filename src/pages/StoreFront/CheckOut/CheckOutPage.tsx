@@ -8,6 +8,7 @@ import {
   Order,
   Retailer,
   ShoppingCart,
+  Transaction,
 } from "../../../common/interfaces";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
@@ -56,6 +57,7 @@ const Carousel = (props: { images: string[] }) => {
 };
 
 export const CheckOutPage = () => {
+  const now = new Date();
   const params = useParams();
   const storeFrontID = params.storeFrontID as string;
   const { register, watch } = useForm<CheckOut>();
@@ -160,6 +162,22 @@ export const CheckOutPage = () => {
       if (updateError) {
         showToast(updateError.message);
         throw new Error(updateError.message);
+      }
+
+      //create transaction
+      const transaction: Transaction = {
+        transactionType: `Payment from ${data.customerName}`,
+        amount: shoppingCart.totalPrice,
+        transactionDate: now.toISOString(),
+        storeFrontId: storeFrontID,
+        retailerId: retailerQuery.data?.id as string,
+      };
+      const { error: transactionError } = await supabase
+        .from("transactions")
+        .insert(transaction);
+      if (transactionError) {
+        showToast(transactionError.message);
+        throw new Error(transactionError.message);
       }
 
       //create order
