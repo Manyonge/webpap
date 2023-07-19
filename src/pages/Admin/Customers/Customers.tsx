@@ -1,3 +1,10 @@
+import { supabase } from "../../../supabase.ts";
+import { Customer } from "../../../common/interfaces";
+import { PostgrestError } from "@supabase/supabase-js";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { SeverityColorEnum } from "../../../common/enums";
+import { useQuery } from "react-query";
+
 const customers = [
   {
     name: "Arthur",
@@ -42,6 +49,28 @@ const customers = [
 ];
 
 export const Customers = () => {
+  const { showToast } = useAppContext();
+  const fetchCustomers = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    const {
+      data,
+      error,
+    }: { data: Customer[] | null; error: PostgrestError | null } =
+      await supabase
+        .from("customers")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id);
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const customersQuery = useQuery("customers", fetchCustomers);
+
   return (
     <>
       <p className="text-center font-bold text-lg md:text-xl leading-5 md:leading-5 my-6">
@@ -59,13 +88,19 @@ export const Customers = () => {
           </thead>
 
           <tbody>
-            {customers.map(({ name, phoneNumber, deliveryAddress }, index) => (
-              <tr key={index} className=":">
-                <td> {name} </td>
-                <td> {phoneNumber} </td>
-                <td> {deliveryAddress} </td>
-              </tr>
-            ))}
+            {customersQuery.data !== undefined &&
+            customersQuery.data !== null &&
+            customersQuery.data.length > 0
+              ? customersQuery.data.map(
+                  ({ name, phoneNumber, emailAddress }, index) => (
+                    <tr key={index} className=":">
+                      <td> {name} </td>
+                      <td> {phoneNumber} </td>
+                      <td> {emailAddress} </td>
+                    </tr>
+                  ),
+                )
+              : null}
           </tbody>
         </table>
       </div>
