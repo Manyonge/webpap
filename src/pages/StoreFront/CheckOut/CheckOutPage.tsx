@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
@@ -64,9 +64,9 @@ export const CheckOutPage = () => {
     products: [],
   });
   const [cartImages, setCartImages] = useState<string[]>([]);
-  const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
+  const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(true);
   const { showToast } = useAppContext();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const cart = localStorage.getItem("shoppingCart");
     if (cart) {
@@ -188,8 +188,9 @@ export const CheckOutPage = () => {
         showToast(customerError.message);
         throw new Error(customerError.message);
       }
-
+      localStorage.removeItem("shoppingCart");
       showToast("order created successfully!", SeverityColorEnum.Success);
+      navigate(`/${storeFrontID}`);
     }
   };
 
