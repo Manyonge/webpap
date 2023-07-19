@@ -1,38 +1,45 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { CartItem } from "../../../common/interfaces";
+import { Order } from "../../../common/interfaces";
 import { Link } from "react-router-dom";
 import { RightOutlined, UpOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { supabase } from "../../../supabase.ts";
+import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
+import { stringToDate } from "../../../common/utils";
 
-const OrderPaper = (props: { order: CartItem }) => {
-  // TODO get orders from within this component and have a fulfillementStatus prop be passed so it can be used to get the types of orders needed
+const OrderPaper = (props: { order: Order }) => {
   const { order } = props;
+
   return (
-    <Link to={`${order.orderId}`}>
+    <Link to={`${order.id}`}>
       <div className=" mx-auto w-full rounded-lg shadow-lg hover:shadow-xl px-4 py-4 mb-6">
         <div className="flex flex-row items-center justify-between mb-3 ">
           <p
             className={`${
-              order.isFulFilled ? "bg-[#428541] text-[#fff]" : "text-[#416C85]"
+              order.isFulfilled ? "bg-[#428541] text-[#fff]" : "text-[#416C85]"
             } rounded-full px-4 py-1 text-xs `}
           >
             {" "}
-            {order.isFulFilled ? "Fulfilled" : "New"}{" "}
+            {order.isFulfilled ? "Fulfilled" : "New"}{" "}
           </p>
 
-          <p className="text-center"> {order.productName} </p>
-          <p className="text-center"> {order.orderTime} </p>
+          <p className="text-center"> {order.product.name} </p>
+          <p className="text-center">
+            {" "}
+            {stringToDate(order.created_at).toDateString()}{" "}
+          </p>
         </div>
 
         <div className="flex flex-row items-center justify-between mb-3 ">
           <img
-            src={order.productPhoto}
-            alt={`${order.productName}`}
+            src={order.product.productImages[0].url}
+            alt={`${order.product.name}`}
             className="h-8 w-8"
           />
 
-          <p className="text-center"> {order.amountPaid} </p>
-          <p className="text-center"> {order.customerName} </p>
+          <p className="text-center"> {order.product.price} </p>
+          <p className="text-center"> {order.customer.name} </p>
           <RightOutlined />
         </div>
       </div>
@@ -41,177 +48,84 @@ const OrderPaper = (props: { order: CartItem }) => {
 };
 
 export const Orders = () => {
+  const { showToast } = useAppContext();
+
   const [selectedTab, setSelectedTab] = useState("allProducts");
+  const [fulfillmentStatus, setFulfillmentStatus] = useState<
+    null | "fulfilled" | "unfulfilled"
+  >(null);
 
-  const [allOrders, setAllOrders] = useState<CartItem[]>([
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
+  const fetchOrders = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
 
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-  ]);
+    if (fulfillmentStatus === null) {
+      const { data, error } = await supabase
+        .from("orders")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id);
 
-  const [newOrders, setNewOrders] = useState([
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-  ]);
-  const [fulfilledOrders, setFulfilledOrders] = useState([
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skhfah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skiah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-    {
-      isFulFilled: true,
-      amountPaid: 4000,
-      customerName: "Arthur Manyonge",
-      orderTime: " 2023-1-7 10:31 am",
-      productName: "Air jordan 1s",
-      orderId: "skah",
-      productPhoto:
-        "https://hustle.imgix.net/8wb0abtw2etmk90e6l6vidnjefe1w88d.jpeg?fit=crop&w=512&h=512",
-    },
-  ]);
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
+
+    if (fulfillmentStatus === "fulfilled") {
+      const { data, error } = await supabase
+        .from("orders")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id)
+        .eq("isFulfilled", true);
+
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
+
+    if (fulfillmentStatus === "unfulfilled") {
+      const { data, error } = await supabase
+        .from("orders")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id)
+        .eq("isFulfilled", false);
+
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
+  };
+
+  const ordersQuery = useQuery(["orders", fulfillmentStatus], fetchOrders);
 
   const tabs = [
     {
       label: "All",
       value: "allProducts",
-      orders: allOrders,
+      fulfillmentStatus: null,
     },
     {
       label: "New",
       value: "newProducts",
-      orders: newOrders,
+      fulfillmentStatus: "unfulfilled",
     },
     {
       label: "Fulfilled",
       value: "fulfilledProducts",
-      orders: fulfilledOrders,
+      fulfillmentStatus: "fulfilled",
     },
   ];
 
-  const handleTab = (tab: string) => {
+  const handleTab = (
+    tab: string,
+    status: null | "unfulfilled" | "fulfilled",
+  ) => {
     setSelectedTab(tab);
+    setFulfillmentStatus(status);
   };
 
   const handleScrollToTop = () => {
@@ -228,7 +142,7 @@ export const Orders = () => {
           className="border-b shrink-0 mb-4 flex"
           defaultValue="allProducts"
         >
-          {tabs.map(({ label, value }) => (
+          {tabs.map(({ label, value, fulfillmentStatus }) => (
             <Tabs.Trigger
               key={value}
               className={`${
@@ -237,16 +151,16 @@ export const Orders = () => {
                   : ""
               } select-none px-4 py-2`}
               value={value}
-              onClick={() => handleTab(value)}
+              onClick={() => handleTab(value, fulfillmentStatus)}
             >
               {label}
             </Tabs.Trigger>
           ))}
         </Tabs.List>
 
-        {tabs.map(({ value, orders }) => (
+        {tabs.map(({ value }) => (
           <Tabs.Content key={value} className="w-full focus: " value={value}>
-            {orders.map((order) => (
+            {ordersQuery.data?.map((order) => (
               <OrderPaper key={order.orderId} order={order} />
             ))}
           </Tabs.Content>

@@ -5,49 +5,6 @@ import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../../common/enums";
 import { useQuery } from "react-query";
 
-const customers = [
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-  {
-    name: "Arthur",
-    phoneNumber: "072586134",
-    deliveryAddress: "Shop direct, Jamhuri",
-  },
-];
-
 export const Customers = () => {
   const { showToast } = useAppContext();
   const fetchCustomers = async () => {

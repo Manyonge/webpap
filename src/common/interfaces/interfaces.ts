@@ -67,4 +67,6 @@ export interface Order {
   product: Product;
   customer: Customer;
   delivery: Delivery;
+  isFulfilled: boolean;
+  created_at: string;
 }
