@@ -135,6 +135,7 @@ export const Signup = () => {
 
     data.passportPhoto = passportUrl;
     data.businessLogo = logoUrl;
+    data.walletBalance = 0;
     delete data.password;
     setMessage("Creating retailer");
 

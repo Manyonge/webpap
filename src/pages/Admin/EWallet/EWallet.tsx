@@ -1,20 +1,12 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../../supabase.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { useQuery } from "react-query";
+import { Transaction } from "../../../common/interfaces";
+import { stringToDate } from "../../../common/utils";
 
 export const EWallet = () => {
-  const now = new Date();
-
-  const [transactions, setTransacions] = useState([
-    {
-      transactionType: "Payment from Arthur Manyonge",
-      transactionDate: now,
-      amount: 50000,
-    },
-  ]);
   const { showToast } = useAppContext();
   const fetchRetailer = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -34,11 +26,25 @@ export const EWallet = () => {
       showToast(error.message);
       throw new Error(error.message);
     }
-    console.log(data);
     return data;
   };
 
   const balanceQuery = useQuery("balance", fetchRetailer);
+
+  const fetchTransactions = async () => {
+    const {
+      data,
+      error,
+    }: { data: Transaction[] | null; error: null | PostgrestError } =
+      await supabase.from("transactions").select();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const transactionsQuery = useQuery("transactions", fetchTransactions);
 
   return (
     <>
@@ -72,26 +78,35 @@ export const EWallet = () => {
       </Link>
 
       <div className="overflow-x-auto px-2 w-10/12 md:w-9/12 mx-auto ">
-        <table className="  md:w-full  ">
-          <thead>
-            <tr>
-              <th>Transaction type</th>
-              <th>Transaction date</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map(
-              ({ transactionType, amount, transactionDate }, index) => (
-                <tr key={index}>
-                  <td> {transactionType} </td>
-                  <td> {transactionDate.toDateString()} </td>
-                  <td> {amount} </td>
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
+        {transactionsQuery.data?.length === 0 && (
+          <p className="font-bold text-center text-lg">
+            {" "}
+            No transactions made yet{" "}
+          </p>
+        )}
+
+        {transactionsQuery.data && transactionsQuery.data?.length > 0 ? (
+          <table className="  md:w-full  ">
+            <thead>
+              <tr>
+                <th>Transaction type</th>
+                <th>Transaction date</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactionsQuery.data.map(
+                ({ transactionType, amount, transactionDate }, index) => (
+                  <tr key={index}>
+                    <td> {transactionType} </td>
+                    <td> {stringToDate(transactionDate).toDateString()} </td>
+                    <td> {amount} </td>
+                  </tr>
+                ),
+              )}
+            </tbody>
+          </table>
+        ) : null}
       </div>
     </>
   );
