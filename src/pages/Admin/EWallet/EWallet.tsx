@@ -86,26 +86,28 @@ export const EWallet = () => {
         )}
 
         {transactionsQuery.data && transactionsQuery.data?.length > 0 ? (
-          <table className="  md:w-full  ">
-            <thead>
-              <tr>
-                <th>Transaction type</th>
-                <th>Transaction date</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactionsQuery.data.map(
-                ({ transactionType, amount, transactionDate }, index) => (
-                  <tr key={index}>
-                    <td> {transactionType} </td>
-                    <td> {stringToDate(transactionDate).toDateString()} </td>
-                    <td> {amount} </td>
-                  </tr>
-                ),
-              )}
-            </tbody>
-          </table>
+          <div className="w-full  overflow-x-auto px-2 md:w-10/12 mx-auto ">
+            <table className=" w-96 md:w-full  ">
+              <thead>
+                <tr>
+                  <th>Transaction type</th>
+                  <th>Transaction date</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactionsQuery.data.map(
+                  ({ transactionType, amount, transactionDate }, index) => (
+                    <tr key={index}>
+                      <td> {transactionType} </td>
+                      <td> {stringToDate(transactionDate).toDateString()} </td>
+                      <td> {amount} </td>
+                    </tr>
+                  ),
+                )}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </>

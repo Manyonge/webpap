@@ -35,7 +35,7 @@ export interface Retailer {
 
 export interface Withdrawal {
   amount: number;
-  mpesaNumber: number;
+  mpesaNumber: string;
   mpesaName: string;
 }
 

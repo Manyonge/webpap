@@ -5,7 +5,8 @@ import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { useQuery } from "react-query";
 import { useForm } from "react-hook-form";
 import { SeverityColorEnum } from "../../../common/enums";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { LeftOutlined } from "@ant-design/icons";
 
 export const Withdraw = () => {
   const { watch, register } = useForm<Withdrawal>();
@@ -36,6 +37,7 @@ export const Withdraw = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const data = watch();
+    console.log(data);
 
     if (
       data.amount === "" ||
@@ -66,6 +68,13 @@ export const Withdraw = () => {
 
   return (
     <>
+      <Link
+        to={`/${storeFrontID}/admin/wallet`}
+        className="flex flex-row items-center justify-start
+         w-10/12 mx-auto mt-4 font-bold"
+      >
+        <LeftOutlined /> Cancel
+      </Link>
       <div
         className="flex flex-row items-center justify-between bg-primary rounded-lg w-10/12
        text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl shadow-lg "
@@ -73,7 +82,6 @@ export const Withdraw = () => {
         <p> Your wallet balance </p>
         <p> {`${retailerQuery.data?.walletBalance} KSH `} </p>
       </div>
-
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-center justify-center
