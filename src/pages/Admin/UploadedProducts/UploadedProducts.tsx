@@ -73,10 +73,8 @@ const ProductPaper = (props: { product: Product }) => {
     >
       <div className="flex flex-row items-center justify-between mb-4 ">
         <p
-          className={`${
-            parseInt(product.stock as string) < 1
-              ? "text-error"
-              : "text-[#428541]"
+          className={` text-white px-2 py-1 rounded-full ${
+            parseInt(product.stock as string) < 1 ? "bg-error" : "bg-success"
           } text-sm`}
         >
           {" "}

@@ -1,8 +1,8 @@
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
@@ -269,7 +269,14 @@ export const SingleProduct = () => {
   };
 
   return (
-    <div className="px-4 py-10">
+    <div className="px-4 md:px-20 py-10">
+      <Link
+        to={`/${storeFrontID}/admin/products`}
+        className="flex flex-row items-center justify-start font-bold "
+      >
+        {" "}
+        <LeftOutlined /> Cancel{" "}
+      </Link>
       <p className="text-center text-lg font-bold">Edit this product</p>
 
       <form onSubmit={handleSubmit}>
