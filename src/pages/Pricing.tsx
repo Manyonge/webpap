@@ -9,7 +9,7 @@ export const Pricing = () => {
           <div>
             <p className="text-center text-4xl md:text-5xl ">8%</p>
 
-            <p className="text-lg md:text-2xl ">Transaction cost</p>
+            <p className="text-lg md:text-2xl text-center ">Transaction cost</p>
           </div>
 
           <div className="h-28 md:h-40 w-1 md:w-1.5 mx-6 rounded-full bg-[#fff] " />
@@ -17,7 +17,7 @@ export const Pricing = () => {
           <div>
             <p className="text-center text-4xl md:text-5xl "> 100 KSH </p>
 
-            <p className="text-lg md:text-2xl ">Per withdrawal</p>
+            <p className="text-lg md:text-2xl text-center">Per withdrawal</p>
           </div>
         </div>
         <p className="md:text-lg">

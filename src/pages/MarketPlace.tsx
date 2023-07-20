@@ -1,57 +1,10 @@
 import { Navbar, WebpapFooter } from "../components";
 import { Link } from "react-router-dom";
-
-const retailers = [
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers  ",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-  {
-    storeFrontID: "dripventory",
-    imageURL:
-      "https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62",
-    description: "Cargo pants, pre-loved sneakers",
-  },
-];
+import { useAppContext } from "../contexts/AppContext.tsx";
+import { PostgrestError } from "@supabase/supabase-js";
+import { useQuery } from "react-query";
+import { Retailer } from "../common/interfaces";
+import { supabase } from "../supabase.ts";
 
 const RetailerPaper = (props: {
   imageURL: string;
@@ -61,13 +14,13 @@ const RetailerPaper = (props: {
   const { storeFrontID, description, imageURL } = props;
   return (
     <Link to={`/${storeFrontID}`} className={"Link"}>
-      <div className=" w-40 md:w-60 shadow-md rounded-lg mx-auto">
+      <div className=" w-full md:w-60 shadow-md rounded-lg mx-auto  ">
         <img
           src={imageURL}
           className="w-40 md:w-60 h-36 md:h-48 rounded-lg object-cover "
         />
 
-        <p className="text-center text-sm md:text-base/5 my-3">
+        <p className="text-center text-sm md:text-base/5 my-3 font-bold pb-3 ">
           {" "}
           {description}{" "}
         </p>
@@ -77,16 +30,33 @@ const RetailerPaper = (props: {
 };
 
 export const MarketPlace = () => {
+  const { showToast } = useAppContext();
+  const fetchRetailers = async () => {
+    const {
+      data,
+      error,
+    }: { data: null | Retailer[]; error: null | PostgrestError } =
+      await supabase.from("retailers").select();
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const retailersQuery = useQuery("retailers", fetchRetailers);
+
   return (
     <>
       <Navbar routesRole="app" />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 pt-4 px-3 md:px-4 pb-40">
-        {retailers.map(({ imageURL, description, storeFrontID }) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10 pt-4 px-3 md:px-4 pb-40 mb-96">
+        {retailersQuery.data?.map(({ businessLogo, businessName }, index) => (
           <RetailerPaper
-            imageURL={imageURL}
-            description={description}
-            storeFrontID={storeFrontID}
+            key={index}
+            imageURL={businessLogo as string}
+            description={businessName}
+            storeFrontID={businessName}
           />
         ))}
       </div>

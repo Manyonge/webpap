@@ -80,10 +80,10 @@ export const Login = () => {
               type={"checkbox"}
               id="show-password"
               onChange={handleShowPassword}
-              className="mr-2 w-4 h-4"
+              className="mr-2 w-4 h-4 mt-3 "
             />
 
-            <label htmlFor="show-password" className="text-sm">
+            <label htmlFor="show-password" className="text-sm mt-3 ">
               Show password{" "}
             </label>
           </div>
