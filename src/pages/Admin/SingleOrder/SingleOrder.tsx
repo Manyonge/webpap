@@ -67,7 +67,7 @@ export const SingleOrder = () => {
           Ordered at{" "}
           {stringToDate(
             orderQuery.data?.created_at as string,
-          ).toDateString()}{" "}
+          ).toLocaleString()}{" "}
         </p>
       </div>
 

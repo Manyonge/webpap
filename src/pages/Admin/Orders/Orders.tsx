@@ -17,17 +17,17 @@ const OrderPaper = (props: { order: Order }) => {
         <div className="flex flex-row items-center justify-between mb-3 ">
           <p
             className={`${
-              order.isFulfilled ? "bg-[#428541] text-[#fff]" : "text-[#416C85]"
-            } rounded-full px-4 py-1 text-xs `}
+              order.isFulfilled ? "bg-success " : "bg-info "
+            } rounded-full px-4 py-1 text-xs text-white `}
           >
             {" "}
             {order.isFulfilled ? "Fulfilled" : "New"}{" "}
           </p>
 
-          <p className="text-center"> {order.product.name} </p>
-          <p className="text-center">
+          <p className="ml-6 font-bold"> {order.product.name} </p>
+          <p className="font-bold text-right  ">
             {" "}
-            {stringToDate(order.created_at).toDateString()}{" "}
+            {stringToDate(order.created_at as string).toLocaleString()}
           </p>
         </div>
 
@@ -35,11 +35,18 @@ const OrderPaper = (props: { order: Order }) => {
           <img
             src={order.product.productImages[0].url}
             alt={`${order.product.name}`}
-            className="h-8 w-8"
+            className="h-14 md:h-20 w-14 md:w-20"
           />
 
-          <p className="text-center"> {order.product.price} </p>
-          <p className="text-center"> {order.customer.name} </p>
+          <p className="text-center   ">
+            {" "}
+            {order.product.price.toLocaleString()}
+            {" KSH"}
+          </p>
+          <p className="text-center  ">
+            {" "}
+            {`Ordered by ${order.customer.name} `}{" "}
+          </p>
           <RightOutlined />
         </div>
       </div>
@@ -102,7 +109,11 @@ export const Orders = () => {
 
   const ordersQuery = useQuery(["orders", fulfillmentStatus], fetchOrders);
 
-  const tabs = [
+  const tabs: {
+    label: string;
+    value: string;
+    fulfillmentStatus: null | "fulfilled" | "unfulfilled";
+  }[] = [
     {
       label: "All",
       value: "allProducts",
@@ -169,7 +180,8 @@ export const Orders = () => {
 
       <button
         onClick={handleScrollToTop}
-        className="  bg-primary rounded-full shadow-2xl fixed bottom-32 px-3 py-3 text-[#fff] flex flex-row items-center justify-center  right-10"
+        className="  bg-primary rounded-full shadow-2xl fixed bottom-32
+         px-3 py-3 text-[#fff] flex flex-row items-center justify-center  right-10"
       >
         <UpOutlined />
       </button>

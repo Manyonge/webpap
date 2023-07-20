@@ -6,6 +6,7 @@ export default {
       primary: "rgba(165, 126, 93, 1)",
       error: "#890404",
       link: "blue",
+      info: "#416C85",
       success: "#428541",
       warning: "#D6A476",
       white: "#fff",

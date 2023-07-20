@@ -71,7 +71,7 @@ export const EWallet = () => {
         to={"withdraw"}
         className="flex flex-row items-center justify-center mb-10 w-10/12 md:w-9/12 mx-auto "
       >
-        <button className="bg-[#416C85] text-[#fff] rounded-full py-1 md:py-2 shadow-lg w-full ">
+        <button className="bg-info text-[#fff] rounded-full py-1 md:py-2 shadow-lg w-full ">
           {" "}
           Withdraw funds{" "}
         </button>
