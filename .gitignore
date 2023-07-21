@@ -14,6 +14,7 @@ dist-ssr
 
 /.env
 /src/supabase.ts
+/src/processPayment.ts
 
 # Editor directories and files
 .vscode/*

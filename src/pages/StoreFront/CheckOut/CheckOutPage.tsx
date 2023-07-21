@@ -16,6 +16,7 @@ import { SeverityColorEnum } from "../../../common/enums";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 import { PostgrestError } from "@supabase/supabase-js";
+import { processPayment } from "../../../processPayment.ts";
 
 const Carousel = (props: { images: string[] }) => {
   const { images } = props;
@@ -66,7 +67,6 @@ export const CheckOutPage = () => {
     products: [],
   });
   const [cartImages, setCartImages] = useState<string[]>([]);
-  const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(true);
   const { showToast } = useAppContext();
   const navigate = useNavigate();
   useEffect(() => {
@@ -82,6 +82,16 @@ export const CheckOutPage = () => {
     } else {
       localStorage.setItem("shoppingCart", JSON.stringify(shoppingCart));
     }
+  }, []);
+
+  useEffect(() => {
+    const test = async () => {
+      const response = await supabase.functions.invoke("processPayment", {
+        body: { name: "hello" },
+      });
+      console.log(response);
+    };
+    test();
   }, []);
 
   const fetchRetailer = async () => {
@@ -130,6 +140,8 @@ export const CheckOutPage = () => {
       pickupLocation: data.pickupLocation,
       pickupAgent: data.pickupAgent,
     };
+
+    const isPaymentConfirmed = await processPayment(customer);
 
     if (isPaymentConfirmed) {
       //reduce product's stock
@@ -211,12 +223,19 @@ export const CheckOutPage = () => {
       showToast("order created successfully!", SeverityColorEnum.Success);
       navigate(`/${storeFrontID}`);
     }
+
+    // localStorage.removeItem("shoppingCart");
+    // showToast("order created successfully!", SeverityColorEnum.Success);
+    // navigate(`/${storeFrontID}`);
   };
 
   return (
     <div className="px-10 pb-40">
       <div className="mt-3   mb-4 ">
-        <Link to={`/${storeFrontID}`} className="font-bold ">
+        <Link
+          to={`/${storeFrontID}`}
+          className="font-bold flex flex-row items-center justiify-start"
+        >
           <LeftOutlined />
           Cancel
         </Link>

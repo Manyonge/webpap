@@ -120,6 +120,9 @@ export const StoreFrontHome = () => {
 
   const { showToast } = useAppContext();
 
+  const [category, setCategory] = useState("");
+  const [size, setSize] = useState("");
+  const [searchName, setSearchName] = useState("");
   const fetchCategories = async () => {
     const { data, error } = await supabase.from("product categories").select();
     if (error) {
@@ -151,6 +154,13 @@ export const StoreFrontHome = () => {
   const categoriesQuery = useQuery(["categories"], fetchCategories);
   const sizesQuery = useQuery(["sizes"], fetchSizes);
 
+  const handleCategoryChange = (e: any) => {
+    setCategory(e.target.value);
+  };
+  const handleSizeChange = (e: any) => {
+    setSize(e.target.value);
+  };
+
   return (
     <div className="px-4 md:px-6 pb-44">
       <div className="mt-10 flex flex-row items-center justify-between ">
@@ -173,7 +183,10 @@ export const StoreFrontHome = () => {
       <p className=""> seller-s bio </p>
 
       <div className="flex flex-row items-center justify-center my-5">
-        <select className="mr-4 outline-none border border-primary rounded-full pl-1 ">
+        <select
+          className="mr-4 outline-none border border-primary rounded-full pl-1 "
+          onChange={handleSizeChange}
+        >
           <option className="hidden">size</option>
           {sizesQuery.data !== undefined && sizesQuery.data.length > 0
             ? sizesQuery.data.map(({ size }, index) => (
@@ -184,7 +197,10 @@ export const StoreFrontHome = () => {
             : null}
         </select>
 
-        <select className="mr-4 outline-none border border-primary rounded-full pl-1 ">
+        <select
+          className="mr-4 outline-none border border-primary rounded-full pl-1 "
+          onChange={handleCategoryChange}
+        >
           <option className="hidden">Category</option>
           {categoriesQuery.data !== undefined && categoriesQuery.data.length > 0
             ? categoriesQuery.data.map(({ category }, index) => (
