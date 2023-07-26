@@ -9,6 +9,58 @@ import * as Popover from "@radix-ui/react-popover";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useGetRetailer } from "../../common/hooks";
+import { Product } from "../../common/interfaces/index.ts";
+import { PostgrestError } from "@supabase/supabase-js";
+import { supabase } from "../../supabase.ts";
+import { useAppContext } from "../../contexts/AppContext.tsx";
+import { useQuery } from "react-query";
+
+const SearchBar = () => {
+  const { showToast } = useAppContext();
+  const [name, setName] = useState("");
+  const params = useParams();
+  const storeFrontID = params.storeFrontID as string;
+  const fetchProduct = async () => {
+    const {
+      data,
+      error,
+    }: { data: Product[] | null; error: PostgrestError | null } = await supabase
+      .from("products")
+      .select()
+      .eq("storeFrontId", storeFrontID)
+      .eq("name", name);
+    if (error) {
+      showToast(error.message);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
+  const productQuery = useQuery(["searchProduct", name], fetchProduct);
+
+  const handleSearch = (e: any) => {
+    setName(e.target.value);
+  };
+
+  return (
+    <div className=" w-2/3 md:w-1/3 mx-auto ">
+      <input
+        onChange={handleSearch}
+        type="search"
+        className="border outline-none rounded-full pl-2
+          w-full "
+      />
+
+      <div className="shadow-lg bg-primary mt-2  w-full"></div>
+      {name !== "" && productQuery.data?.length > 0
+        ? productQuery.data?.map(({ name, id }) => <p key={id}> {name} </p>)
+        : null}
+      {name !== "" && productQuery.data?.length === 0 ? (
+        <p className="text-center font-bold text-lg">No products found</p>
+      ) : null}
+    </div>
+  );
+};
 
 export const StoreFrontLayout = () => {
   const { retailerError } = useGetRetailer();
@@ -72,11 +124,7 @@ export const StoreFrontLayout = () => {
           </Popover.Portal>
         </Popover.Root>
 
-        <input
-          type="search"
-          className="border outline-none rounded-full pl-2
-            w-2/3 md:w-1/3 mx-auto "
-        />
+        <SearchBar />
 
         <div className="hidden md:block">
           {routes.map(({ label, path }) => (
