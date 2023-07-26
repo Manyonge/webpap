@@ -20,6 +20,8 @@ const SearchBar = () => {
   const [name, setName] = useState("");
   const params = useParams();
   const storeFrontID = params.storeFrontID as string;
+  const [open, setOpen] = useState(true);
+
   const fetchProduct = async () => {
     const {
       data,
@@ -40,24 +42,77 @@ const SearchBar = () => {
 
   const handleSearch = (e: any) => {
     setName(e.target.value);
+    // setOpen(true);
+  };
+
+  const handleCloseOpen = () => {
+    setName("");
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handlePopover = () => {
+    setOpen(!open);
   };
 
   return (
-    <div className=" w-2/3 md:w-1/3 mx-auto ">
-      <input
-        onChange={handleSearch}
-        type="search"
-        className="border outline-none rounded-full pl-2
+    <div className=" w-2/3 md:w-1/3 mx-auto  ">
+      <Popover.Root
+        defaultOpen={false}
+        open={name !== ""}
+        onOpenChange={handlePopover}
+      >
+        <Popover.Trigger>
+          <input
+            onChange={handleSearch}
+            type="search"
+            value={name}
+            className="border outline-none rounded-full pl-2
           w-full "
-      />
+          />
+        </Popover.Trigger>
+        <Popover.Portal forceMount={false}>
+          <Popover.Content
+            forceMount={false}
+            className="flex flex-col bg-[#fff]  px-2 py-1
+            rounded-lg  mt-2.5 shadow-lg mr-2 "
+          >
+            hello
+            {name !== "" && productQuery.data?.length > 0
+              ? productQuery.data?.map(({ name, id }) => (
+                  <Link
+                    to={`/${storeFrontID}/product/${id}`}
+                    onClick={handleCloseOpen}
+                  >
+                    <p key={id}> {name} </p>
+                  </Link>
+                ))
+              : null}
+            {name !== "" && productQuery.data?.length === 0 ? (
+              <p className="text-center font-bold text-lg">No products found</p>
+            ) : null}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
 
-      <div className="shadow-lg bg-primary mt-2  w-full"></div>
-      {name !== "" && productQuery.data?.length > 0
-        ? productQuery.data?.map(({ name, id }) => <p key={id}> {name} </p>)
-        : null}
-      {name !== "" && productQuery.data?.length === 0 ? (
-        <p className="text-center font-bold text-lg">No products found</p>
-      ) : null}
+      {/*{open && (*/}
+      {/*  <div className="shadow-lg bg-primary mt-2  w-full absolute  ">*/}
+      {/*    {name !== "" && productQuery.data?.length > 0*/}
+      {/*      ? productQuery.data?.map(({ name, id }) => (*/}
+      {/*          <Link*/}
+      {/*            to={`/${storeFrontID}/product/${id}`}*/}
+      {/*            onClick={handleCloseOpen}*/}
+      {/*          >*/}
+      {/*            <p key={id}> {name} </p>*/}
+      {/*          </Link>*/}
+      {/*        ))*/}
+      {/*      : null}*/}
+      {/*    {name !== "" && productQuery.data?.length === 0 ? (*/}
+      {/*      <p className="text-center font-bold text-lg">No products found</p>*/}
+      {/*    ) : null}*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </div>
   );
 };
@@ -84,7 +139,7 @@ export const StoreFrontLayout = () => {
       <div
         className="flex flex-row justify-between items-center pl-5 pr-5
       md:pr-4 h-10 md:h-12 sticky top-0 shadow-lg
-        md:px-10 bg-white
+        md:px-10 bg-white 
         "
       >
         <Link

@@ -83,7 +83,7 @@ export const ProductView = () => {
     }
     return data;
   };
-  const productQuery = useQuery(["product"], fetchProduct);
+  const productQuery = useQuery(["product", productID], fetchProduct);
 
   const handleAddToCart = async (product: Product | undefined | null) => {
     if (currentCart) {
