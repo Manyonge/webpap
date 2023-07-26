@@ -249,7 +249,6 @@ export const StoreFrontHome = () => {
           className="mr-4 outline-none border border-primary rounded-full pl-1 "
           onChange={handleSizeChange}
         >
-          <option className="hidden">size</option>
           <option value="">All sizes</option>
           {sizesQuery.data !== undefined && sizesQuery.data.length > 0
             ? sizesQuery.data.map(({ size }, index) => (
@@ -264,7 +263,6 @@ export const StoreFrontHome = () => {
           className="mr-4 outline-none border border-primary rounded-full pl-1 "
           onChange={handleCategoryChange}
         >
-          <option className="hidden">Category</option>
           <option value="">All categories </option>
 
           {categoriesQuery.data !== undefined && categoriesQuery.data.length > 0
