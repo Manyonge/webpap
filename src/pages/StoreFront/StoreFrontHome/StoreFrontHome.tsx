@@ -4,11 +4,13 @@ import {
   TwitterCircleFilled,
 } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
-import { Product, ShoppingCart } from "../../../common/interfaces";
+import { Product, Retailer, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
+import { PostgrestError } from "@supabase/supabase-js";
+import { SeverityColorEnum } from "../../../common/enums/index.ts";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
@@ -150,10 +152,27 @@ export const StoreFrontHome = () => {
     return data;
   };
 
+  const fetchRetailer = async () => {
+    const {
+      data,
+      error,
+    }: { data: Retailer | null; error: PostgrestError | null } = await supabase
+      .from("retailers")
+      .select()
+      .eq("businessName", storeFrontID)
+      .single();
+
+    if (error) {
+      showToast(error.message, SeverityColorEnum.Error);
+      throw new Error(error.message);
+    }
+    return data;
+  };
+
   const productsQuery = useQuery(["products"], fetchProducts);
   const categoriesQuery = useQuery(["categories"], fetchCategories);
   const sizesQuery = useQuery(["sizes"], fetchSizes);
-
+  const retaielrQuery = useQuery("retailer", fetchRetailer);
   const handleCategoryChange = (e: any) => {
     setCategory(e.target.value);
   };
@@ -168,7 +187,7 @@ export const StoreFrontHome = () => {
           <img
             className="rounded-full h-24 md:h-36 w-24 md:w-36
             border-[grey] mr-auto md:mb-4 "
-            src="https://firebasestorage.googleapis.com/v0/b/hustle-build.appspot.com/o/hustles%2Fxlei7bkgxu8o7oirt41k546w8est3i95.png?alt=media&token=a580c71c-7a4d-4325-a08a-37e8e4663c62"
+            src={retaielrQuery.data?.businessLogo}
           />
           <p className="text-left font-bold text-lg "> {storeFrontID} </p>
         </div>
@@ -179,8 +198,6 @@ export const StoreFrontHome = () => {
           <FacebookFilled className="mr-4" />
         </div>
       </div>
-
-      <p className=""> seller-s bio </p>
 
       <div className="flex flex-row items-center justify-center my-5">
         <select

@@ -16,7 +16,7 @@ import { SeverityColorEnum } from "../../../common/enums";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 import { PostgrestError } from "@supabase/supabase-js";
-import { processPayment } from "../../../processPayment.ts";
+import axios from "axios";
 
 const Carousel = (props: { images: string[] }) => {
   const { images } = props;
@@ -84,16 +84,6 @@ export const CheckOutPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const test = async () => {
-      const response = await supabase.functions.invoke("processPayment", {
-        body: { name: "hello" },
-      });
-      console.log(response);
-    };
-    test();
-  }, []);
-
   const fetchRetailer = async () => {
     const {
       data: retailer,
@@ -141,7 +131,15 @@ export const CheckOutPage = () => {
       pickupAgent: data.pickupAgent,
     };
 
-    const isPaymentConfirmed = await processPayment(customer);
+    const response = await axios.post(
+      "http://localhost:3000/payments/process",
+      {
+        customerPhone: parseInt(data.mpesaNumber),
+        amount: shoppingCart.totalPrice,
+      },
+    );
+
+    const isPaymentConfirmed = false;
 
     if (isPaymentConfirmed) {
       //reduce product's stock
