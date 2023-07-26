@@ -144,12 +144,57 @@ export const StoreFrontHome = () => {
   };
 
   const fetchProducts = async () => {
-    const { data, error } = await supabase.from("products").select();
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
+    if (size !== "" && category !== "") {
+      const { data, error } = await supabase
+        .from("products")
+        .select()
+        .eq("storeFrontId", storeFrontID)
+        .eq("size", size)
+        .eq("category", category);
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
     }
-    return data;
+
+    if (size !== "" && category === "") {
+      const { data, error } = await supabase
+        .from("products")
+        .select()
+        .eq("storeFrontId", storeFrontID)
+        .eq("size", size);
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
+
+    if (size === "" && category !== "") {
+      const { data, error } = await supabase
+        .from("products")
+        .select()
+        .eq("storeFrontId", storeFrontID)
+        .eq("category", category);
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
+
+    if (size === "" && category === "") {
+      const { data, error } = await supabase
+        .from("products")
+        .select()
+        .eq("storeFrontId", storeFrontID);
+      if (error) {
+        showToast(error.message);
+        throw new Error(error.message);
+      }
+      return data;
+    }
   };
 
   const fetchRetailer = async () => {
@@ -169,10 +214,10 @@ export const StoreFrontHome = () => {
     return data;
   };
 
-  const productsQuery = useQuery(["products"], fetchProducts);
+  const productsQuery = useQuery(["products", size, category], fetchProducts);
   const categoriesQuery = useQuery(["categories"], fetchCategories);
   const sizesQuery = useQuery(["sizes"], fetchSizes);
-  const retaielrQuery = useQuery("retailer", fetchRetailer);
+  const retailerQuery = useQuery("retailer", fetchRetailer);
   const handleCategoryChange = (e: any) => {
     setCategory(e.target.value);
   };
@@ -187,7 +232,7 @@ export const StoreFrontHome = () => {
           <img
             className="rounded-full h-24 md:h-36 w-24 md:w-36
             border-[grey] mr-auto md:mb-4 "
-            src={retaielrQuery.data?.businessLogo}
+            src={retailerQuery.data?.businessLogo}
           />
           <p className="text-left font-bold text-lg "> {storeFrontID} </p>
         </div>
@@ -205,6 +250,7 @@ export const StoreFrontHome = () => {
           onChange={handleSizeChange}
         >
           <option className="hidden">size</option>
+          <option value="">All sizes</option>
           {sizesQuery.data !== undefined && sizesQuery.data.length > 0
             ? sizesQuery.data.map(({ size }, index) => (
                 <option key={index} value={size}>
@@ -219,6 +265,8 @@ export const StoreFrontHome = () => {
           onChange={handleCategoryChange}
         >
           <option className="hidden">Category</option>
+          <option value="">All categories </option>
+
           {categoriesQuery.data !== undefined && categoriesQuery.data.length > 0
             ? categoriesQuery.data.map(({ category }, index) => (
                 <option key={index} value={category}>
@@ -230,6 +278,12 @@ export const StoreFrontHome = () => {
         </select>
       </div>
 
+      {productsQuery?.data !== undefined && productsQuery.data.length === 0 ? (
+        <p className="text-center font-bold text-lg  mt-10">
+          {" "}
+          No products available...{" "}
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-7">
         {productsQuery?.data !== undefined && productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
