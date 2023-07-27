@@ -6,7 +6,11 @@ import {
   useParams,
 } from "react-router-dom";
 import * as Popover from "@radix-ui/react-popover";
-import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  MenuOutlined,
+  RightOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 import { useGetRetailer } from "../../common/hooks";
 import { Product } from "../../common/interfaces/index.ts";
@@ -42,16 +46,13 @@ const SearchBar = () => {
 
   const handleSearch = (e: any) => {
     setName(e.target.value);
-    // setOpen(true);
   };
 
   const handleCloseOpen = () => {
     setName("");
     setOpen(false);
   };
-  const handleOpen = () => {
-    setOpen(true);
-  };
+
   const handlePopover = () => {
     setOpen(!open);
   };
@@ -63,7 +64,7 @@ const SearchBar = () => {
         open={name !== ""}
         onOpenChange={handlePopover}
       >
-        <Popover.Trigger>
+        <Popover.Trigger className="w-full ">
           <input
             onChange={handleSearch}
             type="search"
@@ -75,22 +76,28 @@ const SearchBar = () => {
         <Popover.Portal forceMount={false}>
           <Popover.Content
             forceMount={false}
-            className="flex flex-col bg-[#fff]  px-2 py-1
-            rounded-lg  mt-2.5 shadow-lg mr-2 "
+            className="flex flex-col bg-[#fff]
+            rounded-lg  mt-4 shadow-lg mr-2  w-44 md:w-60 outline-none  "
           >
-            hello
             {name !== "" && productQuery.data?.length > 0
-              ? productQuery.data?.map(({ name, id }) => (
+              ? productQuery.data?.map(({ name, id, productImages }) => (
                   <Link
                     to={`/${storeFrontID}/product/${id}`}
                     onClick={handleCloseOpen}
+                    className="flex flex-row items-center justify-between hover:bg-lightGrey
+                     px-2 py-2 rounded-lg "
                   >
+                    <img
+                      src={productImages[0].url}
+                      className="h-10 w-10 rounded-md  "
+                    />{" "}
                     <p key={id}> {name} </p>
+                    <RightOutlined />
                   </Link>
                 ))
               : null}
             {name !== "" && productQuery.data?.length === 0 ? (
-              <p className="text-center font-bold text-lg">No products found</p>
+              <p className="text-center font-bold">No products found</p>
             ) : null}
           </Popover.Content>
         </Popover.Portal>
