@@ -24,8 +24,11 @@ const OrderPaper = (props: { order: Order }) => {
             {order.isFulfilled ? "Fulfilled" : "New"}{" "}
           </p>
 
-          <p className="ml-6 font-bold"> {order.product.name} </p>
-          <p className="font-bold text-right  ">
+          <p className="ml-6 font-bold text-sm text-center ">
+            {" "}
+            {order.product.name}{" "}
+          </p>
+          <p className="font-bold text-sm text-center ">
             {" "}
             {stringToDate(order.created_at as string).toLocaleString()}
           </p>
@@ -35,15 +38,15 @@ const OrderPaper = (props: { order: Order }) => {
           <img
             src={order.product.productImages[0].url}
             alt={`${order.product.name}`}
-            className="h-14 md:h-20 w-14 md:w-20"
+            className="h-14 md:h-20 w-14 md:w-20 rounded-md "
           />
 
-          <p className="text-center   ">
+          <p className="text-center text-sm  ">
             {" "}
             {order.product.price.toLocaleString()}
             {" KSH"}
           </p>
-          <p className="text-center  ">
+          <p className="text-center text-sm ">
             {" "}
             {`Ordered by ${order.customer.name} `}{" "}
           </p>
