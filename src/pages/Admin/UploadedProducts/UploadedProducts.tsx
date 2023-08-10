@@ -30,9 +30,10 @@ const ProductPaper = (props: { product: Product }) => {
     }
   };
   const handleCopyLink = async () => {
-    const domain = window.location.hostname;
+    // const domain = window.location.hostname;
+    const domain = "http://localhost:5173";
     await navigator.clipboard.writeText(
-      `${domain}/${storeFrontID}/products/${product.id}`,
+      `${domain}/${storeFrontID}/product/${product.id}`,
     );
     showToast("Link copied to clipboard");
   };

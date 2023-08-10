@@ -130,7 +130,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
                     <div
                       onClick={handlePopover}
                       className={`px-5 py-1 w- rounded-md text-sm w-full text-center  ${
-                        pathname === path ? "btn-primary" : ""
+                        pathname.includes(label) ? "btn-primary" : ""
                       }`}
                     >
                       {label}
