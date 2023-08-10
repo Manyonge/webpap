@@ -152,10 +152,7 @@ export const Orders = () => {
         className=" px-2 md:px-10 mt-10 flex flex-col items-center justify-center  "
         defaultValue="allProducts"
       >
-        <Tabs.List
-          className="border-b shrink-0 mb-4 flex"
-          defaultValue="allProducts"
-        >
+        <Tabs.List className=" shrink-0 mb-4 flex" defaultValue="allProducts">
           {tabs.map(({ label, value, fulfillmentStatus }) => (
             <Tabs.Trigger
               key={value}

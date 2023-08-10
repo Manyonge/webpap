@@ -30,7 +30,7 @@ export const SingleOrder = () => {
     return data;
   };
 
-  const orderQuery = useQuery("order", fetchOrder);
+  const orderQuery = useQuery(["order", orderID], fetchOrder);
 
   const navigate = useNavigate();
   const handleEditOrder = async () => {
@@ -61,7 +61,7 @@ export const SingleOrder = () => {
           className="rounded-lg h-44 w-44 mx-auto "
         />
         <p> {orderQuery.data?.product.name} </p>
-        <p> {orderQuery.data?.product.price} </p>
+        <p> {`${orderQuery.data?.product.price} KSH`} </p>
         <p>
           {" "}
           Ordered at{" "}
