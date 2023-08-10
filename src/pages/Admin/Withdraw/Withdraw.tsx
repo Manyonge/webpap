@@ -77,7 +77,7 @@ export const Withdraw = () => {
       </Link>
       <div
         className="flex flex-row items-center justify-between bg-primary rounded-lg w-10/12
-       text-[#fff] px-1 md:px-6  py-4 mt-10 mx-auto mb-20 md:text-xl shadow-lg "
+       text-[#fff] px-3 md:px-6  py-4 mt-10 mx-auto mb-10 md:text-xl shadow-lg "
       >
         <p> Your wallet balance </p>
         <p> {`${retailerQuery.data?.walletBalance} KSH `} </p>
@@ -87,14 +87,17 @@ export const Withdraw = () => {
         className="flex flex-col items-center justify-center
       shadow-lg rounded-lg w-10/12 mx-auto py-10 "
       >
-        <label className="text-sm text-[lightGrey] mt-2" htmlFor="amount">
+        <label
+          className="text-sm text-[lightGrey] text-sm mt-2"
+          htmlFor="amount"
+        >
           {" "}
           * 100 KSH per withdrawal{" "}
         </label>
         <input
           type="number"
           className="outline-none border border-primary rounded-md
-          mb-4 px-2 py-2 w-9/12"
+          mb-4 md:mb-7 px-2 py-2 w-9/12 text-sm "
           {...register("amount")}
           placeholder="Enter withdrawal amount"
         />
@@ -102,21 +105,23 @@ export const Withdraw = () => {
         <input
           type="number"
           className="outline-none border border-primary rounded-md
-          mb-4 px-2 py-2 w-9/12"
+          mb-4 md:mb-7 px-2 py-2 w-9/12 text-sm"
           {...register("mpesaNumber")}
           placeholder="Enter M-PESA Number"
         />
 
-        <label className="text-sm text-[lightGrey] " htmlFor="mpesaName">
-          * Use exact order
-        </label>
         <input
           className="outline-none border border-primary rounded-md
-          mb-4 px-2 py-2 w-9/12"
+          px-2 py-2 w-9/12 text-sm"
           {...register("mpesaName")}
           placeholder="Enter M-PESA Name"
         />
-
+        <label
+          className="text-sm text-[lightGrey] mb-4 md:mb-6"
+          htmlFor="mpesaName"
+        >
+          * Use exact order
+        </label>
         <button
           type="submit"
           className="w-9/12 rounded-full shadow-lg hover:bg-opacity-95 text-[#fff] bg-[#428541]  border"
