@@ -22,7 +22,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       path: "/",
     },
     {
-      label: "Pricing",
+      label: "ricing",
       path: "/pricing",
     },
     {
@@ -45,10 +45,10 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       label: "Dashboard",
       path: `/${storeFrontID}/admin`,
     },
-    { label: "Customers", path: `/${storeFrontID}/admin/customers` },
-    { label: "Orders", path: `/${storeFrontID}/admin/orders` },
-    { label: "Wallet", path: `/${storeFrontID}/admin/wallet` },
-    { label: "Products", path: `/${storeFrontID}/admin/products` },
+    { label: "customers", path: `/${storeFrontID}/admin/customers` },
+    { label: "orders", path: `/${storeFrontID}/admin/orders` },
+    { label: "wallet", path: `/${storeFrontID}/admin/wallet` },
+    { label: "products", path: `/${storeFrontID}/admin/products` },
   ];
 
   const determineHomePath = () => {
@@ -95,7 +95,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
             <Link to={path} key={path}>
               <button
                 className={`px-5 py-1 rounded-md text-sm  ${
-                  pathname === path ? "btn-primary" : ""
+                  pathname.includes(label) ? "btn-primary" : ""
                 }`}
               >
                 {label}
