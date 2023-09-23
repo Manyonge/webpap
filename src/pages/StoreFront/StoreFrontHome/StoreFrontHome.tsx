@@ -124,7 +124,6 @@ export const StoreFrontHome = () => {
 
   const [category, setCategory] = useState("");
   const [size, setSize] = useState("");
-  const [searchName, setSearchName] = useState("");
   const fetchCategories = async () => {
     const { data, error } = await supabase.from("product categories").select();
     if (error) {

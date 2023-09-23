@@ -24,30 +24,26 @@ const CartItem = (props: {
 
   return (
     <div
-      className="rounded-lg shadow-lg px-3 py-2 mb-4
-   flex flex-row items-center   justify-between "
+      className="rounded-lg shadow-xl px-3 py-2 mb-4
+   flex flex-col items-center   justify-between
+   mb-6"
     >
-      <div className="">
+      <div className=" flex flex-row items-center justify-between  w-full">
         <img
           src={product.productImages[0].url}
           className="
-        object-contain   w-20 h-20 "
+        object-fill rounded-lg w-14 h-14  "
         />
-      </div>
-      <div
-        className="flex flex-col items-center justify-between
-        w-1/3  "
-      >
         <p className="text-center"> {product.name} </p>
+        <p className="text-center"> {product.size} </p>
+        <p className="text-center"> {product.price} </p>
       </div>
       <div
         className="flex flex-col items-center justify-between
         w-1/3"
       >
-        <p className="text-center"> {product.size} </p>
-        <p className="text-center"> {product.price} </p>
         <button
-          className="bg-error text-white py-1 w-full shadow-lg rounded-full"
+          className="bg-error text-white py- w-full shadow-lg rounded-full"
           onClick={() => handleRemoveFromCart(product)}
         >
           {" "}
@@ -77,7 +73,7 @@ export const ShoppingCartPage = () => {
   }, []);
 
   return (
-    <div className="px-2 pt-10 pb-40">
+    <div className="px-2 pt-10 pb-40 ">
       <Link
         to={`/${storeFrontID}`}
         className="flex flex-row items-center justify-start
@@ -90,13 +86,16 @@ export const ShoppingCartPage = () => {
 
       <p className="text-lg text-center font-bold mb-5 "> Shopping Cart </p>
 
-      <div className="flex flex-row items-center justify-between mb-5">
+      <div className="flex flex-row items-center justify-between mb-5 w-11/12   mx-auto">
         <p className="font-bold">TOTAL</p>
         <p className="font-bold"> {shoppingCart.totalPrice} KSH </p>
       </div>
 
-      <Link to={`/${storeFrontID}/checkout`} className="">
-        <button className=" w-full rounded-full shadow-lg mb-12 bg-success text-white py-1 ">
+      <Link
+        to={`/${storeFrontID}/checkout`}
+        className="flex flex-row justify-center items-center"
+      >
+        <button className="w-11/12 mx-auto  rounded-full shadow-lg mb-12 bg-success text-white py-1 ">
           {" "}
           Check out{" "}
         </button>
@@ -106,7 +105,7 @@ export const ShoppingCartPage = () => {
         <p className="text-center text-lg"> No items added </p>
       )}
 
-      <div>
+      <div className="w-11/12 mx-auto">
         {shoppingCart.products.length > 0
           ? shoppingCart.products.map((product) => (
               <CartItem
