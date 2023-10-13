@@ -131,13 +131,10 @@ export const CheckOutPage = () => {
       pickupAgent: data.pickupAgent,
     };
 
-    const response = await axios.post(
-      "http://localhost:3000/payments/process",
-      {
-        customerPhone: parseInt(data.mpesaNumber),
-        amount: shoppingCart.totalPrice,
-      },
-    );
+    await axios.post("http://localhost:3000/payments/process", {
+      customerPhone: parseInt(data.mpesaNumber),
+      amount: shoppingCart.totalPrice,
+    });
 
     const isPaymentConfirmed = false;
 

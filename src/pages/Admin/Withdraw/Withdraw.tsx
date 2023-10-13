@@ -40,7 +40,7 @@ export const Withdraw = () => {
     console.log(data);
 
     if (
-      data.amount === "" ||
+      data.amount.toString() === "" ||
       data.mpesaName === "" ||
       data.mpesaNumber === ""
     ) {

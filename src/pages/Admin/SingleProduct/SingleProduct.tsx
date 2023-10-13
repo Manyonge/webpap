@@ -61,7 +61,7 @@ export const SingleProduct = () => {
     setValue("condition", data?.condition as string);
     setValue("description", data?.description as string);
     setValue("stock", data?.stock as string);
-    setValue("price", data?.price as string);
+    setValue("price", data?.price as number);
 
     return data;
   };
@@ -240,7 +240,7 @@ export const SingleProduct = () => {
     if (
       formData.category === "" ||
       formData.stock === "" ||
-      formData.price === "" ||
+      formData.price.toString() === "" ||
       formData.description === "" ||
       formData.condition === "" ||
       formData.size === "" ||
@@ -251,7 +251,7 @@ export const SingleProduct = () => {
     }
 
     formData.isHidden = productQuery?.data?.isHidden as boolean;
-    formData.price = parseInt(formData.price as string);
+    formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
     formData.retailerId = retailer?.id as string;
     formData.storeFrontId = storeFrontID as string;

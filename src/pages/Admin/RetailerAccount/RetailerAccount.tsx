@@ -16,7 +16,7 @@ const businessDetailsCol = [
 ];
 
 export const RetailerAccount = () => {
-  const { register, watch } = useForm();
+  const { register } = useForm();
   const [businessLogo, setBusinessLogo] = useState(null);
   const { storeFrontID } = useParams();
   const { showToast } = useAppContext();

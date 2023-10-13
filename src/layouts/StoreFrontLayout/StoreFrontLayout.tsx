@@ -73,13 +73,14 @@ const SearchBar = () => {
           w-full "
           />
         </Popover.Trigger>
-        <Popover.Portal forceMount={false}>
+        <Popover.Portal>
           <Popover.Content
-            forceMount={false}
             className="flex flex-col bg-[#fff]
             rounded-lg  mt-4 shadow-lg mr-2  w-44 md:w-60 outline-none  "
           >
-            {name !== "" && productQuery.data?.length > 0
+            {name !== "" &&
+            productQuery?.data?.length !== undefined &&
+            productQuery.data?.length > 0
               ? productQuery.data?.map(({ name, id, productImages }) => (
                   <Link
                     to={`/${storeFrontID}/product/${id}`}

@@ -231,7 +231,7 @@ export const StoreFrontHome = () => {
           <img
             className="rounded-full h-24 md:h-36 w-24 md:w-36
             border-[grey] mr-auto md:mb-4 "
-            src={retailerQuery.data?.businessLogo}
+            src={retailerQuery.data?.businessLogo as string}
           />
           <p className="text-left font-bold text-lg "> {storeFrontID} </p>
         </div>

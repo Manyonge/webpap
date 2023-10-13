@@ -11,14 +11,19 @@ const Carousel = (props: {
   images: { url: string; fileName: string }[] | undefined;
 }) => {
   const { images } = props;
-  const [selectedImage, setSelectedImage] = useState(images[0]?.url);
+  const [selectedImage, setSelectedImage] = useState(
+    images && images.length > 0 ? images[0].url : null,
+  );
   const handleChooseImage = (url: string) => {
     setSelectedImage(url);
   };
 
   return (
     <div className="flex flex-col">
-      <img src={selectedImage} className="h-72  w-72 object-contain mx-auto" />
+      <img
+        src={selectedImage ? selectedImage : ""}
+        className="h-72  w-72 object-contain mx-auto"
+      />
 
       <div
         className="flex flex-row items-center justify-around overflow-x-scroll

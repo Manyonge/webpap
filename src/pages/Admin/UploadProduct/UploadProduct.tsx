@@ -155,7 +155,7 @@ export const UploadProduct = () => {
     if (
       formData.category === "" ||
       formData.stock === "" ||
-      formData.price === "" ||
+      formData.price.toString() === "" ||
       formData.description === "" ||
       formData.condition === "" ||
       formData.size === "" ||
@@ -182,7 +182,7 @@ export const UploadProduct = () => {
     }
     formData.productImages = uploadedImages;
     formData.isHidden = false;
-    formData.price = parseInt(formData.price as string);
+    formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
     formData.retailerId = retailer?.id as string;
     formData.storeFrontId = storeFrontID as string;

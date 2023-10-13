@@ -1,9 +1,6 @@
-import { Customer } from "./common/interfaces";
 import axios from "axios";
 
-export const processPayment = async (customer: Customer) => {
-  const timeStamp = new Date();
-
+export const processPayment = async () => {
   // const { data: sessionData } = await supabase.auth.getSession();
   // const {
   //   data: retailer,
