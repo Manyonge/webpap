@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "webpap-2e471"
-  }
+    "default": "webpap-f8025",
+    "new project": "webpap-f8025"
+  },
+  "targets": {},
+  "etags": {}
 }
