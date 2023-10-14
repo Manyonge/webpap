@@ -182,12 +182,12 @@ export const Signup = () => {
           )}
 
           {!passportPhoto && (
-            <>
-              <label htmlFor="passport-photo">
+            <div className="w-fit h-fit rounded-full mx-auto ">
+              <label htmlFor="passport-photo" className="w-fit">
                 <div
                   className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
                       flex flex-col items-center justify-center border-2
-                       border-dashed border-black  my-2  "
+                       border-dashed border-black"
                 >
                   <PlusOutlined />
                   <p className="text-center">
@@ -199,10 +199,10 @@ export const Signup = () => {
               <input
                 type="file"
                 id="passport-photo"
-                className="hidden"
                 onChange={handlePassportPhoto}
+                className="hidden"
               />
-            </>
+            </div>
           )}
 
           <div className="flex flex-col items-center justify-center pb-3  ">
@@ -239,11 +239,11 @@ export const Signup = () => {
           )}
 
           {!businessLogo && (
-            <>
+            <div className="w-fit h-fit rounded-full mx-auto">
               <label htmlFor="business-logo">
                 <div
                   className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
-                      flex flex-col items-center justify-center border-2 border-dashed border-black  my-2 "
+                      flex flex-col items-center justify-center border-2 border-dashed border-black"
                 >
                   <PlusOutlined />
 
@@ -259,7 +259,7 @@ export const Signup = () => {
                 className="hidden"
                 onChange={handleBusinessLogo}
               />
-            </>
+            </div>
           )}
 
           <div className="flex flex-col items-center justify-center pb-3  ">
