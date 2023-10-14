@@ -22,7 +22,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       path: "/",
     },
     {
-      label: "ricing",
+      label: "pricing",
       path: "/pricing",
     },
     {
@@ -122,7 +122,10 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
           <MenuOutlined />
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content className="flex flex-col bg-[#fff]  px-2 py-1 rounded-lg  mt-2.5 shadow-lg mr-2 ">
+          <Popover.Content
+            className="flex flex-col bg-[#fff]  px-2 py-1 rounded-lg
+            outline-none mt-2.5 shadow-lg mr-2 "
+          >
             {routesRole === "admin" && (
               <div>
                 {adminRoutes.map(({ label, path }) => (
