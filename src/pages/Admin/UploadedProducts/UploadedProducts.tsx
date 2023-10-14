@@ -30,8 +30,7 @@ const ProductPaper = (props: { product: Product }) => {
     }
   };
   const handleCopyLink = async () => {
-    // const domain = window.location.hostname;
-    const domain = "http://localhost:5173";
+    const domain = window.location.hostname;
     await navigator.clipboard.writeText(
       `${domain}/${storeFrontID}/product/${product.id}`,
     );
