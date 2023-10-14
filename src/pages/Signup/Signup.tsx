@@ -22,7 +22,7 @@ const personalDetailsCol = [
     id: "phoneNumber",
     name: "phoneNumber",
     htmlFor: "phoneNumber",
-    type: "text",
+    type: "number",
   },
   {
     label: "ID Number",
