@@ -57,6 +57,13 @@ const businessDetailsCol = [
     htmlFor: "password",
     type: "text",
   },
+  {
+    label: "Instagram Handle",
+    id: "igHandle",
+    name: "igHandle",
+    htmlFor: "igHandle",
+    type: "text",
+  },
 ];
 
 export const Signup = () => {
@@ -205,7 +212,7 @@ export const Signup = () => {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center pb-3  ">
+          <div className="flex flex-col items-center justify-center pb-3 px-2 ">
             {personalDetailsCol.map(({ label, id, name, type }, index) => (
               <input
                 key={index}

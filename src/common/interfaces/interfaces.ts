@@ -29,6 +29,7 @@ export interface Retailer {
   businessName: string;
   loginEmail: string;
   password?: string;
+  instagramHandle: string;
   walletBalance: number;
   id: number | string | null;
 }
