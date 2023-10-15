@@ -1,8 +1,4 @@
-import {
-  FacebookFilled,
-  InstagramOutlined,
-  TwitterCircleFilled,
-} from "@ant-design/icons";
+import { InstagramOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 import { Product, Retailer, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
@@ -237,9 +233,12 @@ export const StoreFrontHome = () => {
         </div>
 
         <div>
-          <InstagramOutlined className="mr-4" />
-          <TwitterCircleFilled className="mr-4" />
-          <FacebookFilled className="mr-4" />
+          <a
+            href={`https://www.instagram.com/${retailerQuery.data?.instagramHandle}`}
+            target="_blank"
+          >
+            <InstagramOutlined className="mr-4" />
+          </a>
         </div>
       </div>
 
