@@ -1,8 +1,4 @@
-import {
-  FacebookFilled,
-  InstagramOutlined,
-  TwitterCircleFilled,
-} from "@ant-design/icons";
+import { InstagramOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 import { Product, Retailer, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
@@ -70,7 +66,7 @@ const ProductCard = (props: { product: Product }) => {
   if (product.isHidden) return <></>;
 
   return (
-    <div className="rounded-md shadow-lg hover:shadow-xl mx-auto ">
+    <div className="rounded-md shadow-lg hover:shadow-xl mx-auto  ">
       <Link to={`product/${product.id}`}>
         <img
           src={product.productImages[0].url}
@@ -83,36 +79,34 @@ const ProductCard = (props: { product: Product }) => {
         <p className="text-sm sm:text-lg"> {product.price} </p>
         <p className="text-sm sm:text-lg"> {product.size} </p>
       </div>
-      <div className="flex flex-row items-center justify-center">
-        {parseInt(product.stock as string) < 1 && !isInCart ? (
-          <button
-            className=" mx-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-          >
-            SOLD OUT
-          </button>
-        ) : null}
+      {parseInt(product.stock as string) < 1 && !isInCart ? (
+        <button
+          className=" mx-auto rounded-full py-1 px-3
+        bg-error text-white text-sm  "
+        >
+          SOLD OUT
+        </button>
+      ) : null}
 
-        {parseInt(product.stock as string) > 0 && !isInCart ? (
-          <button
-            onClick={() => handleAddToCart(product)}
-            className=" mx-auto rounded-full py-1 px-3
-        bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
-          >
-            ADD TO BAG
-          </button>
-        ) : null}
+      {parseInt(product.stock as string) > 0 && !isInCart ? (
+        <button
+          onClick={() => handleAddToCart(product)}
+          className=" mx-auto rounded-full py-1 px-3
+        bg-primary text-white text-sm shadow-lg hover:shadow-xl"
+        >
+          ADD TO BAG
+        </button>
+      ) : null}
 
-        {isInCart && (
-          <button
-            className=" ml-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-            onClick={() => handleRemoveFromCart(product)}
-          >
-            Remove from cart
-          </button>
-        )}
-      </div>
+      {isInCart && (
+        <button
+          className=" ml-auto rounded-full py-1 px-3
+        bg-error text-white text-sm  "
+          onClick={() => handleRemoveFromCart(product)}
+        >
+          Remove from cart
+        </button>
+      )}
     </div>
   );
 };
@@ -237,15 +231,19 @@ export const StoreFrontHome = () => {
         </div>
 
         <div>
-          <InstagramOutlined className="mr-4" />
-          <TwitterCircleFilled className="mr-4" />
-          <FacebookFilled className="mr-4" />
+          <a
+            href={`https://www.instagram.com/${retailerQuery.data?.instagramHandle}`}
+            target="_blank"
+          >
+            <InstagramOutlined className="mr-4" />
+          </a>
         </div>
       </div>
 
       <div className="flex flex-row items-center justify-center my-5">
         <select
-          className="mr-4 outline-none border border-primary rounded-full pl-1 "
+          className="mr-4 outline-none border border-primary
+           text-center bg-white rounded-full  "
           onChange={handleSizeChange}
         >
           <option value="">All sizes</option>
@@ -259,7 +257,8 @@ export const StoreFrontHome = () => {
         </select>
 
         <select
-          className="mr-4 outline-none border border-primary rounded-full pl-1 "
+          className="mr-4 outline-none border border-primary
+           text-center bg-white rounded-full  "
           onChange={handleCategoryChange}
         >
           <option value="">All categories </option>
