@@ -9,7 +9,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
-    "deploy": "pnpm build && firebase deploy"
+    "deploy": "pnpm build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
