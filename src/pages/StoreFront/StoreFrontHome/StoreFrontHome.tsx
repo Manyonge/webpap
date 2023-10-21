@@ -66,22 +66,31 @@ const ProductCard = (props: { product: Product }) => {
   if (product.isHidden) return <></>;
 
   return (
-    <div className="rounded-md shadow-lg hover:shadow-xl mx-auto  ">
+    <div
+      className="rounded-md shadow-lg hover:shadow-xl mx-auto flex flex-col justify-between
+     pb-2  "
+    >
       <Link to={`product/${product.id}`}>
         <img
           src={product.productImages[0].url}
-          className="object-cover w-64 h-52 rounded-tr-lg rounded-tl-lg"
+          className="object-cover w-52 sm:w-56 md:w-64 h-40 sm:h-52 md:h-56 rounded-tr-lg rounded-tl-lg"
         />
       </Link>
-      <p className="pl-2 mt-1 text-sm sm:text-lg "> {product.name} </p>
+      <p className="pl-2 my-auto text-sm md:text-lg text-center font-bold ">
+        {" "}
+        {product.name}{" "}
+      </p>
 
-      <div className="flex flex-row items-center justify-between px-2 ">
-        <p className="text-sm sm:text-lg"> {product.price} </p>
-        <p className="text-sm sm:text-lg"> {product.size} </p>
+      <div className="flex flex-row items-center justify-between px-2 my-auto ">
+        <p className="text-xs  text-center md:text-lg">
+          {" "}
+          {`${product.price} KSH`}{" "}
+        </p>
+        <p className="text-xs text-center md:text-lg"> {product.size} </p>
       </div>
       {parseInt(product.stock as string) < 1 && !isInCart ? (
         <button
-          className=" mx-auto rounded-full py-1 px-3
+          className="block mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm  "
         >
           SOLD OUT
@@ -91,8 +100,8 @@ const ProductCard = (props: { product: Product }) => {
       {parseInt(product.stock as string) > 0 && !isInCart ? (
         <button
           onClick={() => handleAddToCart(product)}
-          className=" mx-auto rounded-full py-1 px-3
-        bg-primary text-white text-sm shadow-lg hover:shadow-xl"
+          className="block mx-auto rounded-full py-0.5 md:py-1 px-3
+        bg-primary text-white text-xs md:text-sm shadow-lg hover:shadow-xl mt-auto"
         >
           ADD TO BAG
         </button>
@@ -100,7 +109,7 @@ const ProductCard = (props: { product: Product }) => {
 
       {isInCart && (
         <button
-          className=" ml-auto rounded-full py-1 px-3
+          className="block mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm  "
           onClick={() => handleRemoveFromCart(product)}
         >
