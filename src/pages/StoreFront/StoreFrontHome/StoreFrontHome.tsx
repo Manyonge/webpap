@@ -100,7 +100,7 @@ const ProductCard = (props: { product: Product }) => {
       {parseInt(product.stock as string) > 0 && !isInCart ? (
         <button
           onClick={() => handleAddToCart(product)}
-          className="block mx-auto rounded-full py-0.5 md:py-1 px-3
+          className="block mx-auto rounded-full py-1 px-3
         bg-primary text-white text-sm shadow-lg hover:shadow-xl mt-auto"
         >
           ADD TO BAG
@@ -228,7 +228,7 @@ export const StoreFrontHome = () => {
   };
 
   return (
-    <div className="px-4 md:px-6 pb-44">
+    <div className="px-4 md:px-6 pb-10">
       <div className="mt-10 flex flex-row items-center justify-between ">
         <div className="  flex-col items-center justify-center mr-4  ">
           <img
