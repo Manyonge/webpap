@@ -82,11 +82,11 @@ const ProductCard = (props: { product: Product }) => {
       </p>
 
       <div className="flex flex-row items-center justify-between px-2 my-auto ">
-        <p className="text-xs  text-center md:text-lg">
+        <p className="text-sm  text-center md:text-lg">
           {" "}
           {`${product.price} KSH`}{" "}
         </p>
-        <p className="text-xs text-center md:text-lg"> {product.size} </p>
+        <p className="text-sm text-center md:text-lg"> {product.size} </p>
       </div>
       {parseInt(product.stock as string) < 1 && !isInCart ? (
         <button
@@ -101,7 +101,7 @@ const ProductCard = (props: { product: Product }) => {
         <button
           onClick={() => handleAddToCart(product)}
           className="block mx-auto rounded-full py-0.5 md:py-1 px-3
-        bg-primary text-white text-xs md:text-sm shadow-lg hover:shadow-xl mt-auto"
+        bg-primary text-white text-sm shadow-lg hover:shadow-xl mt-auto"
         >
           ADD TO BAG
         </button>
