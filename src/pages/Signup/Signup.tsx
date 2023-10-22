@@ -59,9 +59,9 @@ const businessDetailsCol = [
   },
   {
     label: "Instagram Handle",
-    id: "igHandle",
-    name: "igHandle",
-    htmlFor: "igHandle",
+    id: "instagramHandle",
+    name: "instagramHandle",
+    htmlFor: "instagramHandle",
     type: "text",
   },
 ];
@@ -221,7 +221,7 @@ export const Signup = () => {
                 type={type}
                 {...register(name, { required: true })}
                 className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
-                     focus:outline-primary"
+                     focus:outline-primary w-11/12 md:w-1/2"
               />
             ))}
           </div>
@@ -278,7 +278,7 @@ export const Signup = () => {
                 type={type}
                 {...register(name, { required: true })}
                 className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
-                     focus:outline-primary"
+                     focus:outline-primary w-11/12 md:w-1/2"
               />
             ))}
           </div>

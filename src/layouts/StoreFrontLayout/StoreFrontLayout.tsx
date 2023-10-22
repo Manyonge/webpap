@@ -169,7 +169,7 @@ export const StoreFrontLayout = () => {
           <Popover.Portal>
             <Popover.Content
               className="flex flex-col bg-[#fff]  px-2 py-1
-            rounded-lg  mt-2.5 shadow-lg mr-2 "
+            rounded-lg  mt-2.5 shadow-lg mr-2 outline-none "
             >
               {routes.map(({ label, path }) => (
                 <Link to={path} key={path}>
