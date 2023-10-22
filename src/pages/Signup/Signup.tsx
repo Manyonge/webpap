@@ -59,9 +59,9 @@ const businessDetailsCol = [
   },
   {
     label: "Instagram Handle",
-    id: "igHandle",
-    name: "igHandle",
-    htmlFor: "igHandle",
+    id: "instagramHandle",
+    name: "instagramHandle",
+    htmlFor: "instagramHandle",
     type: "text",
   },
 ];
