@@ -22,7 +22,7 @@ const Carousel = (props: {
     <div className="flex flex-col">
       <img
         src={selectedImage ? selectedImage : ""}
-        className="h-72  w-72 object-contain mx-auto"
+        className="h-72  w-72 object-cover mx-auto"
       />
 
       <div
@@ -123,7 +123,7 @@ export const ProductView = () => {
   if (productQuery.isLoading) return <></>;
 
   return (
-    <div className="px-2 pt-6 pb-40">
+    <div className="px-2 pt-6 pb-40 md:w-8/12 mx-auto">
       <Link
         to={`/${storeFrontID}`}
         className="flex flex-row items-center justify-start
@@ -134,23 +134,35 @@ export const ProductView = () => {
         <p>Back</p>
       </Link>
 
-      <div className="px-2 py-2 rounded-lg shadow-xl  ">
-        <p> {productQuery.data?.name} </p>
-        <p> {productQuery.data?.category} </p>
+      <div
+        className="px-2 py-2 rounded-lg shadow-xl 
+       "
+      >
+        <p className="text-center font-bold"> {productQuery.data?.name} </p>
+        <p className="text-center font-bold">
+          {" "}
+          {`Category: ${productQuery.data?.category}`}{" "}
+        </p>
 
         {productQuery.data !== undefined && (
           <Carousel images={productQuery.data?.productImages} />
         )}
 
-        <div className="flex flex-row items-center justify-between">
-          <p> {`Size: ${productQuery.data?.size}`} </p>
-          <p> {`Condition: ${productQuery.data?.condition}`} </p>
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <p className="text-center font-bold">
+            {" "}
+            {`Size: ${productQuery.data?.size}`}{" "}
+          </p>
+          <p className="text-center font-bold ">
+            {" "}
+            {`Condition: ${productQuery.data?.condition}`}{" "}
+          </p>
         </div>
 
         <p className="text-center"> {productQuery.data?.description} </p>
 
         <div className="flex flex-row items-center justify-between">
-          <p> {productQuery.data?.price} </p>
+          <p className="font-bold "> {`${productQuery.data?.price} KSH`} </p>
 
           {parseInt(productQuery.data?.stock as string) < 1 && (
             <button
