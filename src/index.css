@@ -86,4 +86,5 @@ tr:nth-of-type(even) {
 img{
   background-color: #eaeaea;
   animation: pulse-animation 1.5s infinite;
+  z-index: 1;
 }
