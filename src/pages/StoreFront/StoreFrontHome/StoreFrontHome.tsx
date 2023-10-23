@@ -128,7 +128,10 @@ export const StoreFrontHome = () => {
   const [category, setCategory] = useState("");
   const [size, setSize] = useState("");
   const fetchCategories = async () => {
-    const { data, error } = await supabase.from("product categories").select();
+    const { data, error } = await supabase
+      .from("product categories")
+      .select()
+      .eq("storeFrontId", storeFrontID);
     if (error) {
       showToast(error.message);
       throw new Error(error.message);
@@ -137,7 +140,10 @@ export const StoreFrontHome = () => {
   };
 
   const fetchSizes = async () => {
-    const { data, error } = await supabase.from("product sizes").select();
+    const { data, error } = await supabase
+      .from("product sizes")
+      .select()
+      .eq("storeFrontId", storeFrontID);
     if (error) {
       showToast(error.message);
       throw new Error(error.message);
