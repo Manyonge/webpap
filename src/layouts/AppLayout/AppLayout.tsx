@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext } from "../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../common/enums";
+import { AuthProvider } from "../../contexts";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
@@ -35,23 +36,25 @@ export const AppLayout = () => {
 
   return (
     <AppContext.Provider value={{ showToast, supabaseApi }}>
-      <Outlet />
-      <Toast.Provider swipeDirection="right" duration={4000}>
-        <Toast.Root
-          className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
-          open={open}
-          onOpenChange={setOpen}
-        >
-          <Toast.Title className="ToastTitle">{message}</Toast.Title>
-          <Toast.Action className="ToastAction" asChild altText="close">
-            <button>
-              {" "}
-              <CloseOutlined />{" "}
-            </button>
-          </Toast.Action>
-        </Toast.Root>
-        <Toast.Viewport className="ToastViewport" />
-      </Toast.Provider>
+      <AuthProvider>
+        <Outlet />
+        <Toast.Provider swipeDirection="right" duration={4000}>
+          <Toast.Root
+            className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
+            open={open}
+            onOpenChange={setOpen}
+          >
+            <Toast.Title className="ToastTitle">{message}</Toast.Title>
+            <Toast.Action className="ToastAction" asChild altText="close">
+              <button>
+                {" "}
+                <CloseOutlined />{" "}
+              </button>
+            </Toast.Action>
+          </Toast.Root>
+          <Toast.Viewport className="ToastViewport" />
+        </Toast.Provider>
+      </AuthProvider>
     </AppContext.Provider>
   );
 };

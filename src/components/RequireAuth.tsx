@@ -1,20 +1,12 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../supabase.ts";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts";
 
-export const RequireAuth = (props: { children: any }) => {
-  const { children } = props;
-  const [isSessionExpired, setIsSessionExpired] = useState(false);
+export const RequireAuth = ({ children }: any) => {
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const authenticate = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) setIsSessionExpired(true);
-    };
-    authenticate().then();
-  }, []);
-
-  if (isSessionExpired) return <Navigate to={"/login"} />;
-
-  return children;
+  if (!user) {
+    // user is not authenticated
+    return <Navigate to="/login" />;
+  }
+  return <>{children}</>;
 };
