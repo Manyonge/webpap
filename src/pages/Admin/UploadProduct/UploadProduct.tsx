@@ -168,7 +168,6 @@ export const UploadProduct = () => {
     setMessage("Uploading photos...");
 
     const uploadedImages = [];
-
     for (const i in chosenImages) {
       const uniqueId = uuidv4();
       const publicUrl = await uploadPhoto(
