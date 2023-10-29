@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 
 export const AdminDashboard = () => {
   const { retailer } = useGetRetailer();
+  const params = useParams();
+  const storeFrontID = params.storeFrontID as string;
 
   const fetchStats = async () => {
-    const stats = { revenue: 0, products: 0, orders: 0, customers: 0 };
     const { data: sessionData } = await supabase.auth.getSession();
 
     const { data: revenue } = await supabase
@@ -15,18 +16,25 @@ export const AdminDashboard = () => {
       .select("walletBalance")
       .eq("id", sessionData.session?.user.id)
       .single();
-    revenue ? (stats.revenue = revenue.walletBalance) : null;
 
-    const { data: totalProducts } = await supabase.from("products").select();
-    totalProducts ? (stats.products = totalProducts.length) : null;
+    const { data: products } = await supabase
+      .from("products")
+      .select()
+      .eq("retailerId", sessionData.session?.user.id)
+      .eq("storeFrontId", storeFrontID);
+    const { data: orders } = await supabase
+      .from("orders")
+      .select()
+      .eq("retailerId", sessionData.session?.user.id)
+      .eq("storeFrontId", storeFrontID);
 
-    const { data: orders } = await supabase.from("orders").select();
-    orders ? (stats.orders = orders.length) : null;
+    const { data: customers } = await supabase
+      .from("customers")
+      .select()
+      .eq("retailerId", sessionData.session?.user.id)
+      .eq("storeFrontId", storeFrontID);
 
-    const { data: customers } = await supabase.from("customers").select();
-    customers ? (stats.customers = customers.length) : null;
-
-    return stats;
+    return { revenue, products, orders, customers };
   };
 
   const statsQuery = useQuery("stats", fetchStats);
@@ -34,25 +42,25 @@ export const AdminDashboard = () => {
   const currentStats = [
     {
       label: "Revenue",
-      value: statsQuery.data?.revenue.toLocaleString(),
+      value: statsQuery.data?.revenue?.walletBalance,
       info: "Sales you've made so far",
       route: "wallet",
     },
     {
       label: "Products",
-      value: statsQuery.data?.products,
+      value: statsQuery.data?.products?.length,
       info: "Manage your products",
       route: "products",
     },
     {
       label: "Orders",
-      value: statsQuery.data?.orders,
+      value: statsQuery.data?.orders?.length,
       info: "Manage your orders",
       route: "orders",
     },
     {
       label: "Customers",
-      value: statsQuery.data?.customers,
+      value: statsQuery.data?.customers?.length,
       info: " customers you've served so far",
       route: "customers",
     },
@@ -62,6 +70,8 @@ export const AdminDashboard = () => {
     <>
       <img
         src={retailer?.businessLogo as string}
+        alt={`${storeFrontID} business logo`}
+        loading="lazy"
         className="mx-auto my-7 w-28 h-28 md:w-32 md:h-32 rounded-full
         "
       />
