@@ -41,10 +41,6 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   ];
 
   const adminRoutes = [
-    {
-      label: "Dashboard",
-      path: `/${storeFrontID}/admin`,
-    },
     { label: "customers", path: `/${storeFrontID}/admin/customers` },
     { label: "orders", path: `/${storeFrontID}/admin/orders` },
     { label: "wallet", path: `/${storeFrontID}/admin/wallet` },
@@ -91,6 +87,15 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
 
       {routesRole === "admin" && (
         <div className="lg:flex flex-row hidden ">
+          <Link to={`/${storeFrontID}/admin`}>
+            <button
+              className={`px-5 py-1 rounded-md text-sm  ${
+                pathname === `/${storeFrontID}/admin` ? "btn-primary" : ""
+              }`}
+            >
+              Dashboard
+            </button>
+          </Link>
           {adminRoutes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
@@ -128,6 +133,15 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
           >
             {routesRole === "admin" && (
               <div>
+                <Link to={`/${storeFrontID}/admin`}>
+                  <button
+                    className={`px-5 py-1 rounded-md text-sm  ${
+                      pathname === `/${storeFrontID}/admin` ? "btn-primary" : ""
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
                 {adminRoutes.map(({ label, path }) => (
                   <Link to={path} key={path}>
                     <div
