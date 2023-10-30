@@ -2,10 +2,8 @@ import { Outlet } from "react-router-dom";
 import * as Toast from "@radix-ui/react-toast";
 import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
-import { AppContext } from "../../contexts/AppContext.tsx";
+import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
-import { AuthProvider } from "../../contexts";
-import { Detector } from "react-detect-offline";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
@@ -17,9 +15,9 @@ export const AppLayout = () => {
     setOpen(true);
   };
 
-  const supabaseApi = async (requestFn: any) => {
+  const supabaseFetcher = async (requestFn: any) => {
     try {
-      const { data, error } = await requestFn();
+      const { data, error } = await requestFn;
       if (error) {
         throw new Error(error.message);
       }
@@ -30,45 +28,36 @@ export const AppLayout = () => {
           "You seem to have lost your connection",
           SeverityColorEnum.Error,
         );
+        return;
+      } else {
+        showToast(e.message, SeverityColorEnum.Error);
       }
-      showToast(e.message, SeverityColorEnum.Error);
     }
   };
 
   return (
-    <AppContext.Provider value={{ showToast, supabaseApi }}>
-      <Detector
-        render={({ online }) => (
-          <>
-            {!online && "you are offline"}
-            {online && (
-              <AuthProvider>
-                <Outlet />
-                <Toast.Provider swipeDirection="right" duration={4000}>
-                  <Toast.Root
-                    className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
-                    open={open}
-                    onOpenChange={setOpen}
-                  >
-                    <Toast.Title className="ToastTitle">{message}</Toast.Title>
-                    <Toast.Action
-                      className="ToastAction"
-                      asChild
-                      altText="close"
-                    >
-                      <button>
-                        {" "}
-                        <CloseOutlined />{" "}
-                      </button>
-                    </Toast.Action>
-                  </Toast.Root>
-                  <Toast.Viewport className="ToastViewport" />
-                </Toast.Provider>
-              </AuthProvider>dr
-            )}
-          </>
-        )}
-      ></Detector>
+    <AppContext.Provider
+      value={{ showToast, supabaseFetcher: supabaseFetcher }}
+    >
+      <AuthProvider>
+        <Outlet />
+        <Toast.Provider swipeDirection="right" duration={4000}>
+          <Toast.Root
+            className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
+            open={open}
+            onOpenChange={setOpen}
+          >
+            <Toast.Title className="ToastTitle">{message}</Toast.Title>
+            <Toast.Action className="ToastAction" asChild altText="close">
+              <button>
+                {" "}
+                <CloseOutlined />{" "}
+              </button>
+            </Toast.Action>
+          </Toast.Root>
+          <Toast.Viewport className="ToastViewport" />
+        </Toast.Provider>
+      </AuthProvider>
     </AppContext.Provider>
   );
 };

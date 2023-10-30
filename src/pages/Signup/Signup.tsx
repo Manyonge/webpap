@@ -3,7 +3,7 @@ import { useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Retailer } from "../../common/interfaces";
 import { useForm } from "react-hook-form";
-import { useAppContext } from "../../contexts/AppContext.tsx";
+import { useAppContext } from "../../contexts";
 import { supabase } from "../../supabase.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
