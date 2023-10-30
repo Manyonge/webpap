@@ -1,5 +1,5 @@
 export enum SeverityColorEnum {
-  Error = "bg-error",
-  Success = "bg-success",
-  Normal = "bg white",
+  Error = "bg-error text-white ",
+  Success = "bg-success text-white",
+  Normal = "bg white text-black ",
 }

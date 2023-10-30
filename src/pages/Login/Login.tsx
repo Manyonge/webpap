@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { supabase } from "../../supabase.ts";
-import { useAppContext } from "../../contexts/AppContext.tsx";
+import { useAppContext } from "../../contexts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { SeverityColorEnum } from "../../common/enums";
 

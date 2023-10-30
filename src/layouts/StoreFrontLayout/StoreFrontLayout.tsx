@@ -16,7 +16,7 @@ import { useGetRetailer } from "../../common/hooks";
 import { Product } from "../../common/interfaces/index.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "../../supabase.ts";
-import { useAppContext } from "../../contexts/AppContext.tsx";
+import { useAppContext } from "../../contexts";
 import { useQuery } from "react-query";
 
 const SearchBar = () => {

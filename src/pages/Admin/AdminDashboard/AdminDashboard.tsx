@@ -2,37 +2,47 @@ import { Link, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
+import { useAppContext } from "../../../contexts";
 
 export const AdminDashboard = () => {
+  const { supabaseFetcher } = useAppContext();
   const { retailer } = useGetRetailer();
   const params = useParams();
   const storeFrontID = params.storeFrontID as string;
 
   const fetchStats = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
+    const sessionData = await supabaseFetcher(supabase.auth.getSession());
 
-    const { data: revenue } = await supabase
-      .from("retailers")
-      .select("walletBalance")
-      .eq("id", sessionData.session?.user.id)
-      .single();
+    const revenue = await supabaseFetcher(
+      supabase
+        .from("retailers")
+        .select("walletBalance")
+        .eq("id", sessionData.session?.user.id)
+        .single(),
+    );
 
-    const { data: products } = await supabase
-      .from("products")
-      .select()
-      .eq("retailerId", sessionData.session?.user.id)
-      .eq("storeFrontId", storeFrontID);
-    const { data: orders } = await supabase
-      .from("orders")
-      .select()
-      .eq("retailerId", sessionData.session?.user.id)
-      .eq("storeFrontId", storeFrontID);
+    const products = await supabaseFetcher(
+      supabase
+        .from("products")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id)
+        .eq("storeFrontId", storeFrontID),
+    );
+    const orders = await supabaseFetcher(
+      supabase
+        .from("orders")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id)
+        .eq("storeFrontId", storeFrontID),
+    );
 
-    const { data: customers } = await supabase
-      .from("customers")
-      .select()
-      .eq("retailerId", sessionData.session?.user.id)
-      .eq("storeFrontId", storeFrontID);
+    const customers = await supabaseFetcher(
+      supabase
+        .from("customers")
+        .select()
+        .eq("retailerId", sessionData.session?.user.id)
+        .eq("storeFrontId", storeFrontID),
+    );
 
     return { revenue, products, orders, customers };
   };
@@ -42,7 +52,7 @@ export const AdminDashboard = () => {
   const currentStats = [
     {
       label: "Revenue",
-      value: statsQuery.data?.revenue?.walletBalance,
+      value: statsQuery.data?.revenue?.walletBalance.toLocaleString(),
       info: "Sales you've made so far",
       route: "wallet",
     },
@@ -71,8 +81,9 @@ export const AdminDashboard = () => {
       <img
         src={retailer?.businessLogo as string}
         alt={`${storeFrontID} business logo`}
-        loading="lazy"
-        className="mx-auto my-7 w-28 h-28 md:w-32 md:h-32 rounded-full
+        loading="eager"
+        className="mx-auto my-7 w-28 h-28 
+        md:w-32 md:h-32 rounded-full text-center text-xs
         "
       />
 
@@ -84,8 +95,11 @@ export const AdminDashboard = () => {
         {currentStats.map(({ label, value, info, route }, index) => (
           <Link to={route} key={index}>
             <div className="rounded-lg shadow-lg hover:shadow-xl h-40">
-              <div className="bg-primary text-[#fff] h-3/5 md:h-3/4 rounded-tr-lg rounded-tl-lg pt-4 ">
-                {statsQuery.isLoading && (
+              <div
+                className="bg-primary text-[#fff] h-3/5 md:h-3/4
+              rounded-tr-lg rounded-tl-lg pt-4 "
+              >
+                {value === undefined && (
                   <p className="text-[#fff] text-center text-3xl md:text-6xl font-bold ">
                     ...
                   </p>
