@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts";
 
 export const AdminDashboard = () => {
   const { supabaseFetcher } = useAppContext();
@@ -82,7 +82,8 @@ export const AdminDashboard = () => {
         src={retailer?.businessLogo as string}
         alt={`${storeFrontID} business logo`}
         loading="eager"
-        className="mx-auto my-7 w-28 h-28 md:w-32 md:h-32 rounded-full
+        className="mx-auto my-7 w-28 h-28
+        md:w-32 md:h-32 rounded-full text-center text-xs
         "
       />
 

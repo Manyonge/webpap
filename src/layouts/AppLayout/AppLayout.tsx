@@ -8,7 +8,7 @@ import { SeverityColorEnum } from "../../common/enums";
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [severityColor, setSeverityColor] = useState("bg-white");
+  const [severityColor, setSeverityColor] = useState(SeverityColorEnum.Normal);
   const showToast = (message: string, severity?: SeverityColorEnum) => {
     setMessage(message);
     severity ? setSeverityColor(severity) : null;
@@ -25,7 +25,7 @@ export const AppLayout = () => {
     } catch (e: any) {
       if (!navigator.onLine) {
         showToast(
-          "You seem to have lost your connection",
+          "You seem you have lost your connection",
           SeverityColorEnum.Error,
         );
         return;
@@ -43,7 +43,8 @@ export const AppLayout = () => {
         <Outlet />
         <Toast.Provider swipeDirection="right" duration={4000}>
           <Toast.Root
-            className={`ToastRoot flex flex-row items-center justify-between ${severityColor}`}
+            className={`ToastRoot flex text-center flex-row py-1 
+            items-center justify-between ${severityColor}`}
             open={open}
             onOpenChange={setOpen}
           >
