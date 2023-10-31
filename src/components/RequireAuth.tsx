@@ -9,7 +9,6 @@ export const RequireAuth = (props: { children: any }) => {
   const storeFrontId = params.storeFrontId as string;
   const { supabaseFetcher } = useAppContext();
   const navigate = useNavigate();
-
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
@@ -26,11 +25,9 @@ export const RequireAuth = (props: { children: any }) => {
         !sessionData.session ||
         (sessionData.session && sessionData.session.user.id !== retailer?.id)
       ) {
-        setIsVerifying(false);
         navigate("/login");
-      } else {
-        setIsVerifying(false);
       }
+      setIsVerifying(false);
     };
     checkLogin().then();
   });

@@ -1,14 +1,14 @@
 import { Link, useParams } from "react-router-dom";
-import { useGetRetailer } from "../../../common/hooks";
+import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 import { useAppContext } from "../../../contexts";
 
 export const AdminDashboard = () => {
+  useLoadingImage();
   const { supabaseFetcher } = useAppContext();
   const { retailer } = useGetRetailer();
-  const params = useParams();
-  const storeFrontId = params.storeFrontId as string;
+  const { storeFrontId } = useParams();
 
   const fetchStats = async () => {
     const sessionData = await supabaseFetcher(supabase.auth.getSession());
@@ -25,23 +25,20 @@ export const AdminDashboard = () => {
       supabase
         .from("products")
         .select()
-        .eq("retailer_id", sessionData.session?.user.id)
-        .eq("storefront_id", storeFrontId),
+        .eq("retailer_id", sessionData.session?.user.id),
     );
     const orders = await supabaseFetcher(
       supabase
         .from("orders")
         .select()
-        .eq("retailer_id", sessionData.session?.user.id)
-        .eq("storefront_id", storeFrontId),
+        .eq("retailer_id", sessionData.session?.user.id),
     );
 
     const customers = await supabaseFetcher(
       supabase
         .from("customers")
         .select()
-        .eq("retailer_id", sessionData.session?.user.id)
-        .eq("storefront_id", storeFrontId),
+        .eq("retailer_id", sessionData.session?.user.id),
     );
 
     return { revenue, products, orders, customers };
@@ -52,7 +49,7 @@ export const AdminDashboard = () => {
   const currentStats = [
     {
       label: "Revenue",
-      value: `${statsQuery.data?.revenue?.wallet_balance.toLocaleString()}`,
+      value: statsQuery.data?.revenue?.wallet_balance.toLocaleString(),
       info: "Sales you've made so far",
       route: "wallet",
     },
@@ -78,14 +75,19 @@ export const AdminDashboard = () => {
 
   return (
     <>
-      <img
-        src={retailer?.business_logo as string}
-        alt={`${storeFrontId} business logo`}
-        loading="eager"
-        className="mx-auto my-7 w-28 h-28 
-        md:w-32 md:h-32 rounded-full text-center text-xs
+      <div
+        className="pulse-loading  mx-auto my-7
+       rounded-full"
+      >
+        <img
+          src={retailer?.business_logo as string}
+          alt={`${storeFrontId} business logo`}
+          loading="eager"
+          className=" w-28 h-28 loading-image
+        md:w-32 md:h-32 rounded-full opacity-0
         "
-      />
+        />
+      </div>
 
       <p className="text-center font-bold mb-4 text-lg md:text-xl">
         Here's your progress so far
