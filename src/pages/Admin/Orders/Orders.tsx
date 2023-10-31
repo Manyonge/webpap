@@ -17,11 +17,11 @@ const OrderPaper = (props: { order: Order }) => {
         <div className="flex flex-row items-center justify-between mb-3 ">
           <p
             className={`${
-              order.isFulfilled ? "bg-success " : "bg-info "
+              order.is_fulfilled ? "bg-success " : "bg-info "
             } rounded-full px-4 py-1 text-xs text-white `}
           >
             {" "}
-            {order.isFulfilled ? "Fulfilled" : "New"}{" "}
+            {order.is_fulfilled ? "Fulfilled" : "New"}{" "}
           </p>
 
           <p className="ml-6 font-bold text-sm text-center ">
@@ -58,7 +58,7 @@ const OrderPaper = (props: { order: Order }) => {
 };
 
 export const Orders = () => {
-  const { showToast, supabaseFetcher } = useAppContext();
+  const { supabaseFetcher } = useAppContext();
 
   const [selectedTab, setSelectedTab] = useState("allProducts");
   const [fulfillmentStatus, setFulfillmentStatus] = useState<
@@ -78,31 +78,23 @@ export const Orders = () => {
     }
 
     if (fulfillmentStatus === "fulfilled") {
-      const { data, error } = await supabase
-        .from("orders")
-        .select()
-        .eq("retailerId", sessionData.session?.user.id)
-        .eq("isFulfilled", true);
-
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
-      }
-      return data;
+      return await supabaseFetcher(
+        supabase
+          .from("orders")
+          .select()
+          .eq("retailer_id", sessionData.session?.user.id)
+          .eq("is_fulfilled", true),
+      );
     }
 
     if (fulfillmentStatus === "unfulfilled") {
-      const { data, error } = await supabase
-        .from("orders")
-        .select()
-        .eq("retailerId", sessionData.session?.user.id)
-        .eq("isFulfilled", false);
-
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
-      }
-      return data;
+      return await supabaseFetcher(
+        supabase
+          .from("orders")
+          .select()
+          .eq("retailer_id", sessionData.session?.user.id)
+          .eq("is_fulfilled", false),
+      );
     }
   };
 
@@ -145,7 +137,8 @@ export const Orders = () => {
   return (
     <div className="relative">
       <Tabs.Root
-        className=" px-2 md:px-10 mt-10 flex flex-col items-center justify-center  "
+        className=" px-2 md:px-10 mt-10 flex flex-col
+        items-center justify-center  "
         defaultValue="allProducts"
       >
         <Tabs.List className=" shrink-0 mb-4 flex" defaultValue="allProducts">
@@ -167,7 +160,7 @@ export const Orders = () => {
 
         {tabs.map(({ value }) => (
           <Tabs.Content key={value} className="w-full focus: " value={value}>
-            {ordersQuery.data?.map((order) => (
+            {ordersQuery.data?.map((order: Order) => (
               <OrderPaper key={order.id} order={order} />
             ))}
           </Tabs.Content>
