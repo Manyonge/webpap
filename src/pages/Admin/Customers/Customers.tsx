@@ -33,6 +33,7 @@ export const Customers = () => {
           </thead>
 
           <tbody>
+            {/*TODO add a loading spinner for this content*/}
             {customersQuery.data !== undefined &&
             customersQuery.data !== null &&
             customersQuery.data.length > 0
