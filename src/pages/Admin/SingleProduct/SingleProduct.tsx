@@ -250,11 +250,11 @@ export const SingleProduct = () => {
       return;
     }
 
-    formData.isHidden = productQuery?.data?.isHidden as boolean;
+    formData.is_hidden = productQuery?.data?.is_hidden as boolean;
     formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
-    formData.retailerId = retailer?.id as string;
-    formData.storeFrontId = storeFrontID as string;
+    formData.retailer_id = retailer?.id as string;
+    formData.storeFront_id = storeFrontID as string;
 
     setMessage("Uploading product...");
     const { error } = await supabase

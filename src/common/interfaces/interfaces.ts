@@ -1,6 +1,6 @@
 export interface Product {
-  retailerId: string;
-  storeFrontId: string;
+  retailer_id: string;
+  storeFront_id: string;
   name: string;
   category: string;
   condition: string;
@@ -8,9 +8,9 @@ export interface Product {
   price: number;
   size: string;
   stock: number | string;
-  isHidden: boolean;
+  is_hidden: boolean;
   id: number | string;
-  productImages: { url: string; fileName: string }[];
+  product_images: { url: string; fileName: string }[];
 }
 
 export interface CartItem {

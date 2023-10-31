@@ -13,8 +13,14 @@ const OrderPaper = (props: { order: Order }) => {
 
   return (
     <Link to={`${order.id}`}>
-      <div className=" mx-auto w-full rounded-lg shadow-lg hover:shadow-xl px-4 py-4 mb-6">
-        <div className="flex flex-row items-center justify-between mb-3 ">
+      <div
+        className=" mx-auto w-full rounded-lg shadow-lg
+       hover:shadow-xl px-4 py-4 mb-6"
+      >
+        <div
+          className="flex flex-row items-center
+         justify-between mb-3 "
+        >
           <p
             className={`${
               order.is_fulfilled ? "bg-success " : "bg-info "
@@ -36,7 +42,7 @@ const OrderPaper = (props: { order: Order }) => {
 
         <div className="flex flex-row items-center justify-between mb-3 ">
           <img
-            src={order.product.productImages[0].url}
+            src={order.product.product_images[0].url}
             alt={`${order.product.name}`}
             className="h-14 md:h-20 w-14 md:w-20 rounded-md "
           />
@@ -169,8 +175,10 @@ export const Orders = () => {
 
       <button
         onClick={handleScrollToTop}
-        className="  bg-primary rounded-full shadow-2xl fixed bottom-32
-         px-3 py-3 text-[#fff] flex flex-row items-center justify-center  right-10"
+        className="  bg-primary rounded-full
+         shadow-2xl fixed bottom-32
+         px-3 py-3 text-[#fff] flex flex-row
+          items-center justify-center  right-10"
       >
         <UpOutlined />
       </button>
