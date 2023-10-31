@@ -42,10 +42,10 @@ export interface Withdrawal {
 
 export interface Customer {
   name: string;
-  phoneNumber: string;
-  emailAddress: string;
-  storeFrontId: string;
-  retailerId: string;
+  phone_number: string;
+  email_address: string;
+  storefront_id: string;
+  retailer_id: string;
 }
 
 export interface Delivery {
@@ -69,19 +69,19 @@ export interface CheckOut {
 }
 export interface Order {
   id?: number;
-  storeFrontId?: string;
-  retailerId?: string;
+  storefront_id?: string;
+  retailer_id?: string;
   product: Product;
   customer: Customer;
   delivery: Delivery;
-  isFulfilled: boolean;
+  is_fulfilled: boolean;
   created_at?: string;
 }
 
 export interface Transaction {
-  transactionType: string;
-  transactionDate: string;
+  transaction_type: string;
+  transaction_date: string;
   amount: number;
-  storeFrontId?: string;
-  retailerId?: string;
+  storefront_id?: string;
+  retailer_id?: string;
 }

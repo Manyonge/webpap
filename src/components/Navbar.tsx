@@ -7,7 +7,8 @@ import { supabase } from "../supabase.ts";
 export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   const { routesRole } = props;
   const { pathname } = useLocation();
-  const { storeFrontID } = useParams();
+  const params = useParams();
+  const storeFrontId = params.storeFrontId as string;
   const navigate = useNavigate();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -41,15 +42,15 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   ];
 
   const adminRoutes = [
-    { label: "customers", path: `/${storeFrontID}/admin/customers` },
-    { label: "orders", path: `/${storeFrontID}/admin/orders` },
-    { label: "wallet", path: `/${storeFrontID}/admin/wallet` },
-    { label: "products", path: `/${storeFrontID}/admin/products` },
+    { label: "customers", path: `/${storeFrontId}/admin/customers` },
+    { label: "orders", path: `/${storeFrontId}/admin/orders` },
+    { label: "wallet", path: `/${storeFrontId}/admin/wallet` },
+    { label: "products", path: `/${storeFrontId}/admin/products` },
   ];
 
   const determineHomePath = () => {
     if (routesRole === "admin") {
-      return { label: storeFrontID, path: `/${storeFrontID}/admin` };
+      return { label: storeFrontId, path: `/${storeFrontId}/admin` };
     }
 
     return { label: "Webpap", path: "/" };
@@ -87,10 +88,10 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
 
       {routesRole === "admin" && (
         <div className="lg:flex flex-row hidden ">
-          <Link to={`/${storeFrontID}/admin`}>
+          <Link to={`/${storeFrontId}/admin`}>
             <button
               className={`px-5 py-1 rounded-md text-sm  ${
-                pathname === `/${storeFrontID}/admin` ? "btn-primary" : ""
+                pathname === `/${storeFrontId}/admin` ? "btn-primary" : ""
               }`}
             >
               Dashboard
@@ -133,10 +134,11 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
           >
             {routesRole === "admin" && (
               <div>
-                <Link to={`/${storeFrontID}/admin`}>
+                <Link to={`/${storeFrontId}/admin`}>
                   <button
+                    onClick={handlePopover}
                     className={`px-5 py-1 rounded-md text-sm  ${
-                      pathname === `/${storeFrontID}/admin` ? "btn-primary" : ""
+                      pathname === `/${storeFrontId}/admin` ? "btn-primary" : ""
                     }`}
                   >
                     Dashboard

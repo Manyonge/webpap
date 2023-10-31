@@ -1,29 +1,17 @@
 import { supabase } from "../../../supabase.ts";
-import { Customer } from "../../../common/interfaces";
-import { PostgrestError } from "@supabase/supabase-js";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
-import { SeverityColorEnum } from "../../../common/enums";
+import { useAppContext } from "../../../contexts/";
 import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
+import { Customer } from "../../../common/interfaces";
 
 export const Customers = () => {
-  const { showToast } = useAppContext();
-  const fetchCustomers = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-
-    const {
-      data,
-      error,
-    }: { data: Customer[] | null; error: PostgrestError | null } =
-      await supabase
-        .from("customers")
-        .select()
-        .eq("retailerId", sessionData.session?.user.id);
-
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-    return data;
+  const { supabaseFetcher } = useAppContext();
+  const params = useParams();
+  const storeFrontId = params.storeFrontId;
+  const fetchCustomers = async (): Promise<Customer[]> => {
+    return await supabaseFetcher(
+      supabase.from("customers").select().eq("storefront_id", storeFrontId),
+    );
   };
 
   const customersQuery = useQuery("customers", fetchCustomers);
@@ -49,11 +37,18 @@ export const Customers = () => {
             customersQuery.data !== null &&
             customersQuery.data.length > 0
               ? customersQuery.data.map(
-                  ({ name, phoneNumber, emailAddress }, index) => (
+                  (
+                    {
+                      name,
+                      phone_number: phone_number,
+                      email_address: email_address,
+                    },
+                    index,
+                  ) => (
                     <tr key={index} className=":">
                       <td> {name} </td>
-                      <td> {phoneNumber} </td>
-                      <td> {emailAddress} </td>
+                      <td> {phone_number} </td>
+                      <td> {email_address} </td>
                     </tr>
                   ),
                 )

@@ -1,20 +1,40 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../contexts";
 import { supabase } from "../supabase.ts";
 
 export const RequireAuth = (props: { children: any }) => {
   const { children } = props;
+  const params = useParams();
+  const storeFrontId = params.storeFrontId as string;
   const { supabaseFetcher } = useAppContext();
   const navigate = useNavigate();
+
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     const checkLogin = async () => {
       const sessionData = await supabaseFetcher(supabase.auth.getSession());
-      if (!sessionData.session || !sessionData.session.user) navigate("/login");
+      const retailer = await supabaseFetcher(
+        supabase
+          .from("retailers")
+          .select()
+          .eq("business_name", storeFrontId)
+          .single(),
+      );
+      if (
+        !sessionData.session ||
+        (sessionData.session && sessionData.session.user.id !== retailer?.id)
+      ) {
+        setIsVerifying(false);
+        navigate("/login");
+      } else {
+        setIsVerifying(false);
+      }
     };
     checkLogin().then();
   });
-
+  if (isVerifying)
+    return <p className="text-3xl font-bold text-center ">...</p>;
   return <> {children} </>;
 };
