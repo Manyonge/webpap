@@ -9,6 +9,7 @@ export const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [severityColor, setSeverityColor] = useState(SeverityColorEnum.Normal);
+
   const showToast = (message: string, severity?: SeverityColorEnum) => {
     setMessage(message);
     severity ? setSeverityColor(severity) : null;

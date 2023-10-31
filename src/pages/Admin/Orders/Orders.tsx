@@ -58,7 +58,7 @@ const OrderPaper = (props: { order: Order }) => {
 };
 
 export const Orders = () => {
-  const { showToast } = useAppContext();
+  const { showToast, supabaseFetcher } = useAppContext();
 
   const [selectedTab, setSelectedTab] = useState("allProducts");
   const [fulfillmentStatus, setFulfillmentStatus] = useState<
@@ -66,19 +66,15 @@ export const Orders = () => {
   >(null);
 
   const fetchOrders = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
+    const sessionData = await supabaseFetcher(supabase.auth.getSession());
 
     if (fulfillmentStatus === null) {
-      const { data, error } = await supabase
-        .from("orders")
-        .select()
-        .eq("retailerId", sessionData.session?.user.id);
-
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
-      }
-      return data;
+      return await supabaseFetcher(
+        supabase
+          .from("orders")
+          .select()
+          .eq("retailer_id", sessionData.session?.user.id),
+      );
     }
 
     if (fulfillmentStatus === "fulfilled") {

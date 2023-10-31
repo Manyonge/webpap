@@ -21,16 +21,16 @@ export interface CartItem {
 
 export interface Retailer {
   [index: string]: any;
-  passportPhoto?: File | string;
-  businessLogo?: File | string;
-  fullName: string;
-  phoneNumber: string;
-  idNumber: string;
-  businessName: string;
-  loginEmail: string;
+  passport_photo?: File | string;
+  business_logo?: File | string;
+  full_name: string;
+  phone_number: string;
+  id_number: string;
+  business_name: string;
+  login_email: string;
   password?: string;
-  instagramHandle: string;
-  walletBalance: number;
+  instagram_handle: string;
+  wallet_balance: number;
   id: number | string | null;
 }
 
@@ -42,10 +42,10 @@ export interface Withdrawal {
 
 export interface Customer {
   name: string;
-  phoneNumber: string;
-  emailAddress: string;
-  storeFrontId: string;
-  retailerId: string;
+  phone_number: string;
+  email_address: string;
+  storefront_id: string;
+  retailer_id: string;
 }
 
 export interface Delivery {
@@ -69,19 +69,19 @@ export interface CheckOut {
 }
 export interface Order {
   id?: number;
-  storeFrontId?: string;
-  retailerId?: string;
+  storefront_id?: string;
+  retailer_id?: string;
   product: Product;
   customer: Customer;
   delivery: Delivery;
-  isFulfilled: boolean;
+  is_fulfilled: boolean;
   created_at?: string;
 }
 
 export interface Transaction {
-  transactionType: string;
-  transactionDate: string;
+  transaction_type: string;
+  transaction_date: string;
   amount: number;
-  storeFrontId?: string;
-  retailerId?: string;
+  storefront_id?: string;
+  retailer_id?: string;
 }

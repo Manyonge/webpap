@@ -51,7 +51,7 @@ export const Withdraw = () => {
     if (isWithdrawalConfirmed && retailerQuery.data) {
       const { data: sessionData } = await supabase.auth.getSession();
       const update = {
-        walletBalance: retailerQuery.data.walletBalance - data.amount,
+        walletBalance: retailerQuery.data.wallet_balance - data.amount,
       };
       const { error } = await supabase
         .from("retailers")
@@ -80,7 +80,7 @@ export const Withdraw = () => {
        text-[#fff] px-3 md:px-6  py-4 mt-10 mx-auto mb-10 md:text-xl shadow-lg "
       >
         <p> Your wallet balance </p>
-        <p> {`${retailerQuery.data?.walletBalance} KSH `} </p>
+        <p> {`${retailerQuery.data?.wallet_balance} KSH `} </p>
       </div>
       <form
         onSubmit={handleSubmit}

@@ -40,7 +40,7 @@ export const Login = () => {
         .select()
         .eq("id", user.user?.id)
         .single();
-      if (retailer) navigate(`/${retailer.businessName}/admin`);
+      if (retailer) navigate(`/${retailer.business_name}/admin`);
     }
   };
 
