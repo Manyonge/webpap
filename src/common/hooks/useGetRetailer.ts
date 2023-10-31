@@ -5,7 +5,7 @@ import { Retailer } from "../interfaces";
 import { useAppContext } from "../../contexts";
 
 export const useGetRetailer = () => {
-  const { storeFrontID } = useParams();
+  const { storeFrontId } = useParams();
   const [retailer, setRetailer] = useState<Retailer | null>(null);
   const { supabaseFetcher } = useAppContext();
   useEffect(() => {
@@ -14,13 +14,13 @@ export const useGetRetailer = () => {
         supabase
           .from("retailers")
           .select()
-          .eq("businessName", storeFrontID)
+          .eq("business_name", storeFrontId)
           .single(),
       );
       setRetailer(data);
     };
     getRetailer().then();
-  }, [storeFrontID, supabaseFetcher]);
+  }, [storeFrontId, supabaseFetcher]);
 
   return { retailer };
 };

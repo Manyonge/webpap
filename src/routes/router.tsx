@@ -37,12 +37,12 @@ export const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: ":storeFrontID/admin",
+        path: ":storeFrontId/admin",
         element: <AdminLayout />,
         children: [...AdminRoutes],
       },
       {
-        path: ":storeFrontID",
+        path: ":storeFrontId",
         element: <StoreFrontLayout />,
         children: [...StoreFrontRoutes],
       },

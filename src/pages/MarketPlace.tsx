@@ -51,12 +51,12 @@ export const MarketPlace = () => {
       <Navbar routesRole="app" />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10 pt-4 px-3 md:px-4 pb-40 mb-96">
-        {retailersQuery.data?.map(({ businessLogo, businessName }, index) => (
+        {retailersQuery.data?.map(({ business_logo, business_name }, index) => (
           <RetailerPaper
             key={index}
-            imageURL={businessLogo as string}
-            description={businessName}
-            storeFrontID={businessName}
+            imageURL={business_logo as string}
+            description={business_name}
+            storeFrontID={business_name}
           />
         ))}
       </div>

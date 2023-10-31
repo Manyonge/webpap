@@ -119,7 +119,7 @@ export const Signup = () => {
     setMessage("Creating user");
 
     const { data: userData, error: userError } = await supabase.auth.signUp({
-      email: data.loginEmail,
+      email: data.login_email,
       password: data.password as string,
     });
 
@@ -140,9 +140,9 @@ export const Signup = () => {
       `business logos/${userData.user?.id}-business-logo`,
     );
 
-    data.passportPhoto = passportUrl;
-    data.businessLogo = logoUrl;
-    data.walletBalance = 0;
+    data.passport_photo = passportUrl;
+    data.business_logo = logoUrl;
+    data.wallet_balance = 0;
     delete data.password;
     setMessage("Creating retailer");
 

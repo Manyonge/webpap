@@ -8,7 +8,7 @@ export const AdminDashboard = () => {
   const { supabaseFetcher } = useAppContext();
   const { retailer } = useGetRetailer();
   const params = useParams();
-  const storeFrontID = params.storeFrontID as string;
+  const storeFrontId = params.storeFrontId as string;
 
   const fetchStats = async () => {
     const sessionData = await supabaseFetcher(supabase.auth.getSession());
@@ -16,7 +16,7 @@ export const AdminDashboard = () => {
     const revenue = await supabaseFetcher(
       supabase
         .from("retailers")
-        .select("walletBalance")
+        .select("wallet_balance")
         .eq("id", sessionData.session?.user.id)
         .single(),
     );
@@ -25,23 +25,23 @@ export const AdminDashboard = () => {
       supabase
         .from("products")
         .select()
-        .eq("retailerId", sessionData.session?.user.id)
-        .eq("storeFrontId", storeFrontID),
+        .eq("retailer_id", sessionData.session?.user.id)
+        .eq("storefront_id", storeFrontId),
     );
     const orders = await supabaseFetcher(
       supabase
         .from("orders")
         .select()
-        .eq("retailerId", sessionData.session?.user.id)
-        .eq("storeFrontId", storeFrontID),
+        .eq("retailer_id", sessionData.session?.user.id)
+        .eq("storefront_id", storeFrontId),
     );
 
     const customers = await supabaseFetcher(
       supabase
         .from("customers")
         .select()
-        .eq("retailerId", sessionData.session?.user.id)
-        .eq("storeFrontId", storeFrontID),
+        .eq("retailer_id", sessionData.session?.user.id)
+        .eq("storefront_id", storeFrontId),
     );
 
     return { revenue, products, orders, customers };
@@ -52,7 +52,7 @@ export const AdminDashboard = () => {
   const currentStats = [
     {
       label: "Revenue",
-      value: statsQuery.data?.revenue?.walletBalance.toLocaleString(),
+      value: `${statsQuery.data?.revenue?.wallet_balance.toLocaleString()}`,
       info: "Sales you've made so far",
       route: "wallet",
     },
@@ -79,8 +79,8 @@ export const AdminDashboard = () => {
   return (
     <>
       <img
-        src={retailer?.businessLogo as string}
-        alt={`${storeFrontID} business logo`}
+        src={retailer?.business_logo as string}
+        alt={`${storeFrontId} business logo`}
         loading="eager"
         className="mx-auto my-7 w-28 h-28 
         md:w-32 md:h-32 rounded-full text-center text-xs

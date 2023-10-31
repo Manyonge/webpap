@@ -107,6 +107,7 @@ export const UploadProduct = () => {
   const handleFileChange = (e: any) => {
     if (chosenImages.length < 5) {
       setChosenImages((prevState) => [...prevState, e.target.files[0]]);
+      console.log(e.target.files[0]);
     }
   };
 

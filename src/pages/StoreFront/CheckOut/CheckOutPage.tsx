@@ -157,8 +157,8 @@ export const CheckOutPage = () => {
       const newRetailer: Retailer = JSON.parse(
         JSON.stringify(retailerQuery.data),
       );
-      newRetailer.walletBalance =
-        newRetailer.walletBalance + shoppingCart.totalPrice;
+      newRetailer.wallet_balance =
+        newRetailer.wallet_balance + shoppingCart.totalPrice;
 
       const { error: updateError } = await supabase
         .from("retailers")
