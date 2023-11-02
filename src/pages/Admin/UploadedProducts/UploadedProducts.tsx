@@ -39,7 +39,7 @@ const ProductPaper = (props: { product: Product }) => {
   const handleDeleteProduct = async () => {
     const photos = [];
     for (const i in product.product_images) {
-      photos.push(product.product_images[i].fileName);
+      photos.push(product.product_images[i].file_name);
     }
     await supabaseFetcher(
       supabase.storage.from("webpap storage").remove(photos),
