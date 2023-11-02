@@ -10,7 +10,7 @@ export interface Product {
   stock: number | string;
   is_hidden: boolean;
   id: number | string;
-  product_images: { url: string; fileName: string }[];
+  product_images: { url: string; file_name: string }[];
 }
 
 export interface CartItem {

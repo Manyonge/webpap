@@ -70,7 +70,7 @@ export const AdminRoutes = [
     ),
   },
   {
-    path: "products/:productID",
+    path: "products/:productId",
     element: (
       <RequireAuth>
         <SingleProduct />

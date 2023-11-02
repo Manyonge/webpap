@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useGetRetailer } from "../../../common/hooks";
+import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/AppContext.tsx";
 import { SeverityColorEnum } from "../../../common/enums";
@@ -14,46 +14,33 @@ import { uploadPhoto } from "../../../services";
 import { v4 as uuidv4 } from "uuid";
 
 export const SingleProduct = () => {
-  const { storeFrontID } = useParams();
+  const { storeFrontId, productId } = useParams();
+  useLoadingImage();
   const { retailer } = useGetRetailer();
   const { register, watch, setValue } = useForm<Product>();
   const [message, setMessage] = useState("Upload Product");
   const navigate = useNavigate();
-  const { showToast } = useAppContext();
+  const { showToast, supabaseFetcher } = useAppContext();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogPurpose, setDialogPurpose] = useState<
     "" | "category" | "size" | "condition"
   >("");
-  const { productID } = useParams();
 
   const fetchPhotos = async () => {
-    const { data, error } = await supabase
-      .from("products")
-      .select("productImages")
-      .eq("id", productID)
-      .single();
-
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
-    }
-    return data;
+    return await supabaseFetcher(
+      supabase
+        .from("products")
+        .select("product_images")
+        .eq("id", productId)
+        .single(),
+    );
   };
 
   const fetchProduct = async () => {
-    const {
-      data,
-      error,
-    }: { data: Product | null; error: PostgrestError | null } = await supabase
-      .from("products")
-      .select()
-      .eq("id", productID)
-      .single();
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
-    }
+    const data = await supabaseFetcher(
+      supabase.from("products").select().eq("id", productId).single(),
+    );
 
     setValue("name", data?.name as string);
     setValue("category", data?.category as string);
@@ -67,39 +54,26 @@ export const SingleProduct = () => {
   };
 
   const fetchCategories = async () => {
-    const { data, error } = await supabase
-      .from("product categories")
-      .select()
-      .eq("storeFrontId", storeFrontID);
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-    return data;
+    return supabaseFetcher(
+      supabase
+        .from("product categories")
+        .select()
+        .eq("storeFront_id", storeFrontId),
+    );
   };
   const fetchConditions = async () => {
-    const { data, error } = await supabase
-      .from("product conditions")
-      .select()
-      .eq("storeFrontId", storeFrontID);
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-    return data;
+    return await supabaseFetcher(
+      supabase
+        .from("product conditions")
+        .select()
+        .eq("storeFront_id", storeFrontId),
+    );
   };
 
   const fetchSizes = async () => {
-    const { data, error } = await supabase
-      .from("product sizes")
-      .select()
-      .eq("storeFrontId", storeFrontID);
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    return await supabaseFetcher(
+      supabase.from("product sizes").select().eq("storeFront_id", storeFrontId),
+    );
   };
 
   const queryClient = useQueryClient();
@@ -115,7 +89,7 @@ export const SingleProduct = () => {
   const productQuery = useQuery(["product"], fetchProduct);
 
   const photosQuery: UseQueryResult<
-    { productImages: { url: string; fileName: string }[] },
+    { productImages: { url: string; file_name: string }[] },
     PostgrestError
   > = useQuery(["photos"], fetchPhotos);
 
@@ -140,11 +114,7 @@ export const SingleProduct = () => {
   };
 
   const uploadData = async (tableName: string, data: any) => {
-    const { error } = await supabase.from(tableName).insert([data]);
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
-    }
+    await supabaseFetcher(supabase.from(tableName).insert([data]));
     showToast(`${dialogPurpose} added successfully`, SeverityColorEnum.Success);
     setDialogOpen(false);
     await queryClient.invalidateQueries(dialogPurpose);
@@ -158,22 +128,22 @@ export const SingleProduct = () => {
     switch (dialogPurpose) {
       case "category":
         await uploadData("product categories", {
-          storeFrontId: storeFrontID,
-          retailerId: retailer?.id,
+          storefront_id: storeFrontId,
+          retailer_id: retailer?.id,
           category: inputElement?.value,
         });
         break;
       case "condition":
         await uploadData("product conditions", {
-          storeFrontId: storeFrontID,
-          retailerId: retailer?.id,
+          storefront_id: storeFrontId,
+          retailer_id: retailer?.id,
           condition: inputElement?.value,
         });
         break;
       case "size":
         await uploadData("product sizes", {
-          storeFrontId: storeFrontID,
-          retailerId: retailer?.id,
+          storefront_id: storeFrontId,
+          retailer_id: retailer?.id,
           size: inputElement?.value,
         });
         break;
@@ -189,42 +159,34 @@ export const SingleProduct = () => {
     const images = photosQuery.data?.productImages;
     images?.push({
       url: publicUrl,
-      fileName: `product images/${uniqueId}-product-photo.jpg`,
+      file_name: `product images/${uniqueId}-product-photo.jpg`,
     });
 
-    const { error } = await supabase
-      .from("products")
-      .update({ productImages: images })
-      .eq("id", productID);
+    await supabaseFetcher(
+      supabase
+        .from("products")
+        .update({ product_images: images })
+        .eq("id", productId),
+    );
 
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
     await queryClient.invalidateQueries("photos");
   };
   const handleDeleteFile = async (fileName: string) => {
     const newPhotos = photosQuery.data?.productImages.filter(
-      (image) => image.fileName !== fileName,
+      (image) => image.file_name !== fileName,
     );
-    const { error } = await supabase
-      .from("products")
-      .update({ productImages: newPhotos })
-      .eq("id", productID);
+    await supabaseFetcher(
+      supabase
+        .from("products")
+        .update({ product_images: newPhotos })
+        .eq("id", productId),
+    );
 
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-
-    const { error: storageError } = await supabase.storage
-      .from("webpap storage")
-      .remove([`product images/${fileName}`]);
-
-    if (storageError) {
-      showToast(storageError.message, SeverityColorEnum.Error);
-      throw new Error(storageError.message);
-    }
+    await supabaseFetcher(
+      supabase.storage
+        .from("webpap storage")
+        .remove([`product images/${fileName}`]),
+    );
 
     await queryClient.invalidateQueries("photos");
   };
@@ -254,24 +216,19 @@ export const SingleProduct = () => {
     formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
     formData.retailer_id = retailer?.id as string;
-    formData.storeFront_id = storeFrontID as string;
+    formData.storeFront_id = storeFrontId as string;
 
     setMessage("Uploading product...");
-    const { error } = await supabase
-      .from("products")
-      .update(formData)
-      .eq("id", productID);
-    if (error === null) {
-      setMessage("Done");
-      showToast("Product updated successfully", SeverityColorEnum.Success);
-      navigate(`/${storeFrontID}/admin/products`);
-    }
+    await supabaseFetcher(
+      supabase.from("products").update(formData).eq("id", productId),
+    );
+    navigate(`/${storeFrontId}/admin/products`);
   };
 
   return (
     <div className="px-4 md:px-20 py-10">
       <Link
-        to={`/${storeFrontID}/admin/products`}
+        to={`/${storeFrontId}/admin/products`}
         className="flex flex-row items-center justify-start font-bold "
       >
         {" "}
@@ -310,12 +267,16 @@ export const SingleProduct = () => {
                 <div
                   key={index}
                   className="mr-1  flex flex-shrink-0  items-center
-              justify-between relative  w-36 h-36 "
+              justify-between relative  w-36 h-36 pulse-loading "
                 >
-                  <img className=" w-32 h-32  object-cover  " src={image.url} />
+                  <img
+                    className=" w-32 h-32  object-cover opacity-0 "
+                    alt={`product-image-${index++}`}
+                    src={image.url}
+                  />
 
                   <button
-                    onClick={() => handleDeleteFile(image.fileName)}
+                    onClick={() => handleDeleteFile(image.file_name)}
                     type={"button"}
                     className="absolute top-0 right-0  bg-white
         shadow-lg  rounded-full p-1 
@@ -343,12 +304,14 @@ export const SingleProduct = () => {
               Category
             </option>
             {categoryQuery.data !== undefined && categoryQuery.data?.length > 0
-              ? categoryQuery.data.map(({ category, id }) => (
-                  <option value={category} key={id}>
-                    {" "}
-                    {category}{" "}
-                  </option>
-                ))
+              ? categoryQuery.data.map(
+                  ({ category, id }: { category: string; id: number }) => (
+                    <option value={category} key={id}>
+                      {" "}
+                      {category}{" "}
+                    </option>
+                  ),
+                )
               : null}
           </select>
 
@@ -382,12 +345,14 @@ export const SingleProduct = () => {
               Size
             </option>
             {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
-              ? sizeQuery.data.map(({ size, id }) => (
-                  <option value={size} key={id}>
-                    {" "}
-                    {size}{" "}
-                  </option>
-                ))
+              ? sizeQuery.data.map(
+                  ({ size, id }: { size: string; id: number }) => (
+                    <option value={size} key={id}>
+                      {" "}
+                      {size}{" "}
+                    </option>
+                  ),
+                )
               : null}
           </select>
 
@@ -416,12 +381,14 @@ export const SingleProduct = () => {
             </option>
             {conditionQuery.data !== undefined &&
             conditionQuery.data?.length > 0
-              ? conditionQuery.data.map(({ condition, id }) => (
-                  <option value={condition} key={id}>
-                    {" "}
-                    {condition}{" "}
-                  </option>
-                ))
+              ? conditionQuery.data.map(
+                  ({ condition, id }: { condition: string; id: number }) => (
+                    <option value={condition} key={id}>
+                      {" "}
+                      {condition}{" "}
+                    </option>
+                  ),
+                )
               : null}
           </select>
 
