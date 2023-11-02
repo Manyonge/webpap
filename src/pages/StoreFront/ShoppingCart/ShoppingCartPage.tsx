@@ -30,7 +30,7 @@ const CartItem = (props: {
     >
       <div className=" flex flex-row items-center justify-between  w-full">
         <img
-          src={product.productImages[0].url}
+          src={product.product_images[0].url}
           className="
         object-fill rounded-lg w-14 h-14  "
         />

@@ -81,7 +81,7 @@ const SearchBar = () => {
             {name !== "" &&
             productQuery?.data?.length !== undefined &&
             productQuery.data?.length > 0
-              ? productQuery.data?.map(({ name, id, productImages }) => (
+              ? productQuery.data?.map(({ name, id, product_images }) => (
                   <Link
                     to={`/${storeFrontID}/product/${id}`}
                     onClick={handleCloseOpen}
@@ -89,7 +89,7 @@ const SearchBar = () => {
                      px-2 py-2 rounded-lg "
                   >
                     <img
-                      src={productImages[0].url}
+                      src={product_images[0].url}
                       className="h-10 w-10 rounded-md  "
                     />{" "}
                     <p key={id}> {name} </p>

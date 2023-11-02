@@ -180,12 +180,12 @@ export const UploadProduct = () => {
         fileName: `product images/${uniqueId}-product-photo.jpg`,
       });
     }
-    formData.productImages = uploadedImages;
-    formData.isHidden = false;
+    formData.product_images = uploadedImages;
+    formData.is_hidden = false;
     formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
-    formData.retailerId = retailer?.id as string;
-    formData.storeFrontId = storeFrontID as string;
+    formData.retailer_id = retailer?.id as string;
+    formData.storeFront_id = storeFrontID as string;
 
     setMessage("Uploading product...");
     const { error } = await supabase.from("products").insert([formData]);

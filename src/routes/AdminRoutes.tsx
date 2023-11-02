@@ -37,7 +37,7 @@ export const AdminRoutes = [
     ),
   },
   {
-    path: "orders/:orderID",
+    path: "orders/:orderId",
     element: (
       <RequireAuth>
         <SingleOrder />

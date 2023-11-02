@@ -145,7 +145,7 @@ export const ProductView = () => {
         </p>
 
         {productQuery.data !== undefined && (
-          <Carousel images={productQuery.data?.productImages} />
+          <Carousel images={productQuery.data?.product_images} />
         )}
 
         <div className="flex flex-col md:flex-row items-center justify-between">

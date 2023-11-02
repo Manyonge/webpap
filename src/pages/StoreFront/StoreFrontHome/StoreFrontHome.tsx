@@ -63,7 +63,7 @@ const ProductCard = (props: { product: Product }) => {
     }
   };
 
-  if (product.isHidden) return <></>;
+  if (product.is_hidden) return <></>;
 
   return (
     <div
@@ -72,7 +72,7 @@ const ProductCard = (props: { product: Product }) => {
     >
       <Link to={`product/${product.id}`}>
         <img
-          src={product.productImages[0].url}
+          src={product.product_images[0].url}
           className="object-cover w-52 sm:w-56 md:w-64 h-40 sm:h-52 md:h-56 rounded-tr-lg rounded-tl-lg"
         />
       </Link>

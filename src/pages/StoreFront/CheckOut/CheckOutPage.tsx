@@ -76,7 +76,7 @@ export const CheckOutPage = () => {
       setShoppingCart(temp);
       const images = [];
       for (const i in temp.products) {
-        images.push(temp.products[i].productImages[0].url);
+        images.push(temp.products[i].product_images[0].url);
       }
       setCartImages(images);
     } else {
