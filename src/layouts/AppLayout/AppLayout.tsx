@@ -45,7 +45,7 @@ export const AppLayout = () => {
         <Toast.Provider swipeDirection="right" duration={4000}>
           <Toast.Root
             className={`ToastRoot flex text-center flex-row py-1 
-            items-center justify-between ${severityColor}`}
+            items-center  justify-between ${severityColor}`}
             open={open}
             onOpenChange={setOpen}
           >

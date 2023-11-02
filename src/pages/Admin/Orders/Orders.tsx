@@ -166,6 +166,9 @@ export const Orders = () => {
 
         {tabs.map(({ value }) => (
           <Tabs.Content key={value} className="w-full focus: " value={value}>
+            {ordersQuery.data?.length === 0 && (
+              <p className="text-center">No orders available</p>
+            )}
             {ordersQuery.data?.map((order: Order) => (
               <OrderPaper key={order.id} order={order} />
             ))}

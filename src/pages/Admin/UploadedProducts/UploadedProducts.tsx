@@ -6,35 +6,34 @@ import { Link, useParams } from "react-router-dom";
 import * as Switch from "@radix-ui/react-switch";
 import { useQuery, useQueryClient } from "react-query";
 import { supabase } from "../../../supabase.ts";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts/";
 import { SeverityColorEnum } from "../../../common/enums";
+import { useLoadingImage } from "../../../common/hooks";
 
 const ProductPaper = (props: { product: Product }) => {
   const { product } = props;
-
-  const { storeFrontID } = useParams();
-  const { showToast } = useAppContext();
+  useLoadingImage();
+  const { storeFrontId } = useParams();
+  const { showToast, supabaseFetcher } = useAppContext();
 
   const [hiddenChecked, setHiddenChecked] = useState(product.is_hidden);
   const queryClient = useQueryClient();
   const handleHideProduct = async () => {
     product.is_hidden = !hiddenChecked;
     setHiddenChecked(!hiddenChecked);
-    const { error } = await supabase
-      .from("products")
-      .update({ isHidden: !hiddenChecked })
-      .eq("id", product.id);
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
+    await supabaseFetcher(
+      supabase
+        .from("products")
+        .update({ is_hidden: !hiddenChecked })
+        .eq("id", product.id),
+    );
   };
   const handleCopyLink = async () => {
     const domain = window.location.hostname;
     await navigator.clipboard.writeText(
-      `${domain}/${storeFrontID}/product/${product.id}`,
+      `${domain}/${storeFrontId}/product/${product.id}`,
     );
-    showToast("Link copied to clipboard");
+    showToast("Link copied to clipboard", SeverityColorEnum.Normal);
   };
 
   const handleDeleteProduct = async () => {
@@ -42,23 +41,14 @@ const ProductPaper = (props: { product: Product }) => {
     for (const i in product.product_images) {
       photos.push(product.product_images[i].fileName);
     }
-    const { error: storageError } = await supabase.storage
-      .from("webpap storage")
-      .remove(photos);
+    await supabaseFetcher(
+      supabase.storage.from("webpap storage").remove(photos),
+    );
 
-    if (storageError) {
-      showToast(storageError.message, SeverityColorEnum.Error);
-      throw new Error(storageError.message);
-    }
+    await supabaseFetcher(
+      supabase.from("products").delete().eq("id", product.id),
+    );
 
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", product.id);
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
     await queryClient.invalidateQueries("allProducts");
     await queryClient.invalidateQueries("soldProducts");
     await queryClient.invalidateQueries("hiddenProducts");
@@ -114,10 +104,15 @@ const ProductPaper = (props: { product: Product }) => {
         className="flex flex-row items-center justify-between mb-4 "
       >
         {product.product_images.length > 0 && (
-          <img
-            src={product.product_images[0].url}
-            className="h-16 w-16 rounded-md object-cover "
-          />
+          <div className="pulse-loading">
+            <img
+              loading="lazy"
+              alt={`${product.name} first image`}
+              src={product.product_images[0].url}
+              className="h-16 w-16 rounded-md object-cover
+             loading-image opacity-0"
+            />
+          </div>
         )}
 
         {product.product_images.length === 0 && (
@@ -151,51 +146,38 @@ const ProductPaper = (props: { product: Product }) => {
 };
 export const UploadedProducts = () => {
   const [selectedTab, setSelectedTab] = useState("allProducts");
-  const { storeFrontID } = useParams();
-  const { showToast } = useAppContext();
+  const { storeFrontId } = useParams();
+  const { supabaseFetcher } = useAppContext();
   const fetchAllProducts = async () => {
-    const { data, error } = await supabase
-      .from("products")
-      .select()
-      .eq("storeFrontId", storeFrontID)
-      .order("created_at", { ascending: false });
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-    return data;
+    return await supabaseFetcher(
+      supabase
+        .from("products")
+        .select()
+        .eq("storefront_id", storeFrontId)
+        .order("created_at", { ascending: false }),
+    );
   };
 
   const fetchSoldProducts = async () => {
-    const { data, error } = await supabase
-      .from("products")
-      .select()
-      .eq("storeFrontId", storeFrontID)
-      .eq("stock", 0)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    return await supabaseFetcher(
+      supabase
+        .from("products")
+        .select()
+        .eq("storefront_id", storeFrontId)
+        .eq("stock", 0)
+        .order("created_at", { ascending: false }),
+    );
   };
 
   const fetchHiddenProducts = async () => {
-    const { data, error } = await supabase
-      .from("products")
-      .select()
-      .eq("storeFrontId", storeFrontID)
-      .eq("isHidden", true)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-
-    return data;
+    await supabaseFetcher(
+      supabase
+        .from("products")
+        .select()
+        .eq("storefront_id", storeFrontId)
+        .eq("is_hidden", true)
+        .order("created_at", { ascending: false }),
+    );
   };
 
   const allProductsQuery = useQuery(
@@ -268,7 +250,7 @@ export const UploadedProducts = () => {
 
         {tabs.map(({ value, products }, index) => (
           <Tabs.Content key={index} className="w-full focus: " value={value}>
-            {products?.map((product, index) => (
+            {products?.map((product: Product, index: number) => (
               <ProductPaper key={index} product={product} />
             ))}
           </Tabs.Content>
