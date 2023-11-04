@@ -5,10 +5,8 @@ import { Retailer } from "../../common/interfaces";
 import { useForm } from "react-hook-form";
 import { useAppContext } from "../../contexts";
 import { supabase } from "../../supabase.ts";
-import { PostgrestError } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { SeverityColorEnum } from "../../common/enums";
-import { uploadPhoto } from "../../services";
 
 const personalDetailsCol = [
   {
@@ -73,7 +71,7 @@ export const Signup = () => {
   const { register, watch } = useForm<Retailer>();
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [message, setMessage] = useState("Create retailer account");
-  const { showToast, supabaseFetcher } = useAppContext();
+  const { showToast, uploadPhoto, supabaseFetcher } = useAppContext();
   const navigate = useNavigate();
 
   const handlePassportPhoto = (value: any) => {
@@ -90,13 +88,6 @@ export const Signup = () => {
 
   const handleDeleteBusiness = () => {
     setBusinessLogo(null);
-  };
-
-  const handleError = (error: PostgrestError | any | null) => {
-    if (error) {
-      showToast(error.message);
-      throw new Error(error);
-    }
   };
 
   const onSubmit = async (e: any) => {
@@ -119,61 +110,70 @@ export const Signup = () => {
     setDisableSubmit(true);
     setMessage("Creating user...");
 
-    const response = await supabaseFetcher(
-      supabase
-        .from("retailers")
-        .select("login_email")
-        .eq("login_email", data.login_email),
-    );
-
-    if (response.length > 0) {
-      showToast(
-        "A user with the same email already exists",
-        SeverityColorEnum.Error,
+    try {
+      const userData = await supabaseFetcher(
+        supabase.auth.signUp({
+          email: data.login_email,
+          password: data.password as string,
+        }),
       );
+      setMessage("uploading passport photo...");
+
+      const passportUrl = await uploadPhoto(
+        passportPhoto,
+        `passport photos/${userData.user?.id}-passport-photo`,
+      );
+
+      setMessage("Uploading logo...");
+
+      const logoUrl = await uploadPhoto(
+        businessLogo,
+        `business logos/${userData.user?.id}-business-logo`,
+      );
+
+      data.passport_photo = passportUrl;
+      data.business_logo = logoUrl;
+      data.wallet_balance = 0;
+      data.id = userData.user?.id;
+      delete data.password;
+      setMessage("Creating your retailer account ...");
+
+      await supabaseFetcher(supabase.from("retailers").insert([data]));
+
+      setMessage("Done");
+      setDisableSubmit(false);
+
+      showToast("Account created successfully!", SeverityColorEnum.Success);
+      navigate("/login");
+    } catch (e: any) {
+      if (
+        e.message ===
+        'duplicate key value violates unique constraint "retailers_businessName_key"'
+      ) {
+        showToast(
+          "A user with the same business name already exists",
+          SeverityColorEnum.Error,
+        );
+        setMessage("Create retailer account");
+
+        setDisableSubmit(false);
+        return;
+      }
+
+      if (e.message === "user already registered") {
+        showToast("Email address already in use", SeverityColorEnum.Error);
+        setMessage("Create retailer account");
+
+        setDisableSubmit(false);
+        return;
+      }
+
+      showToast(e.message, SeverityColorEnum.Error);
       setMessage("Create retailer account");
       setDisableSubmit(false);
-      return;
+
+      throw e;
     }
-
-    const userData = await supabaseFetcher(
-      supabase.auth.signUp({
-        email: data.login_email,
-        password: data.password as string,
-      }),
-    );
-
-    setMessage("uploading passport photo...");
-
-    const passportUrl = await uploadPhoto(
-      passportPhoto,
-      `passport photos/${userData.data.user?.id}-passport-photo`,
-    );
-
-    // setMessage("Uploading logo");
-    //
-    // const logoUrl = await uploadPhoto(
-    //   businessLogo,
-    //   `business logos/${userData.user?.id}-business-logo`,
-    // );
-    //
-    // data.passport_photo = passportUrl;
-    // data.business_logo = logoUrl;
-    // data.wallet_balance = 0;
-    // delete data.password;
-    // setMessage("Creating retailer");
-    //
-    // const { status } = await supabase.from("retailers").insert([data]);
-    //
-    // setMessage("Done");
-    // setDisableSubmit(false);
-    //
-    // if (status === 201) {
-    //   showToast("Account created successfully !");
-    //   navigate("/login");
-    // } else {
-    //   showToast("There was an error");
-    // }
   };
 
   return (

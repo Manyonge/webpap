@@ -4,7 +4,9 @@ import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
+import imageCompression from "browser-image-compression";
 import { supabase } from "../../supabase.ts";
+import { blobToWebP } from "webp-converter-browser";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +35,7 @@ export const AppLayout = () => {
         return;
       } else {
         showToast(e.message, SeverityColorEnum.Error);
+        throw e;
       }
     }
   };
@@ -41,17 +44,33 @@ export const AppLayout = () => {
     photo: File | boolean | string,
     fileName: string,
   ) => {
-    const pathData = await supabaseFetcher(
-      supabase.storage.from("webpap storage").upload(fileName, photo as File),
-    );
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 500,
+      useWebWorker: true,
+    };
 
-    const urlData = await supabaseFetcher(
-      supabase.storage
-        .from("webpap storage")
-        .getPublicUrl(pathData?.path as string),
-    );
+    try {
+      const compressedFile = await imageCompression(photo as File, options);
+      const webpBlob = await blobToWebP(compressedFile);
 
-    return urlData.publicUrl;
+      const pathData = await supabaseFetcher(
+        supabase.storage
+          .from("webpap storage")
+          .upload(fileName, webpBlob as File),
+      );
+
+      const urlData = await supabaseFetcher(
+        supabase.storage
+          .from("webpap storage")
+          .getPublicUrl(pathData?.path as string),
+      );
+
+      return urlData.publicUrl;
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   return (
