@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
+import { supabase } from "../../supabase.ts";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
@@ -36,9 +37,26 @@ export const AppLayout = () => {
     }
   };
 
+  const uploadPhoto = async (
+    photo: File | boolean | string,
+    fileName: string,
+  ) => {
+    const pathData = await supabaseFetcher(
+      supabase.storage.from("webpap storage").upload(fileName, photo as File),
+    );
+
+    const urlData = await supabaseFetcher(
+      supabase.storage
+        .from("webpap storage")
+        .getPublicUrl(pathData?.path as string),
+    );
+
+    return urlData.publicUrl;
+  };
+
   return (
     <AppContext.Provider
-      value={{ showToast, supabaseFetcher: supabaseFetcher }}
+      value={{ showToast, supabaseFetcher: supabaseFetcher, uploadPhoto }}
     >
       <AuthProvider>
         <Outlet />

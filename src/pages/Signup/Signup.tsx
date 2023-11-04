@@ -7,27 +7,28 @@ import { useAppContext } from "../../contexts";
 import { supabase } from "../../supabase.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { SeverityColorEnum } from "../../common/enums";
 import { uploadPhoto } from "../../services";
 
 const personalDetailsCol = [
   {
     label: "Full name",
     id: "fullName",
-    name: "fullName",
+    name: "full_name",
     htmlFor: "fullName",
     type: "text",
   },
   {
-    label: "Phone",
+    label: "Phone Number",
     id: "phoneNumber",
-    name: "phoneNumber",
+    name: "phone_number",
     htmlFor: "phoneNumber",
     type: "number",
   },
   {
     label: "ID Number",
     id: "idNumber",
-    name: "idNumber",
+    name: "id_number",
     htmlFor: "idNumber",
     type: "number",
   },
@@ -37,7 +38,7 @@ const businessDetailsCol = [
   {
     label: "Business Name",
     id: "businessName",
-    name: "businessName",
+    name: "business_name",
     htmlFor: "businessName",
     type: "text",
   },
@@ -45,7 +46,7 @@ const businessDetailsCol = [
   {
     label: "Login email",
     id: "loginEmail",
-    name: "loginEmail",
+    name: "login_email",
     htmlFor: "loginEmail",
     type: "email",
   },
@@ -60,7 +61,7 @@ const businessDetailsCol = [
   {
     label: "Instagram Handle",
     id: "instagramHandle",
-    name: "instagramHandle",
+    name: "instagram_handle",
     htmlFor: "instagramHandle",
     type: "text",
   },
@@ -71,8 +72,8 @@ export const Signup = () => {
   const [businessLogo, setBusinessLogo] = useState(null);
   const { register, watch } = useForm<Retailer>();
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const [message, setMessage] = useState("Submit");
-  const { showToast } = useAppContext();
+  const [message, setMessage] = useState("Create retailer account");
+  const { showToast, supabaseFetcher } = useAppContext();
   const navigate = useNavigate();
 
   const handlePassportPhoto = (value: any) => {
@@ -116,47 +117,63 @@ export const Signup = () => {
     }
 
     setDisableSubmit(true);
-    setMessage("Creating user");
+    setMessage("Creating user...");
 
-    const { data: userData, error: userError } = await supabase.auth.signUp({
-      email: data.login_email,
-      password: data.password as string,
-    });
+    const response = await supabaseFetcher(
+      supabase
+        .from("retailers")
+        .select("login_email")
+        .eq("login_email", data.login_email),
+    );
 
-    handleError(userError);
-    userData.user ? (data.id = userData.user?.id) : null;
+    if (response.length > 0) {
+      showToast(
+        "A user with the same email already exists",
+        SeverityColorEnum.Error,
+      );
+      setMessage("Create retailer account");
+      setDisableSubmit(false);
+      return;
+    }
 
-    setMessage("uploading passport");
+    const userData = await supabaseFetcher(
+      supabase.auth.signUp({
+        email: data.login_email,
+        password: data.password as string,
+      }),
+    );
+
+    setMessage("uploading passport photo...");
 
     const passportUrl = await uploadPhoto(
       passportPhoto,
-      `passport photos/${userData.user?.id}-passport-photo`,
+      `passport photos/${userData.data.user?.id}-passport-photo`,
     );
 
-    setMessage("Uploading logo");
-
-    const logoUrl = await uploadPhoto(
-      businessLogo,
-      `business logos/${userData.user?.id}-business-logo`,
-    );
-
-    data.passport_photo = passportUrl;
-    data.business_logo = logoUrl;
-    data.wallet_balance = 0;
-    delete data.password;
-    setMessage("Creating retailer");
-
-    const { status } = await supabase.from("retailers").insert([data]);
-
-    setMessage("Done");
-    setDisableSubmit(false);
-
-    if (status === 201) {
-      showToast("Account created successfully !");
-      navigate("/login");
-    } else {
-      showToast("There was an error");
-    }
+    // setMessage("Uploading logo");
+    //
+    // const logoUrl = await uploadPhoto(
+    //   businessLogo,
+    //   `business logos/${userData.user?.id}-business-logo`,
+    // );
+    //
+    // data.passport_photo = passportUrl;
+    // data.business_logo = logoUrl;
+    // data.wallet_balance = 0;
+    // delete data.password;
+    // setMessage("Creating retailer");
+    //
+    // const { status } = await supabase.from("retailers").insert([data]);
+    //
+    // setMessage("Done");
+    // setDisableSubmit(false);
+    //
+    // if (status === 201) {
+    //   showToast("Account created successfully !");
+    //   navigate("/login");
+    // } else {
+    //   showToast("There was an error");
+    // }
   };
 
   return (
@@ -172,7 +189,7 @@ export const Signup = () => {
       >
         <div className="shadow-lg rounded-lg w-full ">
           <p className="text-center text-lg md:text-xl font-bold">
-            Personal details
+            Your personal details
           </p>
 
           {passportPhoto && (
@@ -194,10 +211,10 @@ export const Signup = () => {
                 <div
                   className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
                       flex flex-col items-center justify-center border-2
-                       border-dashed border-black"
+                       border-dashed border-[grey]"
                 >
                   <PlusOutlined />
-                  <p className="text-center">
+                  <p className="text-center text-xs ">
                     Passport
                     <br /> photo
                   </p>
@@ -249,12 +266,14 @@ export const Signup = () => {
             <div className="w-fit h-fit rounded-full mx-auto">
               <label htmlFor="business-logo">
                 <div
-                  className="h-32 w-32 md:h-48 md:w-48 rounded-full bg-lightGrey mx-auto
-                      flex flex-col items-center justify-center border-2 border-dashed border-black"
+                  className="h-32 w-32 md:h-48 md:w-48 rounded-full
+                   bg-lightGrey mx-auto
+                      flex flex-col items-center
+                       justify-center border-2 border-dashed border-[grey]"
                 >
                   <PlusOutlined />
 
-                  <p className="text-center">
+                  <p className="text-center text-xs ">
                     Business
                     <br /> logo
                   </p>
