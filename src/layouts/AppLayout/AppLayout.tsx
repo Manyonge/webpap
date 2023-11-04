@@ -4,6 +4,9 @@ import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
+import imageCompression from "browser-image-compression";
+import { supabase } from "../../supabase.ts";
+import { blobToWebP } from "webp-converter-browser";
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false);
@@ -32,13 +35,47 @@ export const AppLayout = () => {
         return;
       } else {
         showToast(e.message, SeverityColorEnum.Error);
+        throw e;
       }
+    }
+  };
+
+  const uploadPhoto = async (
+    photo: File | boolean | string,
+    fileName: string,
+  ) => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 500,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(photo as File, options);
+      const webpBlob = await blobToWebP(compressedFile);
+
+      const pathData = await supabaseFetcher(
+        supabase.storage
+          .from("webpap storage")
+          .upload(fileName, webpBlob as File),
+      );
+
+      const urlData = await supabaseFetcher(
+        supabase.storage
+          .from("webpap storage")
+          .getPublicUrl(pathData?.path as string),
+      );
+
+      return urlData.publicUrl;
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
     }
   };
 
   return (
     <AppContext.Provider
-      value={{ showToast, supabaseFetcher: supabaseFetcher }}
+      value={{ showToast, supabaseFetcher: supabaseFetcher, uploadPhoto }}
     >
       <AuthProvider>
         <Outlet />
