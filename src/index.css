@@ -35,6 +35,12 @@ p {
 
 /*button styles*/
 
+button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-primary {
   background-color: rgba(165, 126, 93, 1);
   color: white;

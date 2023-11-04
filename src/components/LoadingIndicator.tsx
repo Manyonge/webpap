@@ -1,11 +1,20 @@
-export const LoadingIndicator = (props: { heightWidth: number }) => {
-  const { heightWidth } = props;
+import { useAppContext } from "../contexts";
 
+export const LoadingIndicator = (props: {
+  heightWidthXs: number;
+  heightWidthMd: number;
+}) => {
+  const { heightWidthXs, heightWidthMd } = props;
+  const { windowWidth } = useAppContext();
   return (
     <div className="mx-auto">
       <svg
-        height={`${heightWidth}px`}
-        width={`${heightWidth}px`}
+        height={`${
+          windowWidth > heightWidthMd ? heightWidthMd : heightWidthXs
+        }px`}
+        width={`${
+          windowWidth > heightWidthMd ? heightWidthMd : heightWidthXs
+        }px`}
         id="Layer_1"
         version="1.1"
         viewBox="0 0 16 16"

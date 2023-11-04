@@ -1,4 +1,4 @@
-import { Navbar } from "../../components";
+import { LoadingIndicator, Navbar } from "../../components";
 import { useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Retailer } from "../../common/interfaces";
@@ -69,8 +69,8 @@ export const Signup = () => {
   const [passportPhoto, setPassportPhoto] = useState(null);
   const [businessLogo, setBusinessLogo] = useState(null);
   const { register, watch } = useForm<Retailer>();
-  const [disableSubmit, setDisableSubmit] = useState(false);
-  const [message, setMessage] = useState("Create retailer account");
+  const [loading, setLoading] = useState(false);
+
   const { showToast, uploadPhoto, supabaseFetcher } = useAppContext();
   const navigate = useNavigate();
 
@@ -92,23 +92,22 @@ export const Signup = () => {
 
   const onSubmit = async (e: any) => {
     e?.preventDefault();
-
+    setLoading(true);
     const data: Retailer = watch();
 
     if (passportPhoto === null || businessLogo === null) {
-      showToast("You have not included all photos");
+      showToast("You have not included all photos", SeverityColorEnum.Error);
+      setLoading(false);
       return;
     }
 
     for (const key in data) {
       if (data[key] === "") {
-        showToast("Please fill in all fields");
+        showToast("Please fill in all fields", SeverityColorEnum.Error);
+        setLoading(false);
         return;
       }
     }
-
-    setDisableSubmit(true);
-    setMessage("Creating user...");
 
     try {
       const userData = await supabaseFetcher(
@@ -117,32 +116,21 @@ export const Signup = () => {
           password: data.password as string,
         }),
       );
-      setMessage("uploading passport photo...");
-
       const passportUrl = await uploadPhoto(
         passportPhoto,
         `passport photos/${userData.user?.id}-passport-photo`,
       );
-
-      setMessage("Uploading logo...");
-
       const logoUrl = await uploadPhoto(
         businessLogo,
         `business logos/${userData.user?.id}-business-logo`,
       );
-
       data.passport_photo = passportUrl;
       data.business_logo = logoUrl;
       data.wallet_balance = 0;
       data.id = userData.user?.id;
       delete data.password;
-      setMessage("Creating your retailer account ...");
-
       await supabaseFetcher(supabase.from("retailers").insert([data]));
-
-      setMessage("Done");
-      setDisableSubmit(false);
-
+      setLoading(false);
       showToast("Account created successfully!", SeverityColorEnum.Success);
       navigate("/login");
     } catch (e: any) {
@@ -154,24 +142,18 @@ export const Signup = () => {
           "A user with the same business name already exists",
           SeverityColorEnum.Error,
         );
-        setMessage("Create retailer account");
-
-        setDisableSubmit(false);
+        setLoading(false);
         return;
       }
 
       if (e.message === "user already registered") {
         showToast("Email address already in use", SeverityColorEnum.Error);
-        setMessage("Create retailer account");
-
-        setDisableSubmit(false);
+        setLoading(false);
         return;
       }
 
       showToast(e.message, SeverityColorEnum.Error);
-      setMessage("Create retailer account");
-      setDisableSubmit(false);
-
+      setLoading(false);
       throw e;
     }
   };
@@ -305,12 +287,14 @@ export const Signup = () => {
 
         <button
           type="submit"
-          disabled={disableSubmit}
+          disabled={loading}
           className="bg-primary text-[#fff] mx-auto mt-10
                mb-40 w-3/4 py-1.5 rounded-xl shadow-lg"
         >
-          {" "}
-          {message}
+          {loading && (
+            <LoadingIndicator heightWidthMd={25} heightWidthXs={20} />
+          )}
+          {!loading && "Create retailer account"}
         </button>
       </form>
     </div>

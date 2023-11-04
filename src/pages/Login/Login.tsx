@@ -93,7 +93,9 @@ export const Login = () => {
             className="btn-primary py-1 md:py-0.5 w-full
                   rounded-lg border w-230px md:text-lg mt-4 shadow-lg flex items-center justify-center "
           >
-            {loading && <LoadingIndicator heightWidth={25} />}
+            {loading && (
+              <LoadingIndicator heightWidthMd={25} heightWidthXs={20} />
+            )}
             {!loading && "Login"}
           </button>
           <p className="text-sm md:text-base text-center mt-2 mb-10">

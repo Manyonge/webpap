@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import * as Toast from "@radix-ui/react-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
@@ -12,12 +12,18 @@ export const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [severityColor, setSeverityColor] = useState(SeverityColorEnum.Normal);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const showToast = (message: string, severity?: SeverityColorEnum) => {
     setMessage(message);
     severity ? setSeverityColor(severity) : null;
     setOpen(true);
   };
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    console.log(windowWidth);
+  }, [windowWidth, window.innerWidth]);
 
   const supabaseFetcher = async (requestFn: any) => {
     try {
@@ -75,7 +81,12 @@ export const AppLayout = () => {
 
   return (
     <AppContext.Provider
-      value={{ showToast, supabaseFetcher: supabaseFetcher, uploadPhoto }}
+      value={{
+        showToast,
+        supabaseFetcher: supabaseFetcher,
+        uploadPhoto,
+        windowWidth,
+      }}
     >
       <AuthProvider>
         <Outlet />
