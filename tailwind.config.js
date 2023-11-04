@@ -27,7 +27,11 @@ export default {
     fontFamily: {
       sans: ["poppins", "arial"],
     },
-    extend: {},
+    extend: {
+      animation: {
+        "spin-slow": "spin 1.5s linear infinite",
+      },
+    },
   },
   plugins: [],
 };
