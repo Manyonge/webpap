@@ -22,6 +22,14 @@ export const Login = () => {
     setLoading(true);
     const formData = watch();
 
+    for (const key in formData) {
+      if (formData[key] === "") {
+        showToast("Please fill in all fields", SeverityColorEnum.Error);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const userResponse = await supabaseFetcher(
         supabase.auth.signInWithPassword({
