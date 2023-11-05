@@ -58,21 +58,24 @@ export const Login = () => {
           className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
           onSubmit={onSubmit}
         >
-          <input
-            placeholder="Email"
-            {...register("email", { required: true })}
-            className="border-2 border-primary rounded-md 
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-          />
+          <label className="input-container mb-5">
+            <input
+              placeholder="Email"
+              {...register("email", { required: true })}
+              className=" input-field "
+            />
+            <span className="input-label">Email</span>
+          </label>
 
-          <input
-            {...register("password", { required: true })}
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="border-2 border-primary rounded-md
-                  py-2 md:py-2.5 pl-2 md:pl-3 w-full focus:outline-primary"
-          />
+          <label className="input-container mb-5">
+            <input
+              {...register("password", { required: true })}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="input-field"
+            />
+            <span className="input-label">Password</span>
+          </label>
 
           <div className="flex flex-row items-center justify-start mr-auto ">
             <input
