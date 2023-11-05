@@ -92,13 +92,17 @@ export const AppLayout = () => {
         <Outlet />
         <Toast.Provider swipeDirection="right" duration={4000}>
           <Toast.Root
-            className={`ToastRoot flex text-center flex-row py-1 
-            items-center  justify-between ${severityColor}`}
+            className={`ToastRoot flex  flex-row py-1 
+            items-center  justify-center ${severityColor}`}
             open={open}
             onOpenChange={setOpen}
           >
-            <Toast.Title className="ToastTitle">{message}</Toast.Title>
-            <Toast.Action className="ToastAction" asChild altText="close">
+            <Toast.Title className="ToastTitle ml-auto ">{message}</Toast.Title>
+            <Toast.Action
+              className="ToastAction ml-auto"
+              asChild
+              altText="close"
+            >
               <button>
                 {" "}
                 <CloseOutlined />{" "}
