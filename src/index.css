@@ -102,6 +102,10 @@ tr:nth-of-type(even) {
 
 /*input styles*/
 
+input,input::placeholder{
+  background-color: white;
+}
+
 .input-container{
   position:relative;
   width: 100%;
@@ -117,14 +121,14 @@ tr:nth-of-type(even) {
   transform-origin: 0 0;
   transition: transform 120ms ease-in;
   line-height: 1.2;
-  font-size: medium;
+  font-size: 14px;
   background: white;
 
 }
 .input-field{
   box-sizing: border-box;
   padding: 5px;
-  font-size: medium;
+  font-size: 14px;
   height: 35px;
   width: 100%;
   border: 2px solid var(--primary-color);

@@ -60,6 +60,7 @@ export const Login = () => {
         >
           <label className="input-container mb-5">
             <input
+              autoComplete={"false"}
               placeholder="Email"
               {...register("email", { required: true })}
               className=" input-field "

@@ -211,17 +211,19 @@ export const Signup = () => {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center pb-3 px-2 ">
+          <div className="flex flex-col items-center justify-center pb-3 w-1/2 mx-auto px-2 ">
             {personalDetailsCol.map(({ label, id, name, type }, index) => (
-              <input
-                key={index}
-                placeholder={label}
-                id={id}
-                type={type}
-                {...register(name, { required: true })}
-                className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
-                     focus:outline-primary w-11/12 md:w-1/2"
-              />
+              <label className="input-container my-2">
+                <input
+                  key={index}
+                  placeholder={label}
+                  id={id}
+                  type={type}
+                  {...register(name, { required: true })}
+                  className="input-field"
+                />
+                <span className="input-label"> {label} </span>
+              </label>
             ))}
           </div>
         </div>
@@ -270,17 +272,19 @@ export const Signup = () => {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center pb-3  ">
+          <div className="flex flex-col items-center justify-center pb-3 w-1/2 mx-auto  ">
             {businessDetailsCol.map(({ label, id, name, type }, index) => (
-              <input
-                id={id}
-                key={index}
-                placeholder={label}
-                type={type}
-                {...register(name, { required: true })}
-                className="border border-primary pl-2 py-1.5 md:py-2 rounded-lg my-2
-                     focus:outline-primary w-11/12 md:w-1/2"
-              />
+              <label className="input-container  my-2">
+                <input
+                  id={id}
+                  key={index}
+                  placeholder={label}
+                  type={type}
+                  {...register(name, { required: true })}
+                  className="input-field"
+                />
+                <span className="input-label"> {label} </span>
+              </label>
             ))}
           </div>
         </div>
