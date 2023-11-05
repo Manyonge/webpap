@@ -45,6 +45,7 @@ export const Login = () => {
           .eq("id", userResponse.user?.id)
           .single(),
       );
+      // TODO solve not acceptable 406 error
       navigate(`/${retailerResponse.business_name}/admin`);
     } catch (e: any) {
       showToast(e.message, SeverityColorEnum.Error);

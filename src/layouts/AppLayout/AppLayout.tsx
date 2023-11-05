@@ -22,7 +22,6 @@ export const AppLayout = () => {
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
-    console.log(windowWidth);
   }, [windowWidth, window.innerWidth]);
 
   const supabaseFetcher = async (requestFn: any) => {
