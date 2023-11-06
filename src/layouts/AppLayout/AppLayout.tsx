@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { AppContext, AuthProvider } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
-import imageCompression from "browser-image-compression";
+import imageCompression, { Options } from "browser-image-compression";
 import { supabase } from "../../supabase.ts";
 import { blobToWebP } from "webp-converter-browser";
 
@@ -49,9 +49,10 @@ export const AppLayout = () => {
     photo: File | boolean | string,
     fileName: string,
   ) => {
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 500,
+    const options: Options = {
+      maxSizeMB: 2,
+      alwaysKeepResolution: true,
+      maxWidthOrHeight: 512,
       useWebWorker: true,
     };
 

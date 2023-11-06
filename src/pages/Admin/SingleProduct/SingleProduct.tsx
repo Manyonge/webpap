@@ -216,7 +216,7 @@ export const SingleProduct = () => {
     formData.price = parseInt(formData.price.toString());
     formData.stock = parseInt(formData.stock as string);
     formData.retailer_id = retailer?.id as string;
-    formData.storeFront_id = storeFrontId as string;
+    formData.storefront_id = storeFrontId as string;
 
     setMessage("Uploading product...");
     await supabaseFetcher(

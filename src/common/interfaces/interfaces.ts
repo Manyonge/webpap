@@ -1,6 +1,6 @@
 export interface Product {
   retailer_id: string;
-  storeFront_id: string;
+  storefront_id: string;
   name: string;
   category: string;
   condition: string;

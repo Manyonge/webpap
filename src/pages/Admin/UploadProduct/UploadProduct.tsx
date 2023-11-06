@@ -2,7 +2,6 @@ import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Product } from "../../../common/interfaces";
-import { uploadPhoto } from "../../../services";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useGetRetailer } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
@@ -11,14 +10,17 @@ import { SeverityColorEnum } from "../../../common/enums";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useQuery, useQueryClient } from "react-query";
 import { v4 as uuidv4 } from "uuid";
+import { LoadingIndicator } from "../../../components";
 
 export const UploadProduct = () => {
   const { storeFrontId } = useParams();
   const { retailer } = useGetRetailer();
   const { register, watch } = useForm<Product>();
-  const [message, setMessage] = useState("Upload Product");
+  const [productLoading, setProductLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+
   const navigate = useNavigate();
-  const { showToast, supabaseFetcher } = useAppContext();
+  const { showToast, supabaseFetcher, uploadPhoto } = useAppContext();
 
   const [chosenImages, setChosenImages] = useState<File[]>([]);
 
@@ -28,26 +30,44 @@ export const UploadProduct = () => {
   >("");
 
   const fetchCategories = async () => {
-    return await supabaseFetcher(
-      supabase
-        .from("product categories")
-        .select()
-        .eq("storefront_id", storeFrontId),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product categories")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
   const fetchConditions = async () => {
-    return await supabaseFetcher(
-      supabase
-        .from("product conditions")
-        .select()
-        .eq("storefront_id", storeFrontId),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product conditions")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const fetchSizes = async () => {
-    return await supabaseFetcher(
-      supabase.from("product sizes").select().eq("storeFront_id", storeFrontId),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product sizes")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const queryClient = useQueryClient();
@@ -82,17 +102,25 @@ export const UploadProduct = () => {
   };
 
   const uploadData = async (tableName: string, data: any) => {
-    await supabaseFetcher(supabase.from(tableName).insert([data]));
+    setDataLoading(true);
+    try {
+      await supabaseFetcher(supabase.from(tableName).insert([data]));
 
-    showToast(`${dialogPurpose} added successfully`, SeverityColorEnum.Success);
-    setDialogOpen(false);
-    await queryClient.invalidateQueries(dialogPurpose);
+      showToast(
+        `${dialogPurpose} added successfully`,
+        SeverityColorEnum.Success,
+      );
+      setDataLoading(false);
+      setDialogOpen(false);
+      await queryClient.invalidateQueries(dialogPurpose);
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const handleFileChange = (e: any) => {
-    if (chosenImages.length < 5) {
-      setChosenImages((prevState) => [...prevState, e.target.files[0]]);
-    }
+    setChosenImages((prevState) => [...prevState, ...e.target.files]);
   };
 
   const handleDeleteFile = (image: any) => {
@@ -121,7 +149,7 @@ export const UploadProduct = () => {
         break;
       case "size":
         await uploadData("product sizes", {
-          storeFront_id: storeFrontId,
+          storefront_id: storeFrontId,
           retailer_id: retailer?.id,
           size: inputElement?.value,
         });
@@ -131,11 +159,18 @@ export const UploadProduct = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setProductLoading(true);
     const formData = watch();
     if (chosenImages.length === 0) {
       showToast("You have not selected any images", SeverityColorEnum.Error);
       return;
     }
+    if (chosenImages.length > 10) {
+      showToast("You can only upload up to 10 images", SeverityColorEnum.Error);
+      return;
+    }
+
+    const uploadedImages = [];
 
     if (
       formData.category === "" ||
@@ -147,39 +182,39 @@ export const UploadProduct = () => {
       formData.name === ""
     ) {
       showToast("Please fill in all details", SeverityColorEnum.Error);
+      setProductLoading(false);
       return;
     }
+    try {
+      for (const i in chosenImages) {
+        const uniqueId = uuidv4();
+        const publicUrl = await uploadPhoto(
+          chosenImages[i],
+          `product images/${uniqueId}-product-photo.jpg`,
+        );
+        uploadedImages.push({
+          url: publicUrl,
+          file_name: `product images/${uniqueId}-product-photo.jpg`,
+        });
+      }
+      formData.product_images = uploadedImages;
+      formData.is_hidden = false;
+      formData.price = parseInt(formData.price.toString());
+      formData.stock = parseInt(formData.stock as string);
+      formData.retailer_id = retailer?.id as string;
+      formData.storefront_id = storeFrontId as string;
 
-    setMessage("Uploading photos...");
-
-    const uploadedImages = [];
-    for (const i in chosenImages) {
-      const uniqueId = uuidv4();
-      const publicUrl = await uploadPhoto(
-        chosenImages[i],
-        `product images/${uniqueId}-product-photo.jpg`,
-      );
-      uploadedImages.push({
-        url: publicUrl,
-        fileName: `product images/${uniqueId}-product-photo.jpg`,
-      });
+      await supabaseFetcher(supabase.from("products").insert([formData]));
+      showToast("Product uploaded successfully", SeverityColorEnum.Success);
+      navigate(`/${storeFrontId}/admin/products`);
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
     }
-    formData.product_images = uploadedImages;
-    formData.is_hidden = false;
-    formData.price = parseInt(formData.price.toString());
-    formData.stock = parseInt(formData.stock as string);
-    formData.retailer_id = retailer?.id as string;
-    formData.storeFront_id = storeFrontId as string;
-
-    setMessage("Uploading product...");
-    await supabaseFetcher(supabase.from("products").insert([formData]));
-    setMessage("Done");
-    showToast("Product uploaded successfully", SeverityColorEnum.Success);
-    navigate(`/${storeFrontId}/admin/products`);
   };
 
   return (
-    <div className="px-4 md:px-20 py-10">
+    <div className="px-4 md:px-32 py-10  shadow-xl">
       <Link
         to={`/${storeFrontId}/admin/products`}
         className="flex flex-row items-center justify-start font-bold "
@@ -189,32 +224,33 @@ export const UploadProduct = () => {
       </Link>
       <p className="text-center text-lg font-bold">Upload a product</p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="shadow-xl px-5 pb-5 rounded-md">
         <div
           className="flex flex-row items-center
          overflow-x-auto  overflow-y-hidden my-6"
         >
-          {chosenImages.length < 5 && (
-            <div
-              className=" rounded-md border-2
+          <div
+            className=" rounded-md border-2
             border-dashed border-[grey]
        bg-[lightGrey] flex flex-row
         items-center justify-center mr-4  "
+          >
+            <label
+              className="w-32 h-32  flex flex-row items-center justify-center "
+              htmlFor="image-input"
             >
-              <label
-                className="w-32 h-32  flex flex-row items-center justify-center "
-                htmlFor="image-input"
-              >
-                <PlusOutlined />
-              </label>
-              <input
-                type="file"
-                id="image-input"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </div>
-          )}
+              <PlusOutlined />
+            </label>
+            <input
+              disabled={productLoading}
+              type="file"
+              id="image-input"
+              className="hidden"
+              onChange={handleFileChange}
+              accept="image/*"
+              multiple
+            />
+          </div>
 
           {chosenImages.length > 0 &&
             chosenImages.map((image, index) => (
@@ -230,6 +266,7 @@ export const UploadProduct = () => {
                 />
 
                 <button
+                  disabled={productLoading}
                   onClick={() => handleDeleteFile(image)}
                   type={"button"}
                   className="absolute top-0 right-0  bg-white
@@ -243,155 +280,187 @@ export const UploadProduct = () => {
             ))}
         </div>
 
-        <p className="font-bold text-sm mb-2"> Product details</p>
-
-        <div className="flex flex-row items-center justify-between">
-          <select
-            id="category"
-            placeholder="Category"
-            {...register("category")}
-            className="border border-primary rounded-md
-             outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Category
-            </option>
-            {categoryQuery.data !== undefined && categoryQuery.data?.length > 0
-              ? categoryQuery.data.map(
-                  ({ category, id }: { category: string; id: number }) => (
-                    <option value={category} key={id}>
-                      {" "}
-                      {category}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
-
+        <div className="flex flex-row items-end justify-between mb-5">
+          <div className="w-1/2">
+            <label className="" htmlFor="category">
+              Category <span className="text-error">*</span>
+            </label>
+            <select
+              disabled={productLoading}
+              id="category"
+              placeholder="Category"
+              {...register("category")}
+              className="border-2 border-primary rounded-md
+             outline-none w-full block "
+            >
+              <option value="" defaultChecked hidden>
+                Select a category
+              </option>
+              {categoryQuery.data !== undefined &&
+              categoryQuery.data?.length > 0
+                ? categoryQuery.data.map(
+                    ({ category, id }: { category: string; id: number }) => (
+                      <option value={category} key={id}>
+                        {" "}
+                        {category}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
           <button
+            disabled={productLoading}
             onClick={() => handleAddCategory()}
             type="button"
-            className="border border-primary outline-none
-             rounded-md shadow-lg text-sm w-5/12
-          flex flex-row items-center justify-center px-2
+            className="text-white py-0.5 w-1/3
+             rounded-md shadow-xl bg-primary
+          flex flex-row items-center justify-center px-8
           "
           >
             {" "}
-            New <PlusOutlined />
+            <PlusOutlined /> Add category
           </button>
         </div>
 
-        <input
-          placeholder="Enter product name"
-          {...register("name")}
-          className="border border-primary
-           w-full rounded-md mt-5 px-2 "
-        />
-
-        <div className="flex flex-row items-center justify-between mt-4">
-          <select
-            {...register("size")}
-            className="border border-primary
-            rounded-md outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Size
-            </option>
-            {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
-              ? sizeQuery.data.map(
-                  ({ size, id }: { size: string; id: number }) => (
-                    <option value={size} key={id}>
-                      {" "}
-                      {size}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
+        <div className="flex flex-row items-end justify-between mb-5">
+          <div className="w-1/2">
+            <label>
+              Size <span className="text-error">*</span>{" "}
+            </label>
+            <select
+              disabled={productLoading}
+              placeholder="Size"
+              {...register("size")}
+              className="border-2 border-primary
+            rounded-md outline-none w-full block "
+            >
+              <option value="" defaultChecked hidden>
+                Size
+              </option>
+              {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
+                ? sizeQuery.data.map(
+                    ({ size, id }: { size: string; id: number }) => (
+                      <option value={size} key={id}>
+                        {" "}
+                        {size}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
 
           <button
+            disabled={productLoading}
             onClick={handleAddSize}
             type="button"
-            className="border border-primary
-             outline-none rounded-md
-              shadow-lg text-sm w-5/12
-          flex flex-row items-center justify-center px-2
-          "
+            className="text-white py-0.5
+             rounded-md shadow-xl bg-primary w-1/3
+          flex flex-row items-center justify-center px-8"
           >
             {" "}
-            New <PlusOutlined />
+            <PlusOutlined /> Add Size
           </button>
         </div>
 
-        <div className="flex flex-row items-center justify-between mt-4">
-          <select
-            {...register("condition")}
-            className="border border-primary
-            rounded-md outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Condition
-            </option>
-            {conditionQuery.data !== undefined &&
-            conditionQuery.data?.length > 0
-              ? conditionQuery.data.map(
-                  ({ condition, id }: { condition: string; id: number }) => (
-                    <option value={condition} key={id}>
-                      {" "}
-                      {condition}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
+        <div className="flex flex-row items-end justify-between mb-5">
+          <div className="w-1/2">
+            <label>
+              Condition <span className="text-error">*</span>
+            </label>
+            <select
+              disabled={productLoading}
+              {...register("condition")}
+              placeholder="Condition"
+              className="border-2 border-primary
+            rounded-md outline-none w-full block"
+            >
+              <option value="" defaultChecked hidden>
+                Condition
+              </option>
+              {conditionQuery.data !== undefined &&
+              conditionQuery.data?.length > 0
+                ? conditionQuery.data.map(
+                    ({ condition, id }: { condition: string; id: number }) => (
+                      <option value={condition} key={id}>
+                        {" "}
+                        {condition}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
 
           <button
+            disabled={productLoading}
             onClick={handleAddCondition}
             type="button"
-            className="border border-primary
-             outline-none rounded-md
-              shadow-lg text-sm w-5/12
-          flex flex-row items-center
-           justify-center px-2
-          "
+            className="text-white py-0.5
+             rounded-md shadow-xl bg-primary w-1/3
+          flex flex-row items-center justify-center px-8"
           >
             {" "}
-            New <PlusOutlined />
+            <PlusOutlined /> Add Condition
           </button>
         </div>
 
+        <label>
+          Product name <span className="text-error">*</span>{" "}
+        </label>
+        <input
+          placeholder="Product name"
+          {...register("name")}
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 mb-5"
+        />
+        <label>
+          Product description <span className="text-error">*</span>{" "}
+        </label>
         <textarea
           {...register("description")}
           placeholder="Product description"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 mb-5"
         ></textarea>
-
+        <label>
+          Units available <span className="text-error">*</span>{" "}
+        </label>
         <input
           type="number"
           {...register("stock")}
           placeholder="Units available"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 "
         />
-        <p className="text-[grey] text-center text-xs">
+        <p className="text-[grey] mb-5 text-center text-xs">
           {" "}
           A value of '0' means the product is sold out{" "}
         </p>
+
+        <label>
+          Product Price <span className="text-error">*</span>{" "}
+        </label>
 
         <input
           type="number"
           {...register("price")}
           placeholder="Product price"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 mb-5"
         />
 
         <button
+          disabled={productLoading}
           type="submit"
           className="bg-primary text-white
-           w-full
-           rounded-md mt-10 shadow-lg "
+           w-full rounded-md mt-5 shadow-lg"
         >
-          {" "}
-          {message}
+          {productLoading && (
+            <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+          )}
+          {!productLoading && "Upload Product"}
         </button>
       </form>
 
@@ -418,18 +487,28 @@ export const UploadProduct = () => {
             flex flex-col items-center justify-center "
             >
               <input
+                disable={dataLoading}
                 className="border-2 outline-primary border-primary
                 rounded-lg pl-2"
                 name="popoverPurpose"
               />
               <br />
               <button
+                disabled={dataLoading}
                 className="bg-primary text-white px-3 py-1 flex
                flex-row items-center justify-center rounded-lg w-full"
                 type="submit"
               >
                 {" "}
-                <PlusOutlined /> Add{" "}
+                {dataLoading && (
+                  <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+                )}
+                {!dataLoading && (
+                  <p>
+                    {" "}
+                    <PlusOutlined /> Add{" "}
+                  </p>
+                )}
               </button>
             </form>
           </Dialog.Content>
