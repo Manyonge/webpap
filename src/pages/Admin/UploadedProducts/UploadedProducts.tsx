@@ -158,6 +158,17 @@ export const UploadedProducts = () => {
     );
   };
 
+  const fetchAvailableProducts = async () => {
+    return await supabaseFetcher(
+      supabase
+        .from("products")
+        .select()
+        .eq("storefront_id", storeFrontId)
+        .gt("stock", 0)
+        .order("created_at", { ascending: false }),
+    );
+  };
+
   const fetchSoldProducts = async () => {
     return await supabaseFetcher(
       supabase
@@ -170,7 +181,7 @@ export const UploadedProducts = () => {
   };
 
   const fetchHiddenProducts = async () => {
-    await supabaseFetcher(
+    return await supabaseFetcher(
       supabase
         .from("products")
         .select()
@@ -185,6 +196,13 @@ export const UploadedProducts = () => {
     fetchAllProducts,
     { enabled: selectedTab === "allProducts" },
   );
+
+  const availableProductsQuery = useQuery(
+    ["availableProducts", selectedTab],
+    fetchAvailableProducts,
+    { enabled: selectedTab === "availableProducts" },
+  );
+
   const soldProductsQuery = useQuery(
     ["soldProducts", selectedTab],
     fetchSoldProducts,
@@ -202,6 +220,11 @@ export const UploadedProducts = () => {
       label: "All",
       value: "allProducts",
       products: allProductsQuery.data,
+    },
+    {
+      label: "Available",
+      value: "availableProducts",
+      products: availableProductsQuery.data,
     },
     {
       label: "Sold out",
@@ -250,6 +273,19 @@ export const UploadedProducts = () => {
 
         {tabs.map(({ value, products }, index) => (
           <Tabs.Content key={index} className="w-full focus: " value={value}>
+            {hiddenProductsQuery.isLoading ||
+            allProductsQuery.isLoading ||
+            soldProductsQuery.isLoading ||
+            availableProductsQuery.isLoading ? (
+              <p className="text-center">Fetching products... </p>
+            ) : null}
+
+            {products?.length === 0 && (
+              <p className="text-center text-error ">
+                No products available...
+              </p>
+            )}
+
             {products?.map((product: Product, index: number) => (
               <ProductPaper key={index} product={product} />
             ))}
