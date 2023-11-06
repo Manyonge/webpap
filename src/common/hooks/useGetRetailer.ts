@@ -3,21 +3,27 @@ import { supabase } from "../../supabase.ts";
 import { useParams } from "react-router-dom";
 import { Retailer } from "../interfaces";
 import { useAppContext } from "../../contexts";
+import { SeverityColorEnum } from "../enums";
 
 export const useGetRetailer = () => {
   const { storeFrontId } = useParams();
   const [retailer, setRetailer] = useState<Retailer | null>(null);
-  const { supabaseFetcher } = useAppContext();
+  const { supabaseFetcher, showToast } = useAppContext();
   useEffect(() => {
     const getRetailer = async () => {
-      const data = await supabaseFetcher(
-        supabase
-          .from("retailers")
-          .select()
-          .eq("business_name", storeFrontId)
-          .single(),
-      );
-      setRetailer(data);
+      try {
+        const data = await supabaseFetcher(
+          supabase
+            .from("retailers")
+            .select()
+            .eq("business_name", storeFrontId)
+            .single(),
+        );
+        setRetailer(data);
+      } catch (e: any) {
+        showToast(e.message, SeverityColorEnum.Error);
+        throw e;
+      }
     };
     getRetailer().then();
   }, [storeFrontId, supabaseFetcher]);
