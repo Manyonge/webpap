@@ -108,7 +108,6 @@ input,input::placeholder{
 
 .input-container{
   position:relative;
-  width: 100%;
 }
 .input-label {
   position: absolute;
@@ -120,7 +119,6 @@ input,input::placeholder{
   transform: translate(0, 0);
   transform-origin: 0 0;
   transition: transform 120ms ease-in;
-  line-height: 1.2;
   font-size: 14px;
   background: white;
 
