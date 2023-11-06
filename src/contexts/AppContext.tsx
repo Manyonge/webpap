@@ -8,10 +8,12 @@ export type AppContextType = {
     photo: File | boolean | string,
     fileName: string,
   ) => Promise<string>;
+  windowWidth: number;
 };
 export const AppContext = createContext<AppContextType>({
   showToast: () => "",
   supabaseFetcher: async () => "",
   uploadPhoto: async () => "",
+  windowWidth: window.innerWidth,
 });
 export const useAppContext = () => useContext(AppContext);

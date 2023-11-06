@@ -1,46 +1,55 @@
-import { Navbar, WebpapFooter } from "../../components";
+import { LoadingIndicator, Navbar, WebpapFooter } from "../../components";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { supabase } from "../../supabase.ts";
 import { useAppContext } from "../../contexts";
-import { PostgrestError } from "@supabase/supabase-js";
 import { SeverityColorEnum } from "../../common/enums";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { register, watch } = useForm();
-  const { showToast } = useAppContext();
+  const { supabaseFetcher, showToast } = useAppContext();
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const handleShowPassword = (value: any) => {
     setShowPassword(value.target.checked);
   };
 
-  const handleError = (error: PostgrestError | any | null) => {
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error);
-    }
-  };
-
   const onSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
     const formData = watch();
 
-    const { data: user, error: authError } =
-      await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-    handleError(authError);
+    for (const key in formData) {
+      if (formData[key] === "") {
+        showToast("Please fill in all fields", SeverityColorEnum.Error);
+        setLoading(false);
+        return;
+      }
+    }
 
-    if (user) {
-      const { data: retailer } = await supabase
-        .from("retailers")
-        .select()
-        .eq("id", user.user?.id)
-        .single();
-      if (retailer) navigate(`/${retailer.business_name}/admin`);
+    try {
+      const userResponse = await supabaseFetcher(
+        supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        }),
+      );
+
+      const retailerResponse = await supabaseFetcher(
+        supabase
+          .from("retailers")
+          .select()
+          .eq("id", userResponse.user?.id)
+          .single(),
+      );
+      // TODO solve not acceptable 406 error
+      navigate(`/${retailerResponse.business_name}/admin`);
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      setLoading(false);
     }
   };
 
@@ -58,22 +67,25 @@ export const Login = () => {
           className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
           onSubmit={onSubmit}
         >
-          <input
-            placeholder="Email"
-            {...register("email", { required: true })}
-            className="border-2 border-primary rounded-md 
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-          />
+          <label className="input-container mb-5">
+            <input
+              autoComplete={"false"}
+              placeholder="Email"
+              {...register("email", { required: true })}
+              className=" input-field "
+            />
+            <span className="input-label">Email</span>
+          </label>
 
-          <input
-            {...register("password", { required: true })}
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="border-2 border-primary rounded-md
-                  py-2 md:py-2.5 pl-2 md:pl-3 w-full focus:outline-primary
-                  focus:outline-primary "
-          />
+          <label className="input-container mb-5">
+            <input
+              {...register("password", { required: true })}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="input-field"
+            />
+            <span className="input-label">Password</span>
+          </label>
 
           <div className="flex flex-row items-center justify-start mr-auto ">
             <input
@@ -89,13 +101,16 @@ export const Login = () => {
           </div>
 
           <button
+            disabled={loading}
             type="submit"
-            className="bg-[#A57E5D] text-[#fff] py-1 md:py-0.5 w-full
-                  rounded-lg border w-230px md:text-lg mt-4 shadow-lg "
+            className="btn-primary py-1 md:py-0.5 w-full
+                  rounded-lg border w-230px md:text-lg mt-4 shadow-lg flex items-center justify-center "
           >
-            Login
+            {loading && (
+              <LoadingIndicator heightWidthMd={25} heightWidthXs={20} />
+            )}
+            {!loading && "Login"}
           </button>
-
           <p className="text-sm md:text-base text-center mt-2 mb-10">
             Don't have an account?
             <br className="md:hidden" />
