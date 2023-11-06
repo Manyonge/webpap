@@ -214,7 +214,7 @@ export const UploadProduct = () => {
   };
 
   return (
-    <div className="px-4 md:px-32 py-10  shadow-xl">
+    <div className="px-4 md:px-32 py-10">
       <Link
         to={`/${storeFrontId}/admin/products`}
         className="flex flex-row items-center justify-start font-bold "
@@ -280,7 +280,7 @@ export const UploadProduct = () => {
             ))}
         </div>
 
-        <div className="flex flex-row items-end justify-between mb-5">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label className="" htmlFor="category">
               Category <span className="text-error">*</span>
@@ -310,7 +310,7 @@ export const UploadProduct = () => {
             </select>
           </div>
           <button
-            disabled={productLoading}
+            disabled={dataLoading}
             onClick={() => handleAddCategory()}
             type="button"
             className="text-white py-0.5 w-1/3
@@ -318,12 +318,18 @@ export const UploadProduct = () => {
           flex flex-row items-center justify-center px-8
           "
           >
-            {" "}
-            <PlusOutlined /> Add category
+            {dataLoading && (
+              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+            )}
+            {!dataLoading && (
+              <>
+                <PlusOutlined /> Add Category
+              </>
+            )}
           </button>
         </div>
 
-        <div className="flex flex-row items-end justify-between mb-5">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label>
               Size <span className="text-error">*</span>{" "}
@@ -352,19 +358,25 @@ export const UploadProduct = () => {
           </div>
 
           <button
-            disabled={productLoading}
+            disabled={dataLoading}
             onClick={handleAddSize}
             type="button"
             className="text-white py-0.5
              rounded-md shadow-xl bg-primary w-1/3
           flex flex-row items-center justify-center px-8"
           >
-            {" "}
-            <PlusOutlined /> Add Size
+            {dataLoading && (
+              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+            )}
+            {!dataLoading && (
+              <>
+                <PlusOutlined /> Add Size
+              </>
+            )}
           </button>
         </div>
 
-        <div className="flex flex-row items-end justify-between mb-5">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label>
               Condition <span className="text-error">*</span>
@@ -411,30 +423,33 @@ export const UploadProduct = () => {
         </label>
         <input
           placeholder="Product name"
+          disabled={productLoading}
           {...register("name")}
           className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-5"
+          block w-full rounded-md pl-1 mb-3"
         />
         <label>
           Product description <span className="text-error">*</span>{" "}
         </label>
         <textarea
+          disabled={productLoading}
           {...register("description")}
           placeholder="Product description"
           className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-5"
+          block w-full rounded-md pl-1 mb-3"
         ></textarea>
         <label>
           Units available <span className="text-error">*</span>{" "}
         </label>
         <input
           type="number"
+          disabled={productLoading}
           {...register("stock")}
           placeholder="Units available"
           className="border-2 border-primary outline-none
           block w-full rounded-md pl-1 "
         />
-        <p className="text-[grey] mb-5 text-center text-xs">
+        <p className="text-[grey] mb-3 text-center text-xs">
           {" "}
           A value of '0' means the product is sold out{" "}
         </p>
@@ -448,7 +463,7 @@ export const UploadProduct = () => {
           {...register("price")}
           placeholder="Product price"
           className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-5"
+          block w-full rounded-md pl-1 mb-3"
         />
 
         <button
@@ -487,7 +502,7 @@ export const UploadProduct = () => {
             flex flex-col items-center justify-center "
             >
               <input
-                disable={dataLoading}
+                disabled={dataLoading}
                 className="border-2 outline-primary border-primary
                 rounded-lg pl-2"
                 name="popoverPurpose"

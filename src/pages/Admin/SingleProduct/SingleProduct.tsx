@@ -12,6 +12,7 @@ import { useQuery, useQueryClient, UseQueryResult } from "react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import { uploadPhoto } from "../../../services";
 import { v4 as uuidv4 } from "uuid";
+import { LoadingIndicator } from "../../../components";
 
 export const SingleProduct = () => {
   const { storeFrontId, productId } = useParams();
@@ -26,6 +27,9 @@ export const SingleProduct = () => {
   const [dialogPurpose, setDialogPurpose] = useState<
     "" | "category" | "size" | "condition"
   >("");
+
+  const [productLoading, setProductLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
   const fetchPhotos = async () => {
     return await supabaseFetcher(
@@ -226,7 +230,7 @@ export const SingleProduct = () => {
   };
 
   return (
-    <div className="px-4 md:px-20 py-10">
+    <div className="px-4 md:px-32 py-10">
       <Link
         to={`/${storeFrontId}/admin/products`}
         className="flex flex-row items-center justify-start font-bold "
@@ -236,30 +240,29 @@ export const SingleProduct = () => {
       </Link>
       <p className="text-center text-lg font-bold">Edit this product</p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="shadow-xl px-5 pb-5 rounded-md">
         <div className="flex flex-row items-center overflow-x-auto  overflow-y-hidden my-6">
-          {photosQuery.data !== undefined &&
-          photosQuery.data?.productImages?.length < 5 ? (
-            <div
-              className=" rounded-md border-2
+          <div
+            className=" rounded-md border-2
             border-dashed border-[grey]
        bg-[lightGrey] flex flex-row
         items-center justify-center mr-4  "
+          >
+            <label
+              className="w-32 h-32  flex flex-row items-center justify-center "
+              htmlFor="image-input"
             >
-              <label
-                className="w-32 h-32  flex flex-row items-center justify-center "
-                htmlFor="image-input"
-              >
-                <PlusOutlined />
-              </label>
-              <input
-                type="file"
-                id="image-input"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </div>
-          ) : null}
+              <PlusOutlined />
+            </label>
+            <input
+              type="file"
+              id="image-input"
+              className="hidden"
+              onChange={handleFileChange}
+              accept="image/*"
+              multiple
+            />
+          </div>
 
           {photosQuery.data !== undefined &&
           photosQuery?.data?.productImages?.length > 0
@@ -292,71 +295,84 @@ export const SingleProduct = () => {
 
         <p className="font-bold text-sm mb-2"> Product details</p>
 
-        <div className="flex flex-row items-center justify-between">
-          <select
-            id="category"
-            placeholder="Category"
-            {...register("category")}
-            className="border border-primary rounded-md
-             outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Category
-            </option>
-            {categoryQuery.data !== undefined && categoryQuery.data?.length > 0
-              ? categoryQuery.data.map(
-                  ({ category, id }: { category: string; id: number }) => (
-                    <option value={category} key={id}>
-                      {" "}
-                      {category}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
+        <div className="flex flex-row items-center justify-between mb-3">
+          <div className="w-1/2">
+            <label className="" htmlFor="category">
+              Category <span className="text-error">*</span>
+            </label>
+            <select
+              id="category"
+              placeholder="Category"
+              {...register("category")}
+              className="border-2 border-primary rounded-md
+             outline-none w-full block "
+            >
+              <option value="" defaultChecked hidden>
+                Category
+              </option>
+              {categoryQuery.data !== undefined &&
+              categoryQuery.data?.length > 0
+                ? categoryQuery.data.map(
+                    ({ category, id }: { category: string; id: number }) => (
+                      <option value={category} key={id}>
+                        {" "}
+                        {category}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
 
           <button
+            disabled={dataLoading}
             onClick={() => handleAddCategory()}
             type="button"
-            className="border border-primary outline-none
-             rounded-md shadow-lg text-sm w-5/12
-          flex flex-row items-center justify-center px-2
+            className="text-white py-0.5 w-1/3
+             rounded-md shadow-xl bg-primary
+          flex flex-row items-center justify-center px-8
           "
           >
-            {" "}
-            New <PlusOutlined />
+            {dataLoading && (
+              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+            )}
+            {!dataLoading && (
+              <>
+                <PlusOutlined /> Add Category
+              </>
+            )}
           </button>
         </div>
 
-        <input
-          placeholder="Enter product name"
-          {...register("name")}
-          className="border border-primary
-           w-full rounded-md mt-5 px-2 "
-        />
-
-        <div className="flex flex-row items-center justify-between mt-4">
-          <select
-            {...register("size")}
-            className="border border-primary
-            rounded-md outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Size
-            </option>
-            {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
-              ? sizeQuery.data.map(
-                  ({ size, id }: { size: string; id: number }) => (
-                    <option value={size} key={id}>
-                      {" "}
-                      {size}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
+        <div className="flex flex-row items-center justify-between mb-3">
+          <div className="w-1/2">
+            <label>
+              Size <span className="text-error">*</span>{" "}
+            </label>
+            <select
+              disabled={productLoading}
+              {...register("size")}
+              className="border-2 border-primary
+            rounded-md outline-none w-full block  "
+            >
+              <option value="" defaultChecked hidden>
+                Size
+              </option>
+              {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
+                ? sizeQuery.data.map(
+                    ({ size, id }: { size: string; id: number }) => (
+                      <option value={size} key={id}>
+                        {" "}
+                        {size}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
 
           <button
+            disabled={dataLoading}
             onClick={handleAddSize}
             type="button"
             className="border border-primary
@@ -365,80 +381,118 @@ export const SingleProduct = () => {
           flex flex-row items-center justify-center px-2
           "
           >
-            {" "}
-            New <PlusOutlined />
+            {dataLoading && (
+              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+            )}
+            {!dataLoading && (
+              <>
+                <PlusOutlined /> Add Size
+              </>
+            )}
           </button>
         </div>
 
-        <div className="flex flex-row items-center justify-between mt-4">
-          <select
-            {...register("condition")}
-            className="border border-primary
-            rounded-md outline-none w-1/2 text-sm "
-          >
-            <option value="" defaultChecked hidden>
-              Condition
-            </option>
-            {conditionQuery.data !== undefined &&
-            conditionQuery.data?.length > 0
-              ? conditionQuery.data.map(
-                  ({ condition, id }: { condition: string; id: number }) => (
-                    <option value={condition} key={id}>
-                      {" "}
-                      {condition}{" "}
-                    </option>
-                  ),
-                )
-              : null}
-          </select>
+        <div className="flex flex-row items-center justify-between mb-3">
+          <div className="w-1/2">
+            <label>
+              Condition <span className="text-error">*</span>
+            </label>
+            <select
+              disabled={productLoading}
+              {...register("condition")}
+              placeholder="Condition"
+              className="border-2 border-primary
+            rounded-md outline-none w-full block"
+            >
+              <option value="" defaultChecked hidden>
+                Condition
+              </option>
+              {conditionQuery.data !== undefined &&
+              conditionQuery.data?.length > 0
+                ? conditionQuery.data.map(
+                    ({ condition, id }: { condition: string; id: number }) => (
+                      <option value={condition} key={id}>
+                        {" "}
+                        {condition}{" "}
+                      </option>
+                    ),
+                  )
+                : null}
+            </select>
+          </div>
 
           <button
+            disabled={productLoading}
             onClick={handleAddCondition}
             type="button"
-            className="border border-primary
-             outline-none rounded-md
-              shadow-lg text-sm w-5/12
-          flex flex-row items-center
-           justify-center px-2
-          "
+            className="text-white py-0.5
+             rounded-md shadow-xl bg-primary w-1/3
+          flex flex-row items-center justify-center px-8"
           >
             {" "}
             New <PlusOutlined />
           </button>
         </div>
 
+        <label>
+          Product name <span className="text-error">*</span>{" "}
+        </label>
+        <input
+          placeholder="Product name"
+          {...register("name")}
+          disabled={productLoading}
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 mb-3"
+        />
+
+        <label>
+          Product description <span className="text-error">*</span>{" "}
+        </label>
         <textarea
+          disabled={productLoading}
           {...register("description")}
           placeholder="Product description"
           className="border border-primary w-full rounded-md mt-5 px-2 "
         ></textarea>
 
+        <label>
+          Units available <span className="text-error">*</span>{" "}
+        </label>
         <input
           type="number"
+          disabled={productLoading}
           {...register("stock")}
           placeholder="Units available"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 "
         />
-        <p className="text-[grey] text-center text-xs">
+        <p className="text-[grey] mb-3 text-center text-xs">
           {" "}
           A value of '0' means the product is sold out{" "}
         </p>
+
+        <label>
+          Product Price <span className="text-error">*</span>{" "}
+        </label>
 
         <input
           type="number"
           {...register("price")}
           placeholder="Product price"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border-2 border-primary outline-none
+          block w-full rounded-md pl-1 mb-3"
         />
 
         <button
+          disabled={productLoading}
           type="submit"
           className="bg-primary text-white
-           w-full
-           rounded-md mt-10 shadow-lg "
+           w-full rounded-md mt-5 shadow-lg"
         >
-          {" "}
-          {message}
+          {productLoading && (
+            <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+          )}
+          {!productLoading && "Upload Product"}
         </button>
       </form>
 
@@ -465,12 +519,14 @@ export const SingleProduct = () => {
             flex flex-col items-center justify-center "
             >
               <input
+                disabled={dataLoading}
                 className="border-2 outline-primary border-primary
                 rounded-lg pl-2"
                 name="popoverPurpose"
               />
               <br />
               <button
+                disabled={dataLoading}
                 className="bg-primary text-white px-3 py-1 flex
                flex-row items-center justify-center rounded-lg w-full"
                 type="submit"
