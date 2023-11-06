@@ -37,6 +37,7 @@ export const Login = () => {
           password: formData.password,
         }),
       );
+      console.log(userResponse);
 
       const retailerResponse = await supabaseFetcher(
         supabase
@@ -45,7 +46,7 @@ export const Login = () => {
           .eq("id", userResponse.user?.id)
           .single(),
       );
-      // TODO solve not acceptable 406 error
+      console.log(retailerResponse);
       navigate(`/${retailerResponse.business_name}/admin`);
     } catch (e: any) {
       showToast(e.message, SeverityColorEnum.Error);

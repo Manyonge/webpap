@@ -41,6 +41,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [...AdminRoutes],
       },
+
       {
         path: ":storeFrontId",
         element: <StoreFrontLayout />,

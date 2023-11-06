@@ -114,6 +114,7 @@ export const Signup = () => {
         supabase.auth.signUp({
           email: data.login_email,
           password: data.password as string,
+          phone: data.phone_number,
         }),
       );
       const passportUrl = await uploadPhoto(
@@ -213,7 +214,7 @@ export const Signup = () => {
 
           <div className="flex flex-col items-center justify-center pb-3 w-1/2 mx-auto px-2 ">
             {personalDetailsCol.map(({ label, id, name, type }, index) => (
-              <label className="input-container my-2">
+              <label className="input-container my-2" key={index}>
                 <input
                   key={index}
                   placeholder={label}
@@ -274,7 +275,7 @@ export const Signup = () => {
 
           <div className="flex flex-col items-center justify-center pb-3 w-1/2 mx-auto  ">
             {businessDetailsCol.map(({ label, id, name, type }, index) => (
-              <label className="input-container  my-2">
+              <label className="input-container  my-2" key={index}>
                 <input
                   id={id}
                   key={index}

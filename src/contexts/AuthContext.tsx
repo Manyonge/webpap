@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User>();
   const [session, setSession] = useState<Session | null>();
   const [loading, setLoading] = useState(true);
-  const { storeFrontID } = useParams();
+  const { storeFrontId } = useParams();
 
   useEffect(() => {
     const setData = async () => {
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: any) => {
         await supabase
           .from("retailers")
           .select()
-          .eq("businessName", storeFrontID)
+          .eq("businessName", storeFrontId)
           .eq("id", session?.user.id)
           .single();
 

@@ -7,8 +7,7 @@ import { supabase } from "../supabase.ts";
 export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   const { routesRole } = props;
   const { pathname } = useLocation();
-  const params = useParams();
-  const storeFrontId = params.storeFrontId as string;
+  const { storeFrontId } = useParams();
   const navigate = useNavigate();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
