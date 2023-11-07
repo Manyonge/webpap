@@ -258,7 +258,6 @@ export const SingleProduct = () => {
 
       if (
         formData.category === "" ||
-        formData.stock === "" ||
         formData.price.toString() === "" ||
         formData.description === "" ||
         formData.condition === "" ||
@@ -322,6 +321,7 @@ export const SingleProduct = () => {
               className="hidden"
               onChange={handleFileChange}
               accept="image/*"
+              multiple
             />
           </div>
 
@@ -400,7 +400,7 @@ export const SingleProduct = () => {
           flex flex-row items-center justify-center px-8
           "
           >
-            <PlusOutlined /> Add Category
+            <PlusOutlined /> Category
           </button>
         </div>
 
@@ -439,7 +439,7 @@ export const SingleProduct = () => {
              rounded-md shadow-xl bg-primary w-1/3
           flex flex-row items-center justify-center px-8"
           >
-            <PlusOutlined /> Add Size
+            <PlusOutlined /> Size
           </button>
         </div>
 
@@ -481,7 +481,7 @@ export const SingleProduct = () => {
           flex flex-row items-center justify-center px-8"
           >
             {" "}
-            <PlusOutlined /> Add Condition
+            <PlusOutlined /> Condition
           </button>
         </div>
 
@@ -544,7 +544,7 @@ export const SingleProduct = () => {
           {productLoading && (
             <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
           )}
-          {!productLoading && "Upload Product"}
+          {!productLoading && "Edit Product"}
         </button>
       </form>
 

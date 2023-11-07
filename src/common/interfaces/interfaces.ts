@@ -7,7 +7,7 @@ export interface Product {
   description: string;
   price: number;
   size: string;
-  stock: number | string;
+  stock: number;
   is_hidden: boolean;
   id: number | string;
   product_images: { url: string; file_name: string }[];

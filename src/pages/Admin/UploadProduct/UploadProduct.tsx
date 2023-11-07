@@ -177,8 +177,6 @@ export const UploadProduct = () => {
 
     if (
       formData.category === "" ||
-      formData.stock === "" ||
-      formData.price.toString() === "" ||
       formData.description === "" ||
       formData.condition === "" ||
       formData.size === "" ||
@@ -202,8 +200,6 @@ export const UploadProduct = () => {
       }
       formData.product_images = uploadedImages;
       formData.is_hidden = false;
-      formData.price = parseInt(formData.price.toString());
-      formData.stock = parseInt(formData.stock as string);
       formData.retailer_id = retailer?.id as string;
       formData.storefront_id = storeFrontId as string;
 
@@ -322,7 +318,7 @@ export const UploadProduct = () => {
           flex flex-row items-center justify-center px-8
           "
           >
-            <PlusOutlined /> Add Category
+            <PlusOutlined /> Category
           </button>
         </div>
 
@@ -362,7 +358,7 @@ export const UploadProduct = () => {
              rounded-md shadow-xl bg-primary w-1/3
           flex flex-row items-center justify-center px-8"
           >
-            <PlusOutlined /> Add Size
+            <PlusOutlined /> Size
           </button>
         </div>
 
@@ -404,7 +400,7 @@ export const UploadProduct = () => {
           flex flex-row items-center justify-center px-8"
           >
             {" "}
-            <PlusOutlined /> Add Condition
+            <PlusOutlined /> Condition
           </button>
         </div>
 

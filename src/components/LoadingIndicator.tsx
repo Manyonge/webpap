@@ -25,7 +25,7 @@ export const LoadingIndicator = (props: {
         xmlnsXlink="http://www.w3.org/1999/xlink"
         className={`animate-spin-slow ${fillColor ? fillColor : "fill-white"} ${
           styleClasses ? styleClasses : ""
-        } `}
+        } mx-auto `}
       >
         <path
           d="M8,0C7.448,0,7,0.448,7,1v2c0,0.552,0.448,1,1,
