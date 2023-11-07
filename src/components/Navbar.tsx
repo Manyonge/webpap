@@ -123,7 +123,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
         open={popoverOpen}
         onOpenChange={handlePopover}
       >
-        <Popover.Trigger className="lg:hidden ">
+        <Popover.Trigger className="lg:hidden  ">
           <MenuOutlined />
         </Popover.Trigger>
         <Popover.Portal>

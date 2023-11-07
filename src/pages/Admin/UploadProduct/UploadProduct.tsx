@@ -115,6 +115,7 @@ export const UploadProduct = () => {
       await queryClient.invalidateQueries(dialogPurpose);
     } catch (e: any) {
       showToast(e.message, SeverityColorEnum.Error);
+      setDataLoading(false);
       throw e;
     }
   };
@@ -163,10 +164,12 @@ export const UploadProduct = () => {
     const formData = watch();
     if (chosenImages.length === 0) {
       showToast("You have not selected any images", SeverityColorEnum.Error);
+      setProductLoading(false);
       return;
     }
     if (chosenImages.length > 10) {
       showToast("You can only upload up to 10 images", SeverityColorEnum.Error);
+      setProductLoading(false);
       return;
     }
 
@@ -174,8 +177,6 @@ export const UploadProduct = () => {
 
     if (
       formData.category === "" ||
-      formData.stock === "" ||
-      formData.price.toString() === "" ||
       formData.description === "" ||
       formData.condition === "" ||
       formData.size === "" ||
@@ -190,21 +191,20 @@ export const UploadProduct = () => {
         const uniqueId = uuidv4();
         const publicUrl = await uploadPhoto(
           chosenImages[i],
-          `product images/${uniqueId}-product-photo.jpg`,
+          `product images/${uniqueId}-product-photo.webp`,
         );
         uploadedImages.push({
           url: publicUrl,
-          file_name: `product images/${uniqueId}-product-photo.jpg`,
+          file_name: `product images/${uniqueId}-product-photo.webp`,
         });
       }
       formData.product_images = uploadedImages;
       formData.is_hidden = false;
-      formData.price = parseInt(formData.price.toString());
-      formData.stock = parseInt(formData.stock as string);
       formData.retailer_id = retailer?.id as string;
       formData.storefront_id = storeFrontId as string;
 
       await supabaseFetcher(supabase.from("products").insert([formData]));
+      setProductLoading(false);
       showToast("Product uploaded successfully", SeverityColorEnum.Success);
       navigate(`/${storeFrontId}/admin/products`);
     } catch (e: any) {
@@ -269,8 +269,8 @@ export const UploadProduct = () => {
                   disabled={productLoading}
                   onClick={() => handleDeleteFile(image)}
                   type={"button"}
-                  className="absolute top-0 right-0  bg-white
-        shadow-lg  rounded-full p-1
+                  className="absolute top-0 right-0  
+        shadow-lg  rounded-full p-1 bg-error text-white
          flex flex-col items-start justify-center
          "
                 >
@@ -310,7 +310,7 @@ export const UploadProduct = () => {
             </select>
           </div>
           <button
-            disabled={dataLoading}
+            disabled={productLoading}
             onClick={() => handleAddCategory()}
             type="button"
             className="text-white py-0.5 w-1/3
@@ -318,14 +318,7 @@ export const UploadProduct = () => {
           flex flex-row items-center justify-center px-8
           "
           >
-            {dataLoading && (
-              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
-            )}
-            {!dataLoading && (
-              <>
-                <PlusOutlined /> Add Category
-              </>
-            )}
+            <PlusOutlined /> Category
           </button>
         </div>
 
@@ -358,21 +351,14 @@ export const UploadProduct = () => {
           </div>
 
           <button
-            disabled={dataLoading}
+            disabled={productLoading}
             onClick={handleAddSize}
             type="button"
             className="text-white py-0.5
              rounded-md shadow-xl bg-primary w-1/3
           flex flex-row items-center justify-center px-8"
           >
-            {dataLoading && (
-              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
-            )}
-            {!dataLoading && (
-              <>
-                <PlusOutlined /> Add Size
-              </>
-            )}
+            <PlusOutlined /> Size
           </button>
         </div>
 
@@ -414,7 +400,7 @@ export const UploadProduct = () => {
           flex flex-row items-center justify-center px-8"
           >
             {" "}
-            <PlusOutlined /> Add Condition
+            <PlusOutlined /> Condition
           </button>
         </div>
 
@@ -437,7 +423,7 @@ export const UploadProduct = () => {
           placeholder="Product description"
           className="border-2 border-primary outline-none
           block w-full rounded-md pl-1 mb-3"
-        ></textarea>
+        />
         <label>
           Units available <span className="text-error">*</span>{" "}
         </label>
@@ -461,6 +447,7 @@ export const UploadProduct = () => {
         <input
           type="number"
           {...register("price")}
+          disabled={productLoading}
           placeholder="Product price"
           className="border-2 border-primary outline-none
           block w-full rounded-md pl-1 mb-3"

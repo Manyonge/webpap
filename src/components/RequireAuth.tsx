@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAppContext } from "../contexts";
 import { supabase } from "../supabase.ts";
+import { LoadingIndicator } from "./LoadingIndicator.tsx";
 
 export const RequireAuth = (props: { children: any }) => {
   const { children } = props;
@@ -32,6 +33,13 @@ export const RequireAuth = (props: { children: any }) => {
     checkLogin().then();
   });
   if (isVerifying)
-    return <p className="text-3xl font-bold text-center ">...</p>;
+    return (
+      <LoadingIndicator
+        heightWidthXs={30}
+        heightWidthMd={40}
+        fillColor="fill-black"
+        styleClasses="mx-auto mt-10"
+      />
+    );
   return <> {children} </>;
 };

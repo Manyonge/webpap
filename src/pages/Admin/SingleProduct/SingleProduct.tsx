@@ -5,23 +5,20 @@ import { Product } from "../../../common/interfaces";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts";
 import { SeverityColorEnum } from "../../../common/enums";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useQuery, useQueryClient, UseQueryResult } from "react-query";
 import { PostgrestError } from "@supabase/supabase-js";
-import { uploadPhoto } from "../../../services";
-import { v4 as uuidv4 } from "uuid";
 import { LoadingIndicator } from "../../../components";
+import { v4 as uuidv4 } from "uuid";
 
 export const SingleProduct = () => {
   const { storeFrontId, productId } = useParams();
-  useLoadingImage();
   const { retailer } = useGetRetailer();
   const { register, watch, setValue } = useForm<Product>();
-  const [message, setMessage] = useState("Upload Product");
   const navigate = useNavigate();
-  const { showToast, supabaseFetcher } = useAppContext();
+  const { showToast, supabaseFetcher, uploadPhoto } = useAppContext();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogPurpose, setDialogPurpose] = useState<
@@ -30,54 +27,82 @@ export const SingleProduct = () => {
 
   const [productLoading, setProductLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchPhotos = async () => {
-    return await supabaseFetcher(
-      supabase
-        .from("products")
-        .select("product_images")
-        .eq("id", productId)
-        .single(),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("products")
+          .select("product_images")
+          .eq("id", productId)
+          .single(),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const fetchProduct = async () => {
-    const data = await supabaseFetcher(
-      supabase.from("products").select().eq("id", productId).single(),
-    );
+    try {
+      const data = await supabaseFetcher(
+        supabase.from("products").select().eq("id", productId).single(),
+      );
 
-    setValue("name", data?.name as string);
-    setValue("category", data?.category as string);
-    setValue("size", data?.size as string);
-    setValue("condition", data?.condition as string);
-    setValue("description", data?.description as string);
-    setValue("stock", data?.stock as string);
-    setValue("price", data?.price as number);
-
-    return data;
+      setValue("name", data?.name as string);
+      setValue("category", data?.category as string);
+      setValue("size", data?.size as string);
+      setValue("condition", data?.condition as string);
+      setValue("description", data?.description as string);
+      setValue("stock", data?.stock as string);
+      setValue("price", data?.price as number);
+      return data;
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const fetchCategories = async () => {
-    return supabaseFetcher(
-      supabase
-        .from("product categories")
-        .select()
-        .eq("storeFront_id", storeFrontId),
-    );
+    try {
+      return supabaseFetcher(
+        supabase
+          .from("product categories")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
   const fetchConditions = async () => {
-    return await supabaseFetcher(
-      supabase
-        .from("product conditions")
-        .select()
-        .eq("storeFront_id", storeFrontId),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product conditions")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const fetchSizes = async () => {
-    return await supabaseFetcher(
-      supabase.from("product sizes").select().eq("storeFront_id", storeFrontId),
-    );
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product sizes")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const queryClient = useQueryClient();
@@ -93,7 +118,7 @@ export const SingleProduct = () => {
   const productQuery = useQuery(["product"], fetchProduct);
 
   const photosQuery: UseQueryResult<
-    { productImages: { url: string; file_name: string }[] },
+    { product_images: { url: string; file_name: string }[] },
     PostgrestError
   > = useQuery(["photos"], fetchPhotos);
 
@@ -118,10 +143,20 @@ export const SingleProduct = () => {
   };
 
   const uploadData = async (tableName: string, data: any) => {
-    await supabaseFetcher(supabase.from(tableName).insert([data]));
-    showToast(`${dialogPurpose} added successfully`, SeverityColorEnum.Success);
-    setDialogOpen(false);
-    await queryClient.invalidateQueries(dialogPurpose);
+    try {
+      setDataLoading(true);
+      await supabaseFetcher(supabase.from(tableName).insert([data]));
+      showToast(
+        `${dialogPurpose} added successfully`,
+        SeverityColorEnum.Success,
+      );
+      setDataLoading(false);
+      setDialogOpen(false);
+      await queryClient.invalidateQueries(dialogPurpose);
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
 
   const handleDialogSubmit = async (e: any) => {
@@ -155,79 +190,104 @@ export const SingleProduct = () => {
   };
 
   const handleFileChange = async (e: any) => {
-    const uniqueId = uuidv4();
-    const publicUrl = await uploadPhoto(
-      e.target.files[0],
-      `product images/${uniqueId}-product-photo.jpg`,
-    );
-    const images = photosQuery.data?.productImages;
-    images?.push({
-      url: publicUrl,
-      file_name: `product images/${uniqueId}-product-photo.jpg`,
-    });
+    try {
+      const uniqueId = uuidv4();
+      const publicUrl = await uploadPhoto(
+        e.target.files[0],
+        `product images/${uniqueId}-product-photo.jpg`,
+      );
+      const images = photosQuery.data?.product_images;
+      images?.push({
+        url: publicUrl,
+        file_name: `product images/${uniqueId}-product-photo.jpg`,
+      });
 
-    await supabaseFetcher(
-      supabase
-        .from("products")
-        .update({ product_images: images })
-        .eq("id", productId),
-    );
+      await supabaseFetcher(
+        supabase
+          .from("products")
+          .update({ product_images: images })
+          .eq("id", productId),
+      );
 
-    await queryClient.invalidateQueries("photos");
+      await queryClient.invalidateQueries("photos");
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
   };
   const handleDeleteFile = async (fileName: string) => {
-    const newPhotos = photosQuery.data?.productImages.filter(
-      (image) => image.file_name !== fileName,
-    );
-    await supabaseFetcher(
-      supabase
-        .from("products")
-        .update({ product_images: newPhotos })
-        .eq("id", productId),
-    );
+    try {
+      setDeleteLoading(true);
 
-    await supabaseFetcher(
-      supabase.storage
-        .from("webpap storage")
-        .remove([`product images/${fileName}`]),
-    );
+      const newPhotos = photosQuery.data?.product_images.filter(
+        (image) => image.file_name !== fileName,
+      );
+      await supabaseFetcher(
+        supabase
+          .from("products")
+          .update({ product_images: newPhotos })
+          .eq("id", productId),
+      );
 
-    await queryClient.invalidateQueries("photos");
+      await supabaseFetcher(
+        supabase.storage
+          .from("webpap storage")
+          .remove([`product images/${fileName}`]),
+      );
+
+      await queryClient.invalidateQueries("photos");
+      setDeleteLoading(false);
+    } catch (e: any) {
+      setDeleteLoading(false);
+      showToast(e.message, SeverityColorEnum.Error);
+
+      throw e;
+    }
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const formData = watch();
-    if (photosQuery.data?.productImages.length === 0) {
-      showToast("You have not selected any images", SeverityColorEnum.Error);
-      return;
+    try {
+      setProductLoading(true);
+      const formData = watch();
+      if (photosQuery.data?.product_images.length === 0) {
+        showToast("You have not selected any images", SeverityColorEnum.Error);
+        setProductLoading(false);
+        return;
+      }
+
+      if (
+        formData.category === "" ||
+        formData.price.toString() === "" ||
+        formData.description === "" ||
+        formData.condition === "" ||
+        formData.size === "" ||
+        formData.name === ""
+      ) {
+        showToast("Please fill in all details", SeverityColorEnum.Error);
+        setProductLoading(false);
+        return;
+      }
+
+      formData.is_hidden = productQuery?.data?.is_hidden as boolean;
+      formData.price = parseInt(formData.price.toString());
+      formData.stock = parseInt(formData.stock as string);
+      formData.retailer_id = retailer?.id as string;
+      formData.storefront_id = storeFrontId as string;
+
+      await supabaseFetcher(
+        supabase.from("products").update(formData).eq("id", productId),
+      );
+      showToast("Product updated successfully", SeverityColorEnum.Success);
+      navigate(`/${storeFrontId}/admin/products`);
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      setProductLoading(false);
+      throw e;
     }
-
-    if (
-      formData.category === "" ||
-      formData.stock === "" ||
-      formData.price.toString() === "" ||
-      formData.description === "" ||
-      formData.condition === "" ||
-      formData.size === "" ||
-      formData.name === ""
-    ) {
-      showToast("Please fill in all details", SeverityColorEnum.Error);
-      return;
-    }
-
-    formData.is_hidden = productQuery?.data?.is_hidden as boolean;
-    formData.price = parseInt(formData.price.toString());
-    formData.stock = parseInt(formData.stock as string);
-    formData.retailer_id = retailer?.id as string;
-    formData.storefront_id = storeFrontId as string;
-
-    setMessage("Uploading product...");
-    await supabaseFetcher(
-      supabase.from("products").update(formData).eq("id", productId),
-    );
-    navigate(`/${storeFrontId}/admin/products`);
   };
+
+  useLoadingImage();
 
   return (
     <div className="px-4 md:px-32 py-10">
@@ -255,6 +315,7 @@ export const SingleProduct = () => {
               <PlusOutlined />
             </label>
             <input
+              disabled={productLoading}
               type="file"
               id="image-input"
               className="hidden"
@@ -265,28 +326,33 @@ export const SingleProduct = () => {
           </div>
 
           {photosQuery.data !== undefined &&
-          photosQuery?.data?.productImages?.length > 0
-            ? photosQuery.data?.productImages?.map((image, index) => (
+          photosQuery?.data?.product_images?.length > 0
+            ? photosQuery.data?.product_images?.map((image, index) => (
                 <div
                   key={index}
                   className="mr-1  flex flex-shrink-0  items-center
-              justify-between relative  w-36 h-36 pulse-loading "
+              justify-between relative pulse-loading "
                 >
                   <img
-                    className=" w-32 h-32  object-cover opacity-0 "
+                    className=" w-32 h-32 loading-image object-cover opacity-0 "
                     alt={`product-image-${index++}`}
                     src={image.url}
+                    loading="eager"
                   />
 
                   <button
+                    disabled={productLoading || deleteLoading}
                     onClick={() => handleDeleteFile(image.file_name)}
                     type={"button"}
-                    className="absolute top-0 right-0  bg-white
+                    className="absolute top-0 right-0
         shadow-lg  rounded-full p-1 
-         flex flex-col items-start justify-center
+         flex flex-col items-start justify-center text-white bg-error
          "
                   >
-                    <DeleteOutlined />
+                    {deleteLoading && (
+                      <LoadingIndicator heightWidthXs={20} heightWidthMd={20} />
+                    )}
+                    {!deleteLoading && <DeleteOutlined />}
                   </button>
                 </div>
               ))
@@ -295,12 +361,13 @@ export const SingleProduct = () => {
 
         <p className="font-bold text-sm mb-2"> Product details</p>
 
-        <div className="flex flex-row items-center justify-between mb-3">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label className="" htmlFor="category">
               Category <span className="text-error">*</span>
             </label>
             <select
+              disabled={productLoading}
               id="category"
               placeholder="Category"
               {...register("category")}
@@ -308,7 +375,7 @@ export const SingleProduct = () => {
              outline-none w-full block "
             >
               <option value="" defaultChecked hidden>
-                Category
+                Select a category
               </option>
               {categoryQuery.data !== undefined &&
               categoryQuery.data?.length > 0
@@ -325,7 +392,7 @@ export const SingleProduct = () => {
           </div>
 
           <button
-            disabled={dataLoading}
+            disabled={productLoading}
             onClick={() => handleAddCategory()}
             type="button"
             className="text-white py-0.5 w-1/3
@@ -333,18 +400,11 @@ export const SingleProduct = () => {
           flex flex-row items-center justify-center px-8
           "
           >
-            {dataLoading && (
-              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
-            )}
-            {!dataLoading && (
-              <>
-                <PlusOutlined /> Add Category
-              </>
-            )}
+            <PlusOutlined /> Category
           </button>
         </div>
 
-        <div className="flex flex-row items-center justify-between mb-3">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label>
               Size <span className="text-error">*</span>{" "}
@@ -372,27 +432,18 @@ export const SingleProduct = () => {
           </div>
 
           <button
-            disabled={dataLoading}
+            disabled={productLoading}
             onClick={handleAddSize}
             type="button"
-            className="border border-primary
-             outline-none rounded-md
-              shadow-lg text-sm w-5/12
-          flex flex-row items-center justify-center px-2
-          "
+            className="text-white py-0.5
+             rounded-md shadow-xl bg-primary w-1/3
+          flex flex-row items-center justify-center px-8"
           >
-            {dataLoading && (
-              <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
-            )}
-            {!dataLoading && (
-              <>
-                <PlusOutlined /> Add Size
-              </>
-            )}
+            <PlusOutlined /> Size
           </button>
         </div>
 
-        <div className="flex flex-row items-center justify-between mb-3">
+        <div className="flex flex-row items-end justify-between mb-3">
           <div className="w-1/2">
             <label>
               Condition <span className="text-error">*</span>
@@ -430,7 +481,7 @@ export const SingleProduct = () => {
           flex flex-row items-center justify-center px-8"
           >
             {" "}
-            New <PlusOutlined />
+            <PlusOutlined /> Condition
           </button>
         </div>
 
@@ -452,7 +503,7 @@ export const SingleProduct = () => {
           disabled={productLoading}
           {...register("description")}
           placeholder="Product description"
-          className="border border-primary w-full rounded-md mt-5 px-2 "
+          className="border border-primary w-full rounded-md mb-3 px-2 "
         ></textarea>
 
         <label>
@@ -476,6 +527,7 @@ export const SingleProduct = () => {
         </label>
 
         <input
+          disabled={productLoading}
           type="number"
           {...register("price")}
           placeholder="Product price"
@@ -492,7 +544,7 @@ export const SingleProduct = () => {
           {productLoading && (
             <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
           )}
-          {!productLoading && "Upload Product"}
+          {!productLoading && "Edit Product"}
         </button>
       </form>
 
@@ -531,8 +583,14 @@ export const SingleProduct = () => {
                flex-row items-center justify-center rounded-lg w-full"
                 type="submit"
               >
-                {" "}
-                <PlusOutlined /> Add{" "}
+                {dataLoading && (
+                  <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+                )}
+                {!dataLoading && (
+                  <>
+                    <PlusOutlined /> Add
+                  </>
+                )}
               </button>
             </form>
           </Dialog.Content>

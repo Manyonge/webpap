@@ -34,7 +34,7 @@ const SearchBar = () => {
       .from("products")
       .select()
       .eq("storeFrontId", storeFrontID)
-      .eq("name", name);
+      .ilike("name", name);
     if (error) {
       showToast(error.message);
       throw new Error(error.message);
