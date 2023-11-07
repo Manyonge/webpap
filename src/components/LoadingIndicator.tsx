@@ -3,8 +3,10 @@ import { useAppContext } from "../contexts";
 export const LoadingIndicator = (props: {
   heightWidthXs: number;
   heightWidthMd: number;
+  fillColor?: string;
+  styleClasses?: string;
 }) => {
-  const { heightWidthXs, heightWidthMd } = props;
+  const { heightWidthXs, heightWidthMd, fillColor, styleClasses } = props;
   const { windowWidth } = useAppContext();
   return (
     <div className="mx-auto">
@@ -21,7 +23,9 @@ export const LoadingIndicator = (props: {
         xmlSpace="preserve"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        className="animate-spin-slow fill-white"
+        className={`animate-spin-slow ${fillColor ? fillColor : "fill-white"} ${
+          styleClasses ? styleClasses : ""
+        } `}
       >
         <path
           d="M8,0C7.448,0,7,0.448,7,1v2c0,0.552,0.448,1,1,

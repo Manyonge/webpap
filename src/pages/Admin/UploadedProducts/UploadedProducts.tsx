@@ -9,6 +9,7 @@ import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/";
 import { SeverityColorEnum } from "../../../common/enums";
 import { useLoadingImage } from "../../../common/hooks";
+import { LoadingIndicator } from "../../../components";
 
 const ProductPaper = (props: { product: Product }) => {
   const { product } = props;
@@ -277,11 +278,16 @@ export const UploadedProducts = () => {
             allProductsQuery.isLoading ||
             soldProductsQuery.isLoading ||
             availableProductsQuery.isLoading ? (
-              <p className="text-center">Fetching products... </p>
+              <LoadingIndicator
+                heightWidthXs={40}
+                heightWidthMd={50}
+                fillColor="fill-black"
+                styleClasses="mx-auto mt-32"
+              />
             ) : null}
 
             {products?.length === 0 && (
-              <p className="text-center text-error ">
+              <p className="text-center text-error mt-32 ">
                 No products available...
               </p>
             )}
