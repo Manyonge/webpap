@@ -37,7 +37,6 @@ export const Login = () => {
           password: formData.password,
         }),
       );
-      console.log(userResponse);
 
       const retailerResponse = await supabaseFetcher(
         supabase
@@ -46,7 +45,6 @@ export const Login = () => {
           .eq("id", userResponse.user?.id)
           .single(),
       );
-      console.log(retailerResponse);
       navigate(`/${retailerResponse.business_name}/admin`);
     } catch (e: any) {
       showToast(e.message, SeverityColorEnum.Error);
@@ -68,25 +66,22 @@ export const Login = () => {
           className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
           onSubmit={onSubmit}
         >
-          <label className="input-container mb-5">
-            <input
-              autoComplete={"false"}
-              placeholder="Email"
-              {...register("email", { required: true })}
-              className=" input-field "
-            />
-            <span className="input-label">Email</span>
-          </label>
+          <label className="w-full">Email</label>
+          <input
+            autoComplete={"false"}
+            placeholder="Email"
+            {...register("email", { required: true })}
+            className="w-full border-2 border-primary outline-none rounded-lg pl-1 py-1 full mb-4"
+          />
 
-          <label className="input-container mb-5">
-            <input
-              {...register("password", { required: true })}
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="input-field"
-            />
-            <span className="input-label">Password</span>
-          </label>
+          <label className="w-full">Password</label>
+
+          <input
+            {...register("password", { required: true })}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="w-full border-2 border-primary outline-none rounded-lg pl-1 py-1"
+          />
 
           <div className="flex flex-row items-center justify-start mr-auto ">
             <input
