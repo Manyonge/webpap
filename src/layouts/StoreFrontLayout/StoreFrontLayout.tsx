@@ -1,14 +1,17 @@
 import {
   Link,
-  Navigate,
   Outlet,
   useLocation,
+  useNavigate,
   useParams,
 } from "react-router-dom";
 import * as Popover from "@radix-ui/react-popover";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { ProductSearch } from "../../components";
+import { useEffect, useState } from "react";
+import { LoadingIndicator, ProductSearch } from "../../components";
+import { useAppContext } from "../../contexts";
+import { SeverityColorEnum } from "../../common/enums";
+import { supabase } from "../../supabase.ts";
 
 // const SearchBar = () => {
 //   const { showToast, supabaseFetcher } = useAppContext();
@@ -118,16 +121,47 @@ export const StoreFrontLayout = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { storeFrontId } = useParams();
   const { pathname } = useLocation();
+  const { supabaseFetcher, showToast } = useAppContext();
+  const navigate = useNavigate();
+  const [verifyLoading, setVerifyLoading] = useState(true);
+
   const routes = [
     { label: "Home", path: `/${storeFrontId}` },
     { label: "Shopping Cart", path: `/${storeFrontId}/shopping-cart` },
   ];
 
+  useEffect(() => {
+    const verifyStoreId = async () => {
+      try {
+        const retailer = await supabaseFetcher(
+          supabase.from("retailers").select().eq("business_name", storeFrontId),
+        );
+        if (retailer) {
+          setVerifyLoading(false);
+        } else {
+          navigate("/market-place");
+        }
+      } catch (e: any) {
+        showToast(e.message, SeverityColorEnum.Error);
+        throw e;
+      }
+    };
+    verifyStoreId().then();
+  }, [storeFrontId]);
+
   const handlePopover = () => {
     setPopoverOpen(!popoverOpen);
   };
 
-  if (retailerError) return <Navigate to={"/404"} />;
+  if (verifyLoading)
+    return (
+      <LoadingIndicator
+        heightWidthXs={30}
+        heightWidthMd={40}
+        styleClasses="mt-40"
+        fillColor="fill-black"
+      />
+    );
 
   return (
     <>
