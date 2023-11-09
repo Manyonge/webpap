@@ -178,7 +178,6 @@ export const StoreFrontLayout = () => {
           {" "}
           {`${storeFrontId}`}{" "}
         </Link>
-
         <Popover.Root
           defaultOpen={false}
           open={popoverOpen}

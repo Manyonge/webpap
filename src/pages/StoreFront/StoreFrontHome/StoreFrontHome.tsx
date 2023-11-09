@@ -121,34 +121,38 @@ const ProductCard = (props: { product: Product }) => {
 };
 
 export const StoreFrontHome = () => {
-  const { storeFrontID } = useParams();
+  const { storeFrontId } = useParams();
 
-  const { showToast } = useAppContext();
+  const { showToast, supabaseFetcher } = useAppContext();
 
   const [category, setCategory] = useState("");
   const [size, setSize] = useState("");
   const fetchCategories = async () => {
-    const { data, error } = await supabase
-      .from("product categories")
-      .select()
-      .eq("storeFrontId", storeFrontID);
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product categories")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message);
+      throw e;
     }
-    return data;
   };
 
   const fetchSizes = async () => {
-    const { data, error } = await supabase
-      .from("product sizes")
-      .select()
-      .eq("storeFrontId", storeFrontID);
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("product sizes")
+          .select()
+          .eq("storefront_id", storeFrontId),
+      );
+    } catch (e: any) {
+      showToast(e.message);
+      throw new Error(e.message);
     }
-    return data;
   };
 
   const fetchProducts = async () => {
@@ -156,7 +160,7 @@ export const StoreFrontHome = () => {
       const { data, error } = await supabase
         .from("products")
         .select()
-        .eq("storeFrontId", storeFrontID)
+        .eq("storeFrontId", storeFrontId)
         .eq("size", size)
         .eq("category", category);
       if (error) {
@@ -170,7 +174,7 @@ export const StoreFrontHome = () => {
       const { data, error } = await supabase
         .from("products")
         .select()
-        .eq("storeFrontId", storeFrontID)
+        .eq("storeFrontId", storeFrontId)
         .eq("size", size);
       if (error) {
         showToast(error.message);
@@ -183,7 +187,7 @@ export const StoreFrontHome = () => {
       const { data, error } = await supabase
         .from("products")
         .select()
-        .eq("storeFrontId", storeFrontID)
+        .eq("storeFrontId", storeFrontId)
         .eq("category", category);
       if (error) {
         showToast(error.message);
@@ -196,7 +200,7 @@ export const StoreFrontHome = () => {
       const { data, error } = await supabase
         .from("products")
         .select()
-        .eq("storeFrontId", storeFrontID);
+        .eq("storeFrontId", storeFrontId);
       if (error) {
         showToast(error.message);
         throw new Error(error.message);
@@ -212,7 +216,7 @@ export const StoreFrontHome = () => {
     }: { data: Retailer | null; error: PostgrestError | null } = await supabase
       .from("retailers")
       .select()
-      .eq("businessName", storeFrontID)
+      .eq("businessName", storeFrontId)
       .single();
 
     if (error) {
@@ -242,7 +246,7 @@ export const StoreFrontHome = () => {
             border-[grey] mr-auto md:mb-4 "
             src={retailerQuery.data?.business_logo as string}
           />
-          <p className="text-left font-bold text-lg "> {storeFrontID} </p>
+          <p className="text-left font-bold text-lg "> {storeFrontId} </p>
         </div>
 
         <div>
