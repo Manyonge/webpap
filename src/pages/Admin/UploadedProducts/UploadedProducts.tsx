@@ -9,104 +9,7 @@ import { supabase } from "../../../supabase.ts";
 import { useAppContext } from "../../../contexts/";
 import { SeverityColorEnum } from "../../../common/enums";
 import { useLoadingImage } from "../../../common/hooks";
-import { LoadingIndicator } from "../../../components";
-
-const ProductSearch = () => {
-  const [searchString, setSearchString] = useState("");
-
-  const { supabaseFetcher, showToast } = useAppContext();
-  const dialog = document.querySelector("dialog");
-
-  const fetchProducts = async (): Promise<Product[]> => {
-    try {
-      return await supabaseFetcher(
-        supabase.from("products").select().ilike("name", searchString),
-      );
-    } catch (e: any) {
-      showToast(e.message, SeverityColorEnum.Error);
-      throw e;
-    }
-  };
-
-  const searchQuery = useQuery(["searchQuery", searchString], {
-    queryFn: fetchProducts,
-  });
-  const handleSearchChange = (e: any) => {
-    setSearchString(e.target.value);
-  };
-
-  document.addEventListener("click", (event) => {
-    if (!dialog?.contains(event.target as Node) && dialog?.open) {
-      setSearchString("");
-      dialog?.close();
-    }
-  });
-
-  useLoadingImage();
-  return (
-    <div className="w-3/4 mx-auto relative mb-2 z-10 ">
-      <input
-        type="search"
-        onChange={handleSearchChange}
-        value={searchString}
-        placeholder="Search product by name"
-        className=" pl-1 border-2 border-primary outline-none rounded-full w-full"
-      />
-      {searchString !== "" && (
-        <dialog
-          open={searchString.length > 0}
-          className="w-full py-2 shadow-2xl rounded-lg "
-        >
-          {searchQuery.isLoading && (
-            <LoadingIndicator
-              heightWidthXs={20}
-              heightWidthMd={30}
-              fillColor="fill-black"
-            />
-          )}
-          {searchQuery.data && searchQuery.data.length === 0 ? (
-            <p className="text-error text-center">No products found...</p>
-          ) : null}
-          {searchQuery.data && searchQuery.data.length > 0
-            ? searchQuery.data.map(
-                ({ name, id, product_images, size, stock }) => (
-                  <Link
-                    key={id}
-                    to={`${id}`}
-                    className="flex flex-row items-center justify-evenly my-2"
-                  >
-                    <div className="pulse-loading rounded-md ">
-                      <img
-                        loading="lazy"
-                        alt={`${name}-image-1`}
-                        src={product_images[0].url}
-                        className=" rounded-md loading-image object-cover h-14 w-14 "
-                      />
-                    </div>
-                    <p> {name} </p>
-                    <p> {size} </p>
-                    {stock === 0 && (
-                      <p className="text-white rounded-full bg-error text-sm px-2 ">
-                        {" "}
-                        Sold out{" "}
-                      </p>
-                    )}
-                    {stock > 0 && (
-                      <p className="text-white rounded-full bg-success text-sm px-2 ">
-                        {" "}
-                        In stock{" "}
-                      </p>
-                    )}
-                    <RightOutlined />
-                  </Link>
-                ),
-              )
-            : null}
-        </dialog>
-      )}
-    </div>
-  );
-};
+import { LoadingIndicator, ProductSearch } from "../../../components";
 
 const ProductPaper = (props: { product: Product }) => {
   const { product } = props;
@@ -368,7 +271,7 @@ export const UploadedProducts = () => {
   return (
     <div className="px-4 md:px-40 pt-10 relative ">
       <p className="font-bold text-lg mb-3 md:text-xl text-center ">Products</p>
-      <ProductSearch />
+      <ProductSearch resultRoute={`/${storeFrontId}/admin/products/`} />
 
       <Tabs.Root
         className=" px-2 md:px-10 mt-5 flex flex-col items-center justify-center  "
