@@ -13,6 +13,21 @@ export interface Product {
   product_images: { url: string; file_name: string }[];
 }
 
+export interface Size {
+  size: string;
+  id: number;
+}
+
+export interface Category {
+  category: string;
+  id: number;
+}
+
+export interface Condition {
+  condition: string;
+  id: number;
+}
+
 export interface CartItem {
   product: Product;
   orderId: string;

@@ -1,12 +1,17 @@
 import { InstagramOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
-import { Product, Retailer, ShoppingCart } from "../../../common/interfaces";
+import {
+  Category,
+  Product,
+  ShoppingCart,
+  Size,
+} from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { PostgrestError } from "@supabase/supabase-js";
-import { SeverityColorEnum } from "../../../common/enums/index.ts";
+import { SeverityColorEnum } from "../../../common/enums";
+import { useGetRetailer } from "../../../common/hooks";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
@@ -88,7 +93,7 @@ const ProductCard = (props: { product: Product }) => {
         </p>
         <p className="text-sm text-center md:text-lg"> {product.size} </p>
       </div>
-      {parseInt(product.stock as string) < 1 && !isInCart ? (
+      {product.stock < 1 && !isInCart ? (
         <button
           className="block mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm  "
@@ -97,7 +102,7 @@ const ProductCard = (props: { product: Product }) => {
         </button>
       ) : null}
 
-      {parseInt(product.stock as string) > 0 && !isInCart ? (
+      {product.stock > 0 && !isInCart ? (
         <button
           onClick={() => handleAddToCart(product)}
           className="block mx-auto rounded-full py-1 px-3
@@ -127,7 +132,7 @@ export const StoreFrontHome = () => {
 
   const [category, setCategory] = useState("");
   const [size, setSize] = useState("");
-  const fetchCategories = async () => {
+  const fetchCategories = async (): Promise<Category[]> => {
     try {
       return await supabaseFetcher(
         supabase
@@ -141,7 +146,7 @@ export const StoreFrontHome = () => {
     }
   };
 
-  const fetchSizes = async () => {
+  const fetchSizes = async (): Promise<Size[]> => {
     try {
       return await supabaseFetcher(
         supabase
@@ -155,81 +160,55 @@ export const StoreFrontHome = () => {
     }
   };
 
-  const fetchProducts = async () => {
-    if (size !== "" && category !== "") {
-      const { data, error } = await supabase
-        .from("products")
-        .select()
-        .eq("storeFrontId", storeFrontId)
-        .eq("size", size)
-        .eq("category", category);
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
+  const fetchProducts = async (): Promise<Product[] | undefined> => {
+    try {
+      if (size !== "" && category !== "") {
+        return await supabaseFetcher(
+          supabase
+            .from("products")
+            .select()
+            .eq("storefront_id", storeFrontId)
+            .eq("size", size)
+            .eq("category", category),
+        );
       }
-      return data;
-    }
 
-    if (size !== "" && category === "") {
-      const { data, error } = await supabase
-        .from("products")
-        .select()
-        .eq("storeFrontId", storeFrontId)
-        .eq("size", size);
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
+      if (size !== "" && category === "") {
+        return await supabaseFetcher(
+          supabase
+            .from("products")
+            .select()
+            .eq("storefront_id", storeFrontId)
+            .eq("size", size),
+        );
       }
-      return data;
-    }
 
-    if (size === "" && category !== "") {
-      const { data, error } = await supabase
-        .from("products")
-        .select()
-        .eq("storeFrontId", storeFrontId)
-        .eq("category", category);
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
+      if (size === "" && category !== "") {
+        return await supabaseFetcher(
+          supabase
+            .from("products")
+            .select()
+            .eq("storefront_id", storeFrontId)
+            .eq("category", category),
+        );
       }
-      return data;
-    }
 
-    if (size === "" && category === "") {
-      const { data, error } = await supabase
-        .from("products")
-        .select()
-        .eq("storeFrontId", storeFrontId);
-      if (error) {
-        showToast(error.message);
-        throw new Error(error.message);
+      if (size === "" && category === "") {
+        return await supabaseFetcher(
+          supabase.from("products").select().eq("storefront_id", storeFrontId),
+        );
       }
-      return data;
+      return;
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
     }
-  };
-
-  const fetchRetailer = async () => {
-    const {
-      data,
-      error,
-    }: { data: Retailer | null; error: PostgrestError | null } = await supabase
-      .from("retailers")
-      .select()
-      .eq("businessName", storeFrontId)
-      .single();
-
-    if (error) {
-      showToast(error.message, SeverityColorEnum.Error);
-      throw new Error(error.message);
-    }
-    return data;
   };
 
   const productsQuery = useQuery(["products", size, category], fetchProducts);
   const categoriesQuery = useQuery(["categories"], fetchCategories);
   const sizesQuery = useQuery(["sizes"], fetchSizes);
-  const retailerQuery = useQuery("retailer", fetchRetailer);
+  const { retailer } = useGetRetailer();
   const handleCategoryChange = (e: any) => {
     setCategory(e.target.value);
   };
@@ -244,14 +223,14 @@ export const StoreFrontHome = () => {
           <img
             className="rounded-full h-24 md:h-36 w-24 md:w-36
             border-[grey] mr-auto md:mb-4 "
-            src={retailerQuery.data?.business_logo as string}
+            src={retailer?.business_logo as string}
           />
           <p className="text-left font-bold text-lg "> {storeFrontId} </p>
         </div>
 
         <div>
           <a
-            href={`https://www.instagram.com/${retailerQuery.data?.instagram_handle}`}
+            href={`https://www.instagram.com/${retailer?.instagram_handle}`}
             target="_blank"
           >
             <InstagramOutlined className="mr-4" />
@@ -302,7 +281,7 @@ export const StoreFrontHome = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-7">
         {productsQuery?.data !== undefined && productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
-              if (product.productImages.length > 0)
+              if (product.product_images.length > 0)
                 return <ProductCard product={product} key={product.id} />;
             })
           : null}
