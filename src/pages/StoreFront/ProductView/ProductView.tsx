@@ -3,12 +3,14 @@ import { LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { Product, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts";
 import { useQuery } from "react-query";
-import { PostgrestError } from "@supabase/supabase-js";
+import { useLoadingImage } from "../../../common/hooks";
+import { SeverityColorEnum } from "../../../common/enums";
+import { LoadingIndicator } from "../../../components";
 
 const Carousel = (props: {
-  images: { url: string; fileName: string }[] | undefined;
+  images: { url: string; file_name: string }[] | undefined;
 }) => {
   const { images } = props;
   const [selectedImage, setSelectedImage] = useState(
@@ -17,25 +19,29 @@ const Carousel = (props: {
   const handleChooseImage = (url: string) => {
     setSelectedImage(url);
   };
-
+  useLoadingImage();
   return (
     <div className="flex flex-col">
-      <img
-        src={selectedImage ? selectedImage : ""}
-        className="h-72  w-72 object-cover mx-auto"
-      />
-
+      <div className="pulse-loading">
+        <img
+          src={selectedImage ? selectedImage : ""}
+          alt="selected-image"
+          className="h-72  w-72 object-cover mx-auto loading-image"
+        />
+      </div>
       <div
         className="flex flex-row items-center justify-around overflow-x-scroll
       mt-3 mx-auto "
       >
         {images?.map(({ url }, index) => (
-          <img
-            key={index}
-            src={url}
-            onClick={() => handleChooseImage(url)}
-            className="object-cover h-14 w-14 mr-2"
-          />
+          <div key={index} className="pulse-loading">
+            <img
+              alt={`product-image-${index}`}
+              src={url}
+              onClick={() => handleChooseImage(url)}
+              className="object-cover h-14 w-14 mr-2 loading-image "
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -46,7 +52,7 @@ export const ProductView = () => {
   const params = useParams();
   const storeFrontID = params.storeFrontID as string;
   const productID = params.productID as string;
-  const { showToast } = useAppContext();
+  const { showToast, supabaseFetcher } = useAppContext();
   const [isInCart, setIsInCart] = useState(false);
   const [currentCart, setCurrentCart] = useState<ShoppingCart>();
 
@@ -73,20 +79,14 @@ export const ProductView = () => {
   }, [currentCart]);
 
   const fetchProduct = async () => {
-    const {
-      data,
-      error,
-    }: { data: Product | null; error: PostgrestError | null } = await supabase
-      .from("products")
-      .select()
-      .eq("id", productID)
-      .single();
-
-    if (error) {
-      showToast(error.message);
-      throw new Error(error.message);
+    try {
+      return await supabaseFetcher(
+        supabase.from("products").select().eq("id", productID).single(),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
     }
-    return data;
   };
   const productQuery = useQuery(["product", productID], fetchProduct);
 
@@ -120,7 +120,14 @@ export const ProductView = () => {
     }
   };
 
-  if (productQuery.isLoading) return <></>;
+  if (productQuery.isLoading)
+    return (
+      <LoadingIndicator
+        heightWidthXs={30}
+        heightWidthMd={40}
+        fillColor="fill-black"
+      />
+    );
 
   return (
     <div className="px-2 pt-6 pb-40 md:w-8/12 mx-auto">
@@ -164,7 +171,7 @@ export const ProductView = () => {
         <div className="flex flex-row items-center justify-between">
           <p className="font-bold "> {`${productQuery.data?.price} KSH`} </p>
 
-          {parseInt(productQuery.data?.stock as string) < 1 && (
+          {productQuery.data?.stock < 1 && (
             <button
               className=" mx-auto rounded-full py-1 px-3
         bg-error text-white text-sm mb-2 "
@@ -183,7 +190,7 @@ export const ProductView = () => {
             </button>
           )}
 
-          {parseInt(productQuery.data?.stock as string) > 0 && !isInCart ? (
+          {productQuery.data?.stock > 0 && !isInCart ? (
             <button
               className="  rounded-full py-1 px-3
         bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "

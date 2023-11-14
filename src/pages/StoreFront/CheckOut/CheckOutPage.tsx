@@ -1,234 +1,88 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import {
-  CheckOut,
-  Customer,
-  Delivery,
-  Order,
-  Retailer,
-  ShoppingCart,
-  Transaction,
-} from "../../../common/interfaces";
-import { useForm } from "react-hook-form";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
-import { SeverityColorEnum } from "../../../common/enums";
-import { supabase } from "../../../supabase.ts";
-import { useQuery } from "react-query";
-import { PostgrestError } from "@supabase/supabase-js";
-import axios from "axios";
+import { ShoppingCart } from "../../../common/interfaces";
+import { useAppContext } from "../../../contexts";
+import * as Tabs from "@radix-ui/react-tabs";
 
-const Carousel = (props: { images: string[] }) => {
-  const { images } = props;
-
-  const [currentImage, setCurrentImage] = useState(images[0]);
-
-  useEffect(() => {
-    if (!currentImage) {
-      setCurrentImage(images[0]);
-    }
-  }, []);
-
-  const handleChangeImage = (image: string) => {
-    setCurrentImage(image);
-  };
-
+const NairobiAgentForm = () => {
   return (
-    <div className="relative mx-auto w-max  ">
-      <img
-        src={currentImage}
-        className="w-40 h-40 object-cover"
-        alt="product images"
-      />
-
-      <div
-        className="absolute bottom-2 flex flex-row w-full
-         items-center justify-around "
+    <div>
+      {" "}
+      <label className="mx-auto block w-fit">
+        Location <span className="text-error">*</span>{" "}
+      </label>
+      <select
+        placeholder="Location"
+        className="border-2 border-primary block mx-auto rounded-lg"
       >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            onClick={() => handleChangeImage(image)}
-            className="bg-white w-7 h-2  "
-          ></div>
-        ))}
-      </div>
+        <option>Kiserian</option>
+        <option>Jamhuri</option>
+        <option>CBD</option>
+      </select>
+      <label className="mx-auto block w-fit">
+        Mtaani agent <span className="text-error">*</span>{" "}
+      </label>
+      <select className="border-2 border-primary block mx-auto rounded-lg">
+        <option>X-treme media</option>
+        <option>shop direct</option>
+        <option>philadelphia hse</option>
+      </select>
     </div>
   );
 };
 
 export const CheckOutPage = () => {
-  const now = new Date();
-  const params = useParams();
-  const storeFrontID = params.storeFrontID as string;
-  const { register, watch } = useForm<CheckOut>();
+  const { storeFrontId } = useParams();
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>({
     totalPrice: 0,
     products: [],
   });
-  const [cartImages, setCartImages] = useState<string[]>([]);
   const { showToast } = useAppContext();
-  const navigate = useNavigate();
+
+  const [deliveryOption, setDeliveryOption] = useState<
+    "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi"
+  >("Nairobi Agents");
+
+  const tabs = [
+    {
+      label: "Nairobi Agents",
+      value: "Nairobi Agents",
+      component: <NairobiAgentForm />,
+    },
+    {
+      label: "Nairobi Doorstep",
+      value: "Nairobi Doorstep",
+      component: <>nairobi doorstep</>,
+    },
+    {
+      label: "Outside Nairobi",
+      value: "Outside Nairobi",
+      component: <>outside nairobi</>,
+    },
+  ];
+
   useEffect(() => {
     const cart = localStorage.getItem("shoppingCart");
     if (cart) {
-      const temp: ShoppingCart = JSON.parse(cart);
+      const temp = JSON.parse(cart);
       setShoppingCart(temp);
-      const images = [];
-      for (const i in temp.products) {
-        images.push(temp.products[i].product_images[0].url);
-      }
-      setCartImages(images);
     } else {
       localStorage.setItem("shoppingCart", JSON.stringify(shoppingCart));
     }
   }, []);
 
-  const fetchRetailer = async () => {
-    const {
-      data: retailer,
-      error: retailerError,
-    }: { data: Retailer | null; error: PostgrestError | null } = await supabase
-      .from("retailers")
-      .select()
-      .eq("businessName", storeFrontID)
-      .single();
-    if (retailerError) {
-      showToast(retailerError.message);
-      throw new Error(retailerError.message);
-    }
-    return retailer;
-  };
-
-  const retailerQuery = useQuery(["retailer"], fetchRetailer);
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const data = watch();
-
-    if (
-      data.customerName === "" ||
-      data.customerPhoneNumber === "" ||
-      data.customerEmailAddress === "" ||
-      data.mpesaNumber === "" ||
-      data.pickupAgent === "" ||
-      data.pickupLocation === ""
-    ) {
-      showToast("Please fill in all details", SeverityColorEnum.Error);
-      return;
-    }
-
-    const customer: Customer = {
-      name: data.customerName,
-      phoneNumber: data.customerPhoneNumber,
-      emailAddress: data.customerEmailAddress,
-      storeFrontId: storeFrontID,
-      retailerId: retailerQuery.data?.id as string,
-    };
-
-    const delivery: Delivery = {
-      pickupLocation: data.pickupLocation,
-      pickupAgent: data.pickupAgent,
-    };
-
-    await axios.post("http://localhost:3000/payments/process", {
-      customerPhone: parseInt(data.mpesaNumber),
-      amount: shoppingCart.totalPrice,
-    });
-
-    const isPaymentConfirmed = false;
-
-    if (isPaymentConfirmed) {
-      //reduce product's stock
-      for (const i in shoppingCart.products) {
-        const newStock = parseInt(shoppingCart.products[i].stock as string) - 1;
-        const { error: productError } = await supabase
-          .from("products")
-          .update({ stock: newStock })
-          .eq("id", shoppingCart.products[i].id)
-          .select();
-        if (productError) {
-          showToast(productError.message);
-          throw new Error(productError.message);
-        }
-      }
-
-      //add retailer's wallet balance
-      const newRetailer: Retailer = JSON.parse(
-        JSON.stringify(retailerQuery.data),
-      );
-      newRetailer.wallet_balance =
-        newRetailer.wallet_balance + shoppingCart.totalPrice;
-
-      const { error: updateError } = await supabase
-        .from("retailers")
-        .update(newRetailer)
-        .eq("businessName", storeFrontID)
-        .select();
-
-      if (updateError) {
-        showToast(updateError.message);
-        throw new Error(updateError.message);
-      }
-
-      //create transaction
-      const transaction: Transaction = {
-        transactionType: `Payment from ${data.customerName}`,
-        amount: shoppingCart.totalPrice,
-        transactionDate: now.toISOString(),
-        storeFrontId: storeFrontID,
-        retailerId: retailerQuery.data?.id as string,
-      };
-      const { error: transactionError } = await supabase
-        .from("transactions")
-        .insert(transaction);
-      if (transactionError) {
-        showToast(transactionError.message);
-        throw new Error(transactionError.message);
-      }
-
-      //create order
-      for (const i in shoppingCart.products) {
-        const order: Order = {
-          retailerId: retailerQuery.data?.id as string,
-          storeFrontId: storeFrontID,
-          product: shoppingCart.products[i],
-          isFulfilled: false,
-          delivery,
-          customer,
-        };
-        const { error: orderError } = await supabase
-          .from("orders")
-          .insert(order);
-        if (orderError) {
-          showToast(orderError.message);
-          throw new Error(orderError.message);
-        }
-      }
-
-      //create customer
-      const { error: customerError } = await supabase
-        .from("customers")
-        .insert(customer);
-      if (customerError) {
-        showToast(customerError.message);
-        throw new Error(customerError.message);
-      }
-      localStorage.removeItem("shoppingCart");
-      showToast("order created successfully!", SeverityColorEnum.Success);
-      navigate(`/${storeFrontID}`);
-    }
-
-    // localStorage.removeItem("shoppingCart");
-    // showToast("order created successfully!", SeverityColorEnum.Success);
-    // navigate(`/${storeFrontID}`);
+  const handleTab = (
+    tab: "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi",
+  ) => {
+    setDeliveryOption(tab);
   };
 
   return (
     <div className="px-10 pb-40">
       <div className="mt-3   mb-4 ">
         <Link
-          to={`/${storeFrontID}`}
+          to={`/${storeFrontId}`}
           className="font-bold flex flex-row items-center justiify-start"
         >
           <LeftOutlined />
@@ -236,95 +90,73 @@ export const CheckOutPage = () => {
         </Link>
       </div>
 
-      <p className="text-center text-lg mb-4">
-        {" "}
-        {shoppingCart.products.length} ITEMS{" "}
-      </p>
-
-      <Carousel images={cartImages} />
-
-      <div className="flex flex-row items-center justify-between">
-        <p>TOTAL</p>
-        <p> {`${shoppingCart.totalPrice} KSH`} </p>
-      </div>
-
-      <form className="flex flex-col items-center " onSubmit={handleSubmit}>
-        <input
-          placeholder="Full name"
-          {...register("customerName")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        />
-
-        <input
-          placeholder="Phone number"
-          {...register("customerPhoneNumber")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        />
-
-        <input
-          placeholder="Email Address"
-          {...register("customerEmailAddress")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        />
-
-        <textarea
-          placeholder="delivery notes"
-          {...register("deliveryNotes")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        />
-
-        <select
-          {...register("pickupLocation")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        >
-          <option value="" defaultChecked hidden>
-            Pickup location
-          </option>
-          <option>hello</option>
-        </select>
-
-        <select
-          {...register("pickupAgent")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        >
-          <option value="" defaultChecked hidden>
-            Pickup Agent
-          </option>
-          <option>hello</option>
-        </select>
-
-        <input
-          placeholder="M-PESA number"
-          {...register("mpesaNumber")}
-          className="border-2 border-primary rounded-md
-                 py-2 md:py-2.5  pl-2 md:pl-3 w-full focus:outline-primary
-                  mb-5"
-        />
-        <p className="text-center text-grey text-sms">
-          This number will be prompted for payment
+      <div
+        className=" border-grey border-y-2
+      py-2"
+      >
+        <p className="font-bold text-lg">Order summary</p>
+        <p className="inline-block mr-auto w-1/2  "> Number of Items </p>
+        <p className="inline-block text-right ml-auto w-1/2  ">
+          {" "}
+          {`${shoppingCart.products.length}`}{" "}
         </p>
 
-        <button
-          type="submit"
-          className="bg-success text-white shadow-lg rounded-lg
-          w-full py-1"
-        >
+        <p className="inline-block mr-auto w-1/2  "> Delivery Option</p>
+        <p className="inline-block text-right ml-auto w-1/2  ">
           {" "}
-          {`PAY KSH ${shoppingCart.totalPrice}`}{" "}
-        </button>
-      </form>
+          {`${deliveryOption}`}{" "}
+        </p>
+
+        <Link to={`/${storeFrontId}/shopping-cart`}>
+          <button
+            className="block border-2 border-primary
+        rounded-lg text-primary mx-auto px-10 "
+          >
+            {" "}
+            MODIFY SHOPPING CART{" "}
+          </button>
+        </Link>
+      </div>
+
+      <div
+        className=" border-grey border-b-2
+      py-2"
+      >
+        <p className="font-bold text-lg">Delivery</p>
+
+        <Tabs.Root className="TabsRoot" defaultValue="Nairobi Agents">
+          <Tabs.List className="shrink-0  flex" defaultValue="Nairobi Agents">
+            {tabs.map(({ label, value }, index) => (
+              <Tabs.Trigger
+                key={index}
+                className={`${
+                  deliveryOption === value
+                    ? "font-bold bg-primary text-[#fff] rounded-full"
+                    : ""
+                } select-none px-4 py-0.5`}
+                value={value}
+                onClick={() =>
+                  handleTab(
+                    value as
+                      | "Nairobi Agents"
+                      | "Nairobi Doorstep"
+                      | "Outside Nairobi",
+                  )
+                }
+              >
+                {" "}
+                {label}{" "}
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+
+          {tabs.map(({ value, component }, index) => (
+            <Tabs.Content key={index} className="w-full focus: " value={value}>
+              {component}
+            </Tabs.Content>
+          ))}
+        </Tabs.Root>
+      </div>
     </div>
   );
 };

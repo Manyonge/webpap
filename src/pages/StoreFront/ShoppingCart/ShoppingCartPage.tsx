@@ -55,7 +55,7 @@ const CartItem = (props: {
 };
 
 export const ShoppingCartPage = () => {
-  const { storeFrontID } = useParams();
+  const { storeFrontId } = useParams();
 
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>({
     totalPrice: 0,
@@ -75,7 +75,7 @@ export const ShoppingCartPage = () => {
   return (
     <div className="px-2 pt-10 pb-40 ">
       <Link
-        to={`/${storeFrontID}`}
+        to={`/${storeFrontId}`}
         className="flex flex-row items-center justify-start
        font-bold mb-4
       "
@@ -92,7 +92,7 @@ export const ShoppingCartPage = () => {
       </div>
 
       <Link
-        to={`/${storeFrontID}/checkout`}
+        to={`/${storeFrontId}/checkout`}
         className="flex flex-row justify-center items-center"
       >
         <button className="w-11/12 mx-auto  rounded-full shadow-lg mb-12 bg-success text-white py-1 ">
