@@ -5,6 +5,8 @@ import { ShoppingCart } from "../../../common/interfaces";
 import { useAppContext } from "../../../contexts";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SeverityColorEnum } from "../../../common/enums";
+import { supabase } from "../../../supabase.ts";
+import { useQuery } from "react-query";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -13,6 +15,37 @@ const NairobiAgentForm = (props: {
   setAgentLocation: any;
 }) => {
   const { agentName, agentLocation, setAgentLocation, setAgentName } = props;
+  const { showToast, supabaseFetcher } = useAppContext();
+  const fetchLocations = async () => {
+    try {
+      return await supabaseFetcher(
+        supabase.from("pickup mtaani locations").select(),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
+  };
+
+  const fetchAgents = async () => {
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("pickup mtaani agents")
+          .select()
+          .eq("location", agentLocation),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
+  };
+
+  const locationsQuery = useQuery(["locations"], { queryFn: fetchLocations });
+  const agentsQuery = useQuery(["agents"], {
+    queryFn: fetchAgents,
+    enabled: agentLocation !== "...",
+  });
 
   const handleName = (e: any) => {
     setAgentName(e.target.value);
@@ -35,7 +68,6 @@ const NairobiAgentForm = (props: {
         className="border-2 border-primary block mx-auto rounded-lg"
       >
         <option value="Kiserian">Kiserian</option>
-        <option value="Jamhuri">Jamhuri</option>
         <option value="CBD">CBD</option>
       </select>
       <label className="mx-auto block w-fit">
