@@ -1,11 +1,27 @@
 import { Link, useParams } from "react-router-dom";
-import { LeftOutlined } from "@ant-design/icons";
+import { EditOutlined, LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ShoppingCart } from "../../../common/interfaces";
 import { useAppContext } from "../../../contexts";
 import * as Tabs from "@radix-ui/react-tabs";
+import { SeverityColorEnum } from "../../../common/enums";
 
-const NairobiAgentForm = () => {
+const NairobiAgentForm = (props: {
+  agentName: string;
+  agentLocation: string;
+  setAgentName: any;
+  setAgentLocation: any;
+}) => {
+  const { agentName, agentLocation, setAgentLocation, setAgentName } = props;
+
+  const handleName = (e: any) => {
+    setAgentName(e.target.value);
+  };
+
+  const handleLocation = (e: any) => {
+    setAgentLocation(e.target.value);
+  };
+
   return (
     <div>
       {" "}
@@ -14,19 +30,80 @@ const NairobiAgentForm = () => {
       </label>
       <select
         placeholder="Location"
+        value={agentLocation}
+        onChange={handleLocation}
         className="border-2 border-primary block mx-auto rounded-lg"
       >
-        <option>Kiserian</option>
-        <option>Jamhuri</option>
-        <option>CBD</option>
+        <option value="Kiserian">Kiserian</option>
+        <option value="Jamhuri">Jamhuri</option>
+        <option value="CBD">CBD</option>
       </select>
       <label className="mx-auto block w-fit">
         Mtaani agent <span className="text-error">*</span>{" "}
       </label>
-      <select className="border-2 border-primary block mx-auto rounded-lg">
-        <option>X-treme media</option>
-        <option>shop direct</option>
-        <option>philadelphia hse</option>
+      <select
+        value={agentName}
+        onChange={handleName}
+        className="border-2 border-primary block mx-auto rounded-lg"
+      >
+        <option defaultChecked value="X-treme media">
+          X-treme media
+        </option>
+        <option value="shop direct">shop direct</option>
+        <option value="philadelphia hse">philadelphia hse</option>
+      </select>
+    </div>
+  );
+};
+
+const OutOfNairobiForm = (props: {
+  outsideLocation: string;
+  outsideCourier: string;
+  setOutsideCourier: any;
+  setOutsideLocation: any;
+}) => {
+  const {
+    outsideLocation,
+    outsideCourier,
+    setOutsideLocation,
+    setOutsideCourier,
+  } = props;
+
+  const handleCourier = (e: any) => {
+    setOutsideCourier(e.target.value);
+  };
+
+  const handleLocation = (e: any) => {
+    setOutsideLocation(e.target.value);
+  };
+
+  return (
+    <div>
+      {" "}
+      <label className="mx-auto block w-fit">
+        Location <span className="text-error">*</span>{" "}
+      </label>
+      <select
+        placeholder="Location"
+        value={outsideLocation}
+        onChange={handleLocation}
+        className="border-2 border-primary block mx-auto rounded-lg"
+      >
+        <option value="Moyale">Moyale</option>
+        <option value="Kisumu">Kisumu</option>
+        <option value="Kisii">Kisii</option>
+      </select>
+      <label className="mx-auto block w-fit">
+        Courier service <span className="text-error">*</span>{" "}
+      </label>
+      <select
+        value={outsideCourier}
+        onChange={handleCourier}
+        className="border-2 border-primary block mx-auto rounded-lg"
+      >
+        <option value="Easy coach">Easy coach</option>
+        <option value="2NK">2NK</option>
+        <option value="Molo line">Molo line</option>
       </select>
     </div>
   );
@@ -38,6 +115,12 @@ export const CheckOutPage = () => {
     totalPrice: 0,
     products: [],
   });
+  const [agentLocation, setAgentLocation] = useState("...");
+  const [agentName, setAgentName] = useState("...");
+  const [outsideLocation, setOutsideLocation] = useState("...");
+  const [outsideCourier, setOutsideCourier] = useState("...");
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const { showToast } = useAppContext();
 
   const [deliveryOption, setDeliveryOption] = useState<
@@ -48,17 +131,31 @@ export const CheckOutPage = () => {
     {
       label: "Nairobi Agents",
       value: "Nairobi Agents",
-      component: <NairobiAgentForm />,
+      component: (
+        <NairobiAgentForm
+          agentLocation={agentLocation}
+          agentName={agentName}
+          setAgentLocation={setAgentLocation}
+          setAgentName={setAgentName}
+        />
+      ),
     },
     {
       label: "Nairobi Doorstep",
       value: "Nairobi Doorstep",
-      component: <>nairobi doorstep</>,
+      component: <p className="text-error">Coming soon!!!</p>,
     },
     {
       label: "Outside Nairobi",
       value: "Outside Nairobi",
-      component: <>outside nairobi</>,
+      component: (
+        <OutOfNairobiForm
+          outsideLocation={outsideLocation}
+          outsideCourier={outsideCourier}
+          setOutsideCourier={setOutsideCourier}
+          setOutsideLocation={setOutsideLocation}
+        />
+      ),
     },
   ];
 
@@ -77,6 +174,41 @@ export const CheckOutPage = () => {
   ) => {
     setDeliveryOption(tab);
   };
+
+  const handlePlaceOrder = () => {
+    switch (deliveryOption) {
+      case "Nairobi Agents":
+        if (agentName === "..." || agentLocation === "...") {
+          showToast(
+            "Please fill in all Nairobi agent delivery fields",
+            SeverityColorEnum.Error,
+          );
+        } else {
+          setDialogOpen(true);
+          showToast("hello", SeverityColorEnum.Success);
+        }
+        break;
+
+      case "Outside Nairobi":
+        if (outsideCourier === "..." || outsideLocation === "...") {
+          showToast(
+            "Please fill in all Outside Nairobi delivery fields",
+            SeverityColorEnum.Error,
+          );
+        } else {
+          setDialogOpen(true);
+        }
+        break;
+    }
+  };
+
+  const dialog = document.querySelector("dialog");
+
+  // document.addEventListener("click", (event) => {
+  //   if (!dialog?.contains(event.target as Node) && dialogOpen) {
+  //     setDialogOpen(false);
+  //   }
+  // });
 
   return (
     <div className="px-10 pb-40">
@@ -107,13 +239,54 @@ export const CheckOutPage = () => {
           {`${deliveryOption}`}{" "}
         </p>
 
+        {deliveryOption === "Nairobi Agents" && (
+          <>
+            <p className="inline-block mr-auto w-1/2  "> Agent Location</p>
+            <p className="inline-block text-right ml-auto w-1/2  ">
+              {" "}
+              {`${agentLocation}`}{" "}
+            </p>
+          </>
+        )}
+
+        {deliveryOption === "Nairobi Agents" && (
+          <>
+            <p className="inline-block mr-auto w-1/2  "> Agent Name</p>
+            <p className="inline-block text-right ml-auto w-1/2  ">
+              {" "}
+              {`${agentName}`}{" "}
+            </p>
+          </>
+        )}
+
+        {deliveryOption === "Outside Nairobi" && (
+          <>
+            <p className="inline-block mr-auto w-1/2  "> Location</p>
+            <p className="inline-block text-right ml-auto w-1/2  ">
+              {" "}
+              {`${outsideLocation}`}{" "}
+            </p>
+          </>
+        )}
+
+        {deliveryOption === "Outside Nairobi" && (
+          <>
+            <p className="inline-block mr-auto w-1/2  "> Courier Service</p>
+            <p className="inline-block text-right ml-auto w-1/2  ">
+              {" "}
+              {`${outsideCourier}`}{" "}
+            </p>
+          </>
+        )}
+
         <Link to={`/${storeFrontId}/shopping-cart`}>
           <button
             className="block border-2 border-primary
-        rounded-lg text-primary mx-auto px-10 "
+        rounded-lg text-primary mx-auto px-10
+        flex items-center justify-center"
           >
             {" "}
-            MODIFY SHOPPING CART{" "}
+            MODIFY SHOPPING CART <EditOutlined />
           </button>
         </Link>
       </div>
@@ -157,6 +330,43 @@ export const CheckOutPage = () => {
           ))}
         </Tabs.Root>
       </div>
+
+      <div
+        className=" border-grey border-b-2
+      py-2"
+      >
+        <p className="font-bold text-lg">Contact details</p>
+        <label className="mx-auto block w-fit">
+          Name <span className="text-error">*</span>{" "}
+        </label>
+        <input className="border-2 border-primary block mx-auto rounded-lg" />
+
+        <label className="mx-auto block w-fit">
+          Phone number <span className="text-error">*</span>{" "}
+        </label>
+        <input className="border-2 border-primary block mx-auto rounded-lg" />
+
+        <label className="mx-auto block w-fit">
+          Email <span className="text-error">*</span>{" "}
+        </label>
+        <input className="border-2 border-primary block mx-auto rounded-lg" />
+
+        <label className="mx-auto block w-fit">Instagram Handle</label>
+        <input className="border-2 border-primary block mx-auto rounded-lg" />
+      </div>
+
+      <button
+        onClick={handlePlaceOrder}
+        className="block mx-auto bg-primary text-white
+      rounded-lg
+      "
+      >
+        Place Order
+      </button>
+
+      <dialog open={dialogOpen} className="border-error border-2">
+        <p>hello world </p>
+      </dialog>
     </div>
   );
 };
