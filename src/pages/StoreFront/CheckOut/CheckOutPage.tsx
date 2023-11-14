@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ShoppingCart } from "../../../common/interfaces";
 import { useAppContext } from "../../../contexts";
 import * as Tabs from "@radix-ui/react-tabs";
+import { SeverityColorEnum } from "../../../common/enums";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -118,6 +119,7 @@ export const CheckOutPage = () => {
   const [agentName, setAgentName] = useState("...");
   const [outsideLocation, setOutsideLocation] = useState("...");
   const [outsideCourier, setOutsideCourier] = useState("...");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { showToast } = useAppContext();
 
@@ -172,6 +174,41 @@ export const CheckOutPage = () => {
   ) => {
     setDeliveryOption(tab);
   };
+
+  const handlePlaceOrder = () => {
+    switch (deliveryOption) {
+      case "Nairobi Agents":
+        if (agentName === "..." || agentLocation === "...") {
+          showToast(
+            "Please fill in all Nairobi agent delivery fields",
+            SeverityColorEnum.Error,
+          );
+        } else {
+          setDialogOpen(true);
+          showToast("hello", SeverityColorEnum.Success);
+        }
+        break;
+
+      case "Outside Nairobi":
+        if (outsideCourier === "..." || outsideLocation === "...") {
+          showToast(
+            "Please fill in all Outside Nairobi delivery fields",
+            SeverityColorEnum.Error,
+          );
+        } else {
+          setDialogOpen(true);
+        }
+        break;
+    }
+  };
+
+  const dialog = document.querySelector("dialog");
+
+  // document.addEventListener("click", (event) => {
+  //   if (!dialog?.contains(event.target as Node) && dialogOpen) {
+  //     setDialogOpen(false);
+  //   }
+  // });
 
   return (
     <div className="px-10 pb-40">
@@ -319,12 +356,17 @@ export const CheckOutPage = () => {
       </div>
 
       <button
+        onClick={handlePlaceOrder}
         className="block mx-auto bg-primary text-white
       rounded-lg
       "
       >
         Place Order
       </button>
+
+      <dialog open={dialogOpen} className="border-error border-2">
+        <p>hello world </p>
+      </dialog>
     </div>
   );
 };
