@@ -55,7 +55,7 @@ export const SingleProduct = () => {
       setValue("size", data?.size as string);
       setValue("condition", data?.condition as string);
       setValue("description", data?.description as string);
-      setValue("stock", data?.stock as string);
+      setValue("stock", data?.stock);
       setValue("price", data?.price as number);
       return data;
     } catch (e: any) {
@@ -270,8 +270,6 @@ export const SingleProduct = () => {
       }
 
       formData.is_hidden = productQuery?.data?.is_hidden as boolean;
-      formData.price = parseInt(formData.price.toString());
-      formData.stock = parseInt(formData.stock as string);
       formData.retailer_id = retailer?.id as string;
       formData.storefront_id = storeFrontId as string;
 
