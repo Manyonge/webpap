@@ -5,6 +5,8 @@ import { ShoppingCart } from "../../../common/interfaces";
 import { useAppContext } from "../../../contexts";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SeverityColorEnum } from "../../../common/enums";
+import { supabase } from "../../../supabase.ts";
+import { useQuery } from "react-query";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -13,6 +15,37 @@ const NairobiAgentForm = (props: {
   setAgentLocation: any;
 }) => {
   const { agentName, agentLocation, setAgentLocation, setAgentName } = props;
+  const { showToast, supabaseFetcher } = useAppContext();
+  const fetchLocations = async () => {
+    try {
+      return await supabaseFetcher(
+        supabase.from("pickup mtaani locations").select(),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
+  };
+
+  const fetchAgents = async () => {
+    try {
+      return await supabaseFetcher(
+        supabase
+          .from("pickup mtaani agents")
+          .select()
+          .eq("location", agentLocation),
+      );
+    } catch (e: any) {
+      showToast(e.message, SeverityColorEnum.Error);
+      throw e;
+    }
+  };
+
+  const locationsQuery = useQuery(["locations"], { queryFn: fetchLocations });
+  const agentsQuery = useQuery(["agents", agentLocation], {
+    queryFn: fetchAgents,
+    enabled: agentLocation !== "...",
+  });
 
   const handleName = (e: any) => {
     setAgentName(e.target.value);
@@ -20,6 +53,7 @@ const NairobiAgentForm = (props: {
 
   const handleLocation = (e: any) => {
     setAgentLocation(e.target.value);
+    setAgentName("...");
   };
 
   return (
@@ -34,9 +68,17 @@ const NairobiAgentForm = (props: {
         onChange={handleLocation}
         className="border-2 border-primary block mx-auto rounded-lg"
       >
-        <option value="Kiserian">Kiserian</option>
-        <option value="Jamhuri">Jamhuri</option>
-        <option value="CBD">CBD</option>
+        <option defaultChecked value="...">
+          {" "}
+          Select a location{" "}
+        </option>
+        {locationsQuery.data?.length > 0 &&
+          locationsQuery.data.map(({ name, id }: any) => (
+            <option key={id} value={name}>
+              {" "}
+              {name}{" "}
+            </option>
+          ))}
       </select>
       <label className="mx-auto block w-fit">
         Mtaani agent <span className="text-error">*</span>{" "}
@@ -46,11 +88,17 @@ const NairobiAgentForm = (props: {
         onChange={handleName}
         className="border-2 border-primary block mx-auto rounded-lg"
       >
-        <option defaultChecked value="X-treme media">
-          X-treme media
+        <option defaultChecked value="...">
+          {" "}
+          Select an agent{" "}
         </option>
-        <option value="shop direct">shop direct</option>
-        <option value="philadelphia hse">philadelphia hse</option>
+        {agentsQuery.data?.length > 0 &&
+          agentsQuery.data.map(({ agent_name, id }: any) => (
+            <option key={id} value={agent_name}>
+              {" "}
+              {agent_name}{" "}
+            </option>
+          ))}
       </select>
     </div>
   );
@@ -201,8 +249,6 @@ export const CheckOutPage = () => {
         break;
     }
   };
-
-  const dialog = document.querySelector("dialog");
 
   // document.addEventListener("click", (event) => {
   //   if (!dialog?.contains(event.target as Node) && dialogOpen) {

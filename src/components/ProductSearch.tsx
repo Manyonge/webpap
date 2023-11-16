@@ -19,7 +19,7 @@ export const ProductSearch = (props: { resultRoute: string }) => {
   const fetchProducts = async (): Promise<Product[]> => {
     try {
       return await supabaseFetcher(
-        supabase.from("products").select().ilike("name", searchString),
+        supabase.from("products").select().ilike("name", `%${searchString}%`),
       );
     } catch (e: any) {
       showToast(e.message, SeverityColorEnum.Error);
