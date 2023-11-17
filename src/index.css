@@ -54,8 +54,15 @@ button{
 .btn-primary {
   background-color: rgba(165, 126, 93, 1);
   color: white;
+  border-radius: 5px;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
-button:hover {
+button:hover, button:disabled {
   opacity: 0.9;
 }
 
@@ -119,3 +126,4 @@ label{
   margin-right: auto;
   display: block;
 }
+

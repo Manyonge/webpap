@@ -59,19 +59,19 @@ export const Login = () => {
         className="flex flex-col items-center justify-center
        shadow-lg w-3/4 md:w-3/5 mx-auto mt-44 mb-80 rounded-md "
       >
-        <p className="font-bold text-lg md:text-2xl  ">Login</p>
+        <p className="text-lg md:text-2xl  ">Login</p>
         <p className="my-1 md:text-lg ">Welcome back admin!</p>
 
         <form
           className="flex flex-col items-center justify-center w-4/5 md:w-3/5 "
           onSubmit={onSubmit}
         >
-          <label className="w-full">Email</label>
+          <label>Email</label>
           <input
+            className="mb-2"
             autoComplete={"false"}
             placeholder="Email"
             {...register("email", { required: true })}
-            className="w-full border-2 border-primary outline-none rounded-lg pl-1 py-1 full mb-4"
           />
 
           <label className="w-full">Password</label>
@@ -80,7 +80,6 @@ export const Login = () => {
             {...register("password", { required: true })}
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full border-2 border-primary outline-none rounded-lg pl-1 py-1"
           />
 
           <div className="flex flex-row items-center justify-start mr-auto ">
@@ -96,12 +95,7 @@ export const Login = () => {
             </label>
           </div>
 
-          <button
-            disabled={loading}
-            type="submit"
-            className="btn-primary py-1 md:py-0.5 w-full
-                  rounded-lg border w-230px md:text-lg mt-4 shadow-lg flex items-center justify-center "
-          >
+          <button disabled={loading} type="submit" className="btn-primary">
             {loading && (
               <LoadingIndicator heightWidthMd={25} heightWidthXs={20} />
             )}
