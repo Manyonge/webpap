@@ -222,7 +222,7 @@ export const UploadProduct = () => {
         {" "}
         <LeftOutlined /> Cancel{" "}
       </Link>
-      <p className="text-center text-lg font-bold">Upload a product</p>
+      <h1 className="text-center text-lg font-semibold ">Upload a product</h1>
 
       <form onSubmit={handleSubmit} className="shadow-xl px-5 pb-5 rounded-md">
         <div
@@ -313,10 +313,7 @@ export const UploadProduct = () => {
             disabled={productLoading}
             onClick={() => handleAddCategory()}
             type="button"
-            className="text-white py-0.5 w-1/3
-             rounded-md shadow-xl bg-primary
-          flex flex-row items-center justify-center px-8
-          "
+            className="btn-primary w-1/3  "
           >
             <PlusOutlined /> Category
           </button>

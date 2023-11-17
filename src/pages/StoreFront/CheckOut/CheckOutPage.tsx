@@ -59,14 +59,14 @@ const NairobiAgentForm = (props: {
   return (
     <div>
       {" "}
-      <label className="mx-auto block w-fit">
+      <label className="">
         Location <span className="text-error">*</span>{" "}
       </label>
       <select
         placeholder="Location"
         value={agentLocation}
         onChange={handleLocation}
-        className="border-2 border-primary block mx-auto rounded-lg"
+        className=""
       >
         <option defaultChecked value="...">
           {" "}
@@ -80,14 +80,10 @@ const NairobiAgentForm = (props: {
             </option>
           ))}
       </select>
-      <label className="mx-auto block w-fit">
+      <label className="">
         Mtaani agent <span className="text-error">*</span>{" "}
       </label>
-      <select
-        value={agentName}
-        onChange={handleName}
-        className="border-2 border-primary block mx-auto rounded-lg"
-      >
+      <select value={agentName} onChange={handleName} className="">
         <option defaultChecked value="...">
           {" "}
           Select an agent{" "}
@@ -128,27 +124,23 @@ const OutOfNairobiForm = (props: {
   return (
     <div>
       {" "}
-      <label className="mx-auto block w-fit">
+      <label className="">
         Location <span className="text-error">*</span>{" "}
       </label>
       <select
         placeholder="Location"
         value={outsideLocation}
         onChange={handleLocation}
-        className="border-2 border-primary block mx-auto rounded-lg"
+        className=""
       >
         <option value="Moyale">Moyale</option>
         <option value="Kisumu">Kisumu</option>
         <option value="Kisii">Kisii</option>
       </select>
-      <label className="mx-auto block w-fit">
+      <label className="">
         Courier service <span className="text-error">*</span>{" "}
       </label>
-      <select
-        value={outsideCourier}
-        onChange={handleCourier}
-        className="border-2 border-primary block mx-auto rounded-lg"
-      >
+      <select value={outsideCourier} onChange={handleCourier} className="">
         <option value="Easy coach">Easy coach</option>
         <option value="2NK">2NK</option>
         <option value="Molo line">Molo line</option>
@@ -382,23 +374,23 @@ export const CheckOutPage = () => {
       py-2"
       >
         <p className="font-bold text-lg">Contact details</p>
-        <label className="mx-auto block w-fit">
+        <label className="">
           Name <span className="text-error">*</span>{" "}
         </label>
-        <input className="border-2 border-primary block mx-auto rounded-lg" />
+        <input className="" />
 
-        <label className="mx-auto block w-fit">
+        <label className="">
           Phone number <span className="text-error">*</span>{" "}
         </label>
-        <input className="border-2 border-primary block mx-auto rounded-lg" />
+        <input className="" />
 
-        <label className="mx-auto block w-fit">
+        <label className="">
           Email <span className="text-error">*</span>{" "}
         </label>
-        <input className="border-2 border-primary block mx-auto rounded-lg" />
+        <input className="" />
 
-        <label className="mx-auto block w-fit">Instagram Handle</label>
-        <input className="border-2 border-primary block mx-auto rounded-lg" />
+        <label className="">Instagram Handle</label>
+        <input className="" />
       </div>
 
       <button
