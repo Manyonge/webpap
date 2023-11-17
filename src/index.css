@@ -105,44 +105,17 @@ tr:nth-of-type(even) {
   animation: pulse-animation 1.5s infinite;
 }
 
-/*input styles*/
-
-input,input::placeholder{
-  background-color: white;
-}
-
-.input-container{
-  position:relative;
-}
-.input-label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding: 4px;
-  margin: 5px;
-  white-space: nowrap;
-  transform: translate(0, 0);
-  transform-origin: 0 0;
-  transition: transform 120ms ease-in;
-  font-size: 14px;
-  background: white;
-
-}
-.input-field{
-  box-sizing: border-box;
-  padding: 5px;
-  font-size: 14px;
-  height: 35px;
-  width: 100%;
-  border: 2px solid var(--primary-color);
+/*form element styles*/
+input, select{
+  min-height: 30px;
+  border: 1px solid var(--primary-color);
   border-radius: 5px;
+outline: none;
+  padding-left: 2px;
+  width: 100%;
 }
 
-.input-field::placeholder {
-  color:transparent
-}
-
-.input-field:focus + .input-label,
-.input-field:not(:placeholder-shown) + .input-label {
-  transform: translate(.25rem, -65%) scale(.8);
+label{
+  margin-right: auto;
+  display: block;
 }
