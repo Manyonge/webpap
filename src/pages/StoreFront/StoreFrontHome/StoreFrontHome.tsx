@@ -1,4 +1,3 @@
-import { InstagramOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom";
 import {
   Category,
@@ -11,7 +10,7 @@ import { useAppContext } from "../../../contexts";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import { SeverityColorEnum } from "../../../common/enums";
-import { useGetRetailer } from "../../../common/hooks";
+import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
@@ -68,54 +67,53 @@ const ProductCard = (props: { product: Product }) => {
     }
   };
 
+  useLoadingImage();
   if (product.is_hidden) return <></>;
 
   return (
-    <div
-      className="rounded-md shadow-lg hover:shadow-xl mx-auto flex flex-col justify-between
-     pb-2  "
-    >
-      <Link to={`product/${product.id}`}>
-        <img
-          src={product.product_images[0].url}
-          className="object-cover w-52 sm:w-56 md:w-64 h-40 sm:h-52 md:h-56 rounded-tr-lg rounded-tl-lg"
-        />
+    <div className="w-fit relative ">
+      {product.stock < 1 && !isInCart ? (
+        <button className="text-sm bg-error text-white absolute ">
+          SOLD OUT
+        </button>
+      ) : null}
+      <Link to={`product/${product.id}`} className=" ">
+        <div className="pulse-loading">
+          <img
+            loading="lazy"
+            alt={`${product.name} image 1`}
+            src={product.product_images[0].url}
+            className="
+            loading-image opacity-0 object-cover w-52 sm:w-56 md:w-64 h-48 sm:h-60 md:h-64"
+          />
+        </div>
       </Link>
-      <p className="pl-2 my-auto text-sm md:text-lg text-center font-bold ">
+      <p className=" my-auto text-sm text-left uppercase truncate overflow-hidden whitespace-no-wrap">
         {" "}
         {product.name}{" "}
       </p>
 
-      <div className="flex flex-row items-center justify-between px-2 my-auto ">
-        <p className="text-sm  text-center md:text-lg">
-          {" "}
-          {`${product.price} KSH`}{" "}
-        </p>
-        <p className="text-sm text-center md:text-lg"> {product.size} </p>
-      </div>
-      {product.stock < 1 && !isInCart ? (
-        <button
-          className="block mx-auto rounded-full py-1 px-3
-        bg-error text-white text-sm  "
-        >
-          SOLD OUT
-        </button>
-      ) : null}
+      <p className="text-sm text-left uppercase  ">
+        {" "}
+        {`Size: ${product.size}`}{" "}
+      </p>
+      <p className="text-sm  text-left uppercase ">
+        {" "}
+        {`KSH ${product.price}`}{" "}
+      </p>
 
       {product.stock > 0 && !isInCart ? (
         <button
           onClick={() => handleAddToCart(product)}
-          className="block mx-auto rounded-full py-1 px-3
-        bg-primary text-white text-sm shadow-lg hover:shadow-xl mt-auto"
+          className="btn-primary w-full shadow-xl mx-auto text-sm mb-2 uppercase"
         >
-          ADD TO BAG
+          Add to cart
         </button>
       ) : null}
 
       {isInCart && (
         <button
-          className="block mx-auto rounded-full py-1 px-3
-        bg-error text-white text-sm  "
+          className="bg-error text-white rounded-md py-0.5 w-full shadow-xl mx-auto text-sm mb-2 uppercase"
           onClick={() => handleRemoveFromCart(product)}
         >
           Remove from cart
@@ -215,35 +213,21 @@ export const StoreFrontHome = () => {
   const handleSizeChange = (e: any) => {
     setSize(e.target.value);
   };
-
+  useLoadingImage();
   return (
-    <div className="px-4 md:px-6 pb-10">
-      <div className="mt-10 flex flex-row items-center justify-between ">
-        <div className="  flex-col items-center justify-center mr-4  ">
-          <img
-            className="rounded-full h-24 md:h-36 w-24 md:w-36
-            border-[grey] mr-auto md:mb-4 "
-            src={retailer?.business_logo as string}
-          />
-          <p className="text-left font-bold text-lg "> {storeFrontId} </p>
-        </div>
-
-        <div>
-          <a
-            href={`https://www.instagram.com/${retailer?.instagram_handle}`}
-            target="_blank"
-          >
-            <InstagramOutlined className="mr-4" />
-          </a>
-        </div>
+    <div className="px-4 md:px-6 py-7">
+      <div className="pulse-loading rounded-full mx-auto md:mb-4">
+        <img
+          loading="lazy"
+          alt={`${storeFrontId}-business-logo`}
+          className="loading-image opacity-0 rounded-full h-24 md:h-36 w-24 md:w-36
+               "
+          src={retailer?.business_logo as string}
+        />
       </div>
 
       <div className="flex flex-row items-center justify-center my-5">
-        <select
-          className="mr-4 outline-none border border-primary
-           text-center bg-white rounded-full  "
-          onChange={handleSizeChange}
-        >
+        <select className="w-fit mr-1 " onChange={handleSizeChange}>
           <option value="">All sizes</option>
           {sizesQuery.data !== undefined && sizesQuery.data.length > 0
             ? sizesQuery.data.map(({ size }, index) => (
@@ -254,11 +238,7 @@ export const StoreFrontHome = () => {
             : null}
         </select>
 
-        <select
-          className="mr-4 outline-none border border-primary
-           text-center bg-white rounded-full  "
-          onChange={handleCategoryChange}
-        >
+        <select className="w-fit ml-1" onChange={handleCategoryChange}>
           <option value="">All categories </option>
 
           {categoriesQuery.data !== undefined && categoriesQuery.data.length > 0
@@ -278,7 +258,7 @@ export const StoreFrontHome = () => {
           No products available...{" "}
         </p>
       ) : null}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-7">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-7 mx-auto  w-fit">
         {productsQuery?.data !== undefined && productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
               if (product.product_images.length > 0)

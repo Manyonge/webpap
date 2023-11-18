@@ -168,10 +168,13 @@ export const StoreFrontLayout = () => {
       <div
         className="flex flex-row justify-between items-center pl-5 pr-5
       md:pr-4 h-10 md:h-12 sticky top-0 shadow-lg
-        md:px-10 bg-white 
+        md:px-10 bg-white  z-50
         "
       >
-        <Link to={`/${storeFrontId}`} className="hidden md:block text-lg">
+        <Link
+          to={`/${storeFrontId}`}
+          className="hidden md:block text-xl capitalize"
+        >
           {" "}
           {`${storeFrontId}`}{" "}
         </Link>
@@ -206,7 +209,7 @@ export const StoreFrontLayout = () => {
 
         <ProductSearch
           resultRoute={`/${storeFrontId}/product/`}
-          widthClass="w-1/2"
+          widthClass="w-3/4 md:w-1/2"
         />
 
         <div className="hidden md:block">

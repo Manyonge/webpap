@@ -108,6 +108,7 @@ tr:nth-of-type(even) {
   animation: pulse-animation 1.5s infinite;
 }
 
+
 /*form element styles*/
 input, select, textarea{
   min-height: 30px;
