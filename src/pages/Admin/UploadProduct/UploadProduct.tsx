@@ -177,10 +177,12 @@ export const UploadProduct = () => {
 
     if (
       formData.category === "" ||
-      formData.description === "" ||
-      formData.condition === "" ||
       formData.size === "" ||
-      formData.name === ""
+      formData.condition === "" ||
+      formData.name === "" ||
+      formData.description === "" ||
+      formData.stock.toString() === "" ||
+      formData.price.toString() === ""
     ) {
       showToast("Please fill in all details", SeverityColorEnum.Error);
       setProductLoading(false);
@@ -214,15 +216,15 @@ export const UploadProduct = () => {
   };
 
   return (
-    <div className="px-4 md:px-32 py-10">
+    <div className="w-11/12 md:w-3/4 mx-auto py-10">
       <Link
         to={`/${storeFrontId}/admin/products`}
-        className="flex flex-row items-center justify-start font-bold "
+        className="flex flex-row items-center justify-start "
       >
         {" "}
         <LeftOutlined /> Cancel{" "}
       </Link>
-      <h1 className="text-center text-lg font-semibold ">Upload a product</h1>
+      <h1 className="text-center text-xl ">Upload a product</h1>
 
       <form onSubmit={handleSubmit} className="shadow-xl px-5 pb-5 rounded-md">
         <div
@@ -280,35 +282,31 @@ export const UploadProduct = () => {
             ))}
         </div>
 
-        <div className="flex flex-row items-end justify-between mb-3">
-          <div className="w-1/2">
-            <label className="" htmlFor="category">
-              Category <span className="text-error">*</span>
-            </label>
-            <select
-              disabled={productLoading}
-              id="category"
-              placeholder="Category"
-              {...register("category")}
-              className="border-2 border-primary rounded-md
-             outline-none w-full block "
-            >
-              <option value="" defaultChecked hidden>
-                Select a category
-              </option>
-              {categoryQuery.data !== undefined &&
-              categoryQuery.data?.length > 0
-                ? categoryQuery.data.map(
-                    ({ category, id }: { category: string; id: number }) => (
-                      <option value={category} key={id}>
-                        {" "}
-                        {category}{" "}
-                      </option>
-                    ),
-                  )
-                : null}
-            </select>
-          </div>
+        <label htmlFor="category">
+          Category <span className="text-error">*</span>
+        </label>
+        <div className="flex flex-row items-center justify-between">
+          <select
+            disabled={productLoading}
+            id="category"
+            placeholder="Category"
+            {...register("category")}
+            className="w-1/2  "
+          >
+            <option value="" defaultChecked hidden>
+              Select a category
+            </option>
+            {categoryQuery.data !== undefined && categoryQuery.data?.length > 0
+              ? categoryQuery.data.map(
+                  ({ category, id }: { category: string; id: number }) => (
+                    <option value={category} key={id}>
+                      {" "}
+                      {category}{" "}
+                    </option>
+                  ),
+                )
+              : null}
+          </select>
           <button
             disabled={productLoading}
             onClick={() => handleAddCategory()}
@@ -318,75 +316,66 @@ export const UploadProduct = () => {
             <PlusOutlined /> Category
           </button>
         </div>
-
+        <label>
+          Size <span className="text-error">*</span>{" "}
+        </label>
         <div className="flex flex-row items-end justify-between mb-3">
-          <div className="w-1/2">
-            <label>
-              Size <span className="text-error">*</span>{" "}
-            </label>
-            <select
-              disabled={productLoading}
-              placeholder="Size"
-              {...register("size")}
-              className="border-2 border-primary
-            rounded-md outline-none w-full block "
-            >
-              <option value="" defaultChecked hidden>
-                Size
-              </option>
-              {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
-                ? sizeQuery.data.map(
-                    ({ size, id }: { size: string; id: number }) => (
-                      <option value={size} key={id}>
-                        {" "}
-                        {size}{" "}
-                      </option>
-                    ),
-                  )
-                : null}
-            </select>
-          </div>
+          <select
+            disabled={productLoading}
+            placeholder="Size"
+            {...register("size")}
+            className="w-1/2"
+          >
+            <option value="" defaultChecked hidden>
+              Size
+            </option>
+            {sizeQuery.data !== undefined && sizeQuery.data?.length > 0
+              ? sizeQuery.data.map(
+                  ({ size, id }: { size: string; id: number }) => (
+                    <option value={size} key={id}>
+                      {" "}
+                      {size}{" "}
+                    </option>
+                  ),
+                )
+              : null}
+          </select>
 
           <button
             disabled={productLoading}
             onClick={handleAddSize}
             type="button"
-            className="text-white py-0.5
-             rounded-md shadow-xl bg-primary w-1/3
-          flex flex-row items-center justify-center px-8"
+            className="btn-primary w-1/3"
           >
             <PlusOutlined /> Size
           </button>
         </div>
 
+        <label>
+          Condition <span className="text-error">*</span>
+        </label>
         <div className="flex flex-row items-end justify-between mb-3">
-          <div className="w-1/2">
-            <label>
-              Condition <span className="text-error">*</span>
-            </label>
-            <select
-              disabled={productLoading}
-              {...register("condition")}
-              placeholder="Condition"
-              className="border-2 border-primary
-            rounded-md outline-none w-full block"
-            >
-              <option value="" defaultChecked hidden>
-                Condition
-              </option>
-              {conditionQuery.data !== undefined &&
-              conditionQuery.data?.length > 0
-                ? conditionQuery.data.map(
-                    ({ condition, id }: { condition: string; id: number }) => (
-                      <option value={condition} key={id}>
-                        {" "}
-                        {condition}{" "}
-                      </option>
-                    ),
-                  )
-                : null}
-            </select>
-          </div>
+          <select
+            disabled={productLoading}
+            {...register("condition")}
+            placeholder="Condition"
+            className="w-1/2"
+          >
+            <option value="" defaultChecked hidden>
+              Condition
+            </option>
+            {conditionQuery.data !== undefined &&
+            conditionQuery.data?.length > 0
+              ? conditionQuery.data.map(
+                  ({ condition, id }: { condition: string; id: number }) => (
+                    <option value={condition} key={id}>
+                      {" "}
+                      {condition}{" "}
+                    </option>
+                  ),
+                )
+              : null}
+          </select>
 
           <button
             disabled={productLoading}
@@ -408,8 +397,7 @@ export const UploadProduct = () => {
           placeholder="Product name"
           disabled={productLoading}
           {...register("name")}
-          className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-3"
+          className="mb-3"
         />
         <label>
           Product description <span className="text-error">*</span>{" "}
@@ -418,8 +406,7 @@ export const UploadProduct = () => {
           disabled={productLoading}
           {...register("description")}
           placeholder="Product description"
-          className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-3"
+          className="mb-3"
         />
         <label>
           Units available <span className="text-error">*</span>{" "}
@@ -429,8 +416,6 @@ export const UploadProduct = () => {
           disabled={productLoading}
           {...register("stock")}
           placeholder="Units available"
-          className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 "
         />
         <p className="text-[grey] mb-3 text-center text-xs">
           {" "}
@@ -446,15 +431,13 @@ export const UploadProduct = () => {
           {...register("price")}
           disabled={productLoading}
           placeholder="Product price"
-          className="border-2 border-primary outline-none
-          block w-full rounded-md pl-1 mb-3"
+          className="mb-3"
         />
 
         <button
           disabled={productLoading}
           type="submit"
-          className="bg-primary text-white
-           w-full rounded-md mt-5 shadow-lg"
+          className="btn-primary w-full "
         >
           {productLoading && (
             <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
