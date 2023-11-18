@@ -77,7 +77,7 @@ const ProductCard = (props: { product: Product }) => {
           SOLD OUT
         </button>
       ) : null}
-      <Link to={`product/${product.id}`} className=" ">
+      <Link to={`product/${product.id}`}>
         <div className="pulse-loading">
           <img
             loading="lazy"
@@ -167,7 +167,8 @@ export const StoreFrontHome = () => {
             .select()
             .eq("storefront_id", storeFrontId)
             .eq("size", size)
-            .eq("category", category),
+            .eq("category", category)
+            .order("created_at", { ascending: false }),
         );
       }
 
@@ -177,7 +178,8 @@ export const StoreFrontHome = () => {
             .from("products")
             .select()
             .eq("storefront_id", storeFrontId)
-            .eq("size", size),
+            .eq("size", size)
+            .order("created_at", { ascending: false }),
         );
       }
 
@@ -187,7 +189,8 @@ export const StoreFrontHome = () => {
             .from("products")
             .select()
             .eq("storefront_id", storeFrontId)
-            .eq("category", category),
+            .eq("category", category)
+            .order("created_at", { ascending: false }),
         );
       }
 
