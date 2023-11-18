@@ -50,7 +50,7 @@ export const AppLayout = () => {
     fileName: string,
   ) => {
     const options: Options = {
-      maxSizeMB: 2,
+      maxSizeMB: 5,
       alwaysKeepResolution: true,
       maxWidthOrHeight: 512,
       useWebWorker: true,

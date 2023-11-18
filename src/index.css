@@ -55,16 +55,11 @@ button{
   background-color: rgba(165, 126, 93, 1);
   color: white;
   border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: auto;
-  margin-left: auto;
   padding-top: 2px;
   padding-bottom: 2px;
 }
 button:hover, button:disabled {
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 /*table styles*/
@@ -113,8 +108,9 @@ tr:nth-of-type(even) {
   animation: pulse-animation 1.5s infinite;
 }
 
+
 /*form element styles*/
-input, select{
+input, select, textarea{
   min-height: 30px;
   border: 1px solid var(--primary-color);
   border-radius: 5px;

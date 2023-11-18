@@ -9,8 +9,11 @@ import { LoadingIndicator } from "./LoadingIndicator.tsx";
 import { Link } from "react-router-dom";
 import { RightOutlined } from "@ant-design/icons";
 
-export const ProductSearch = (props: { resultRoute: string }) => {
-  const { resultRoute } = props;
+export const ProductSearch = (props: {
+  resultRoute: string;
+  widthClass?: string;
+}) => {
+  const { resultRoute, widthClass } = props;
   const [searchString, setSearchString] = useState("");
 
   const { supabaseFetcher, showToast } = useAppContext();
@@ -43,13 +46,17 @@ export const ProductSearch = (props: { resultRoute: string }) => {
 
   useLoadingImage();
   return (
-    <div className="w-3/4 mx-auto relative my-auto z-10 ">
+    <div
+      className={`${
+        widthClass ? widthClass : ""
+      } mx-auto relative my-auto z-10 `}
+    >
       <input
         type="search"
         onChange={handleSearchChange}
         value={searchString}
         placeholder="Search product by name"
-        className=" pl-1 border-2 border-primary outline-none rounded-full w-full"
+        className=" "
       />
       {searchString !== "" && (
         <dialog

@@ -73,13 +73,13 @@ const ProductPaper = (props: { product: Product }) => {
 
   return (
     <div
-      className={`px-4 py-4 rounded-lg shadow-2xl my-5 ${
+      className={`px-4 py-4 rounded-lg shadow-xl my-5 ${
         product.is_hidden ? "border-2 border-warning" : ""
       }`}
     >
       <div className="flex flex-row items-center justify-between mb-4 ">
         <p
-          className={` text-white px-2 py-1 rounded-full ${
+          className={` text-white px-2 text-xs rounded-full ${
             product.stock < 1 ? "bg-error" : "bg-success"
           } text-sm`}
         >
@@ -88,7 +88,7 @@ const ProductPaper = (props: { product: Product }) => {
         </p>
 
         <div className="flex flex-row items-center justify-between  w-1/3">
-          <label htmlFor="hide-switch" className="text-sm mr-2">
+          <label htmlFor="hide-switch" className="text-sm ml-auto">
             {" "}
             Hidden{" "}
           </label>
@@ -97,7 +97,7 @@ const ProductPaper = (props: { product: Product }) => {
             checked={hiddenChecked}
             id={"hide-switch"}
             className={`rounded-full w-9 h-5 px-1 py-3
-            flex shrink-0 flex-row items-center 
+            flex shrink-0  
             relative shadow-lg focus:shadow-xl hover:shadow-xl checked:bg-[#000]
             ${product.is_hidden ? "bg-warning grayscale-0  " : "bg-[lightGrey]"}
             `}
@@ -123,7 +123,7 @@ const ProductPaper = (props: { product: Product }) => {
               loading="lazy"
               alt={`${product.name} first image`}
               src={product.product_images[0].url}
-              className="h-16 w-16 rounded-md object-cover
+              className="h-24 w-24 rounded-md object-cover
              loading-image opacity-0"
             />
           </div>
@@ -133,9 +133,9 @@ const ProductPaper = (props: { product: Product }) => {
           <p className="text-error text-sm ">No Images added</p>
         )}
 
-        <p className="font-bold text-center text-sm"> {product.name} </p>
-        <p className="font-bold text-center text-sm"> {product.size} </p>
-        <p className="font-bold text-center text-sm"> {product.price} </p>
+        <p className="text-center"> {product.name} </p>
+        <p className="text-center"> {product.size} </p>
+        <p className="text-center"> {product.price} </p>
 
         <RightOutlined />
       </Link>
@@ -143,7 +143,7 @@ const ProductPaper = (props: { product: Product }) => {
       <div className="mx-auto mt-2 flex flex-row items-center justify-center w-max ">
         <button
           onClick={handleCopyLink}
-          className=" mr-4 rounded-full shadow-lg
+          className=" mr-4 rounded-full
         border-[grey] border text-[grey] text-sm px-2 py-0.5"
         >
           <LinkOutlined /> Copy link
@@ -151,7 +151,7 @@ const ProductPaper = (props: { product: Product }) => {
         <button
           disabled={deleteLoading}
           onClick={handleDeleteProduct}
-          className=" ml-4 rounded-full shadow-lg border-error border text-error text-sm px-2 py-0.5"
+          className=" ml-4 rounded-full  border-error border text-error text-sm px-2 py-0.5"
         >
           {deleteLoading && (
             <LoadingIndicator
@@ -269,8 +269,8 @@ export const UploadedProducts = () => {
   };
 
   return (
-    <div className="px-4 md:px-40 pt-10 relative ">
-      <p className="font-bold text-lg mb-3 md:text-xl text-center ">Products</p>
+    <div className="w-11/12 md:w-3/4 mx-auto pt-10 relative ">
+      <p className=" mb-3 text-xl text-center ">Products</p>
       <ProductSearch resultRoute={`/${storeFrontId}/admin/products/`} />
 
       <Tabs.Root
@@ -282,9 +282,7 @@ export const UploadedProducts = () => {
             <Tabs.Trigger
               key={index}
               className={`${
-                selectedTab === value
-                  ? "font-bold bg-primary text-[#fff] rounded-full"
-                  : ""
+                selectedTab === value ? "btn-primary" : ""
               } select-none px-4 py-0.5`}
               value={value}
               onClick={() => handleTab(value)}

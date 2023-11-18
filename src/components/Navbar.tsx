@@ -65,7 +65,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
       className="flex flex-row justify-between items-center pl-5 pr-5 md:pr-4
      bg-white h-10 md:h-12 sticky top-0 shadow-lg z-50"
     >
-      <Link to={determineHomePath().path} className="font-bold md:text-lg">
+      <Link to={determineHomePath().path} className=" font-medium text-lg ">
         {determineHomePath().label}
       </Link>
 
@@ -110,7 +110,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
 
           <button
             onClick={handleLogOut}
-            className={`px-5 py-1 rounded-md text-sm hover:bg-error hover:text-white`}
+            className={`px-5 py-0.5 rounded-md text-sm hover:bg-error hover:text-white`}
           >
             {" "}
             Log out{" "}
