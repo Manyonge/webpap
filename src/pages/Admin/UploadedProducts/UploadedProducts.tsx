@@ -269,8 +269,8 @@ export const UploadedProducts = () => {
   };
 
   return (
-    <div className="px-4 md:px-40 pt-10 relative ">
-      <p className="font-bold text-lg mb-3 md:text-xl text-center ">Products</p>
+    <div className="w-11/12 md:w-3/4 mx-auto pt-10 relative ">
+      <p className=" text-lg mb-3 md:text-xl text-center ">Products</p>
       <ProductSearch resultRoute={`/${storeFrontId}/admin/products/`} />
 
       <Tabs.Root
