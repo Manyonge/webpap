@@ -171,10 +171,7 @@ export const StoreFrontLayout = () => {
         md:px-10 bg-white 
         "
       >
-        <Link
-          to={`/${storeFrontId}`}
-          className="hidden md:block font-bold text-lg"
-        >
+        <Link to={`/${storeFrontId}`} className="hidden md:block text-lg">
           {" "}
           {`${storeFrontId}`}{" "}
         </Link>
@@ -207,13 +204,16 @@ export const StoreFrontLayout = () => {
           </Popover.Portal>
         </Popover.Root>
 
-        <ProductSearch resultRoute={`/${storeFrontId}/product/`} />
+        <ProductSearch
+          resultRoute={`/${storeFrontId}/product/`}
+          widthClass="w-1/2"
+        />
 
         <div className="hidden md:block">
           {routes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
-                className={`px-5 py-1 rounded-md text-sm  ${
+                className={`px-5 py-1 inline rounded-md text-sm  ${
                   pathname === path ? "btn-primary" : ""
                 }`}
               >
