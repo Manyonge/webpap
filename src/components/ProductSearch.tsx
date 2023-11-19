@@ -56,7 +56,6 @@ export const ProductSearch = (props: {
         onChange={handleSearchChange}
         value={searchString}
         placeholder="Search product by name"
-        className=" "
       />
       {searchString !== "" && (
         <dialog

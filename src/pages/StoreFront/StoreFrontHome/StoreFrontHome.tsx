@@ -11,6 +11,7 @@ import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import { SeverityColorEnum } from "../../../common/enums";
 import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
+import { LoadingIndicator } from "../../../components";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
@@ -71,7 +72,7 @@ const ProductCard = (props: { product: Product }) => {
   if (product.is_hidden) return <></>;
 
   return (
-    <div className="w-fit h-80 relative ">
+    <div className="w-fit relative ">
       {product.stock < 1 && !isInCart ? (
         <button className="text-sm bg-error text-white absolute ">
           SOLD OUT
@@ -119,6 +120,15 @@ const ProductCard = (props: { product: Product }) => {
           Remove from cart
         </button>
       )}
+
+      {product.stock < 1 && !isInCart ? (
+        <button
+          className="bg-error text-white rounded-md py-0.5 w-full shadow-xl mx-auto text-sm mb-2 uppercase
+        opacity-40 hover:opacity-40"
+        >
+          SOLD OUT
+        </button>
+      ) : null}
     </div>
   );
 };
@@ -217,6 +227,7 @@ const StoreFrontHome = () => {
     setSize(e.target.value);
   };
   useLoadingImage();
+
   return (
     <div className="px-4 md:px-6 py-7">
       <div className="pulse-loading rounded-full mx-auto md:mb-4">
@@ -255,14 +266,27 @@ const StoreFrontHome = () => {
         </select>
       </div>
 
-      {productsQuery?.data !== undefined && productsQuery.data.length === 0 ? (
+      {productsQuery.isLoading && (
+        <LoadingIndicator
+          heightWidthXs={30}
+          heightWidthMd={40}
+          fillColor="fill-black"
+          styleClasses="mt-20"
+        />
+      )}
+
+      {productsQuery?.data !== undefined &&
+      !productsQuery.isLoading &&
+      productsQuery.data.length === 0 ? (
         <p className="text-center font-bold text-lg  mt-10">
           {" "}
           No products available...{" "}
         </p>
       ) : null}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 mx-auto  w-fit">
-        {productsQuery?.data !== undefined && productsQuery.data.length > 0
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-7 mx-auto  w-fit">
+        {productsQuery?.data !== undefined &&
+        !productsQuery.isLoading &&
+        productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
               if (product.product_images.length > 0)
                 return <ProductCard product={product} key={product.id} />;
