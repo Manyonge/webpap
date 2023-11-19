@@ -149,7 +149,7 @@ const OutOfNairobiForm = (props: {
   );
 };
 
-const CheckOutPage = () => {
+export const CheckOutPage = () => {
   const { storeFrontId } = useParams();
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>({
     totalPrice: 0,
@@ -408,5 +408,3 @@ const CheckOutPage = () => {
     </div>
   );
 };
-
-export default CheckOutPage;

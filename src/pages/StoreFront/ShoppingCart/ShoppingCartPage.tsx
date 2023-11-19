@@ -54,7 +54,7 @@ const CartItem = (props: {
   );
 };
 
-const ShoppingCartPage = () => {
+export const ShoppingCartPage = () => {
   const { storeFrontId } = useParams();
 
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>({
@@ -120,4 +120,3 @@ const ShoppingCartPage = () => {
     </div>
   );
 };
-export default ShoppingCartPage;
