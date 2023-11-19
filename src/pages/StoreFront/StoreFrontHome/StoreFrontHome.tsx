@@ -71,7 +71,7 @@ const ProductCard = (props: { product: Product }) => {
   if (product.is_hidden) return <></>;
 
   return (
-    <div className="w-fit relative ">
+    <div className="w-fit h-80 relative ">
       {product.stock < 1 && !isInCart ? (
         <button className="text-sm bg-error text-white absolute ">
           SOLD OUT
@@ -261,7 +261,7 @@ export const StoreFrontHome = () => {
           No products available...{" "}
         </p>
       ) : null}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-7 mx-auto  w-fit">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 mx-auto  w-fit">
         {productsQuery?.data !== undefined && productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
               if (product.product_images.length > 0)
