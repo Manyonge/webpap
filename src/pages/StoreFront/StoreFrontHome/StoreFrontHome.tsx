@@ -11,6 +11,7 @@ import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import { SeverityColorEnum } from "../../../common/enums";
 import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
+import { LoadingIndicator } from "../../../components";
 
 const ProductCard = (props: { product: Product }) => {
   const { product } = props;
@@ -77,7 +78,7 @@ const ProductCard = (props: { product: Product }) => {
           SOLD OUT
         </button>
       ) : null}
-      <Link to={`product/${product.id}`} className=" ">
+      <Link to={`product/${product.id}`}>
         <div className="pulse-loading">
           <img
             loading="lazy"
@@ -119,6 +120,15 @@ const ProductCard = (props: { product: Product }) => {
           Remove from cart
         </button>
       )}
+
+      {product.stock < 1 && !isInCart ? (
+        <button
+          className="bg-error text-white rounded-md py-0.5 w-full shadow-xl mx-auto text-sm mb-2 uppercase
+        opacity-40 hover:opacity-40"
+        >
+          SOLD OUT
+        </button>
+      ) : null}
     </div>
   );
 };
@@ -167,7 +177,8 @@ export const StoreFrontHome = () => {
             .select()
             .eq("storefront_id", storeFrontId)
             .eq("size", size)
-            .eq("category", category),
+            .eq("category", category)
+            .order("created_at", { ascending: false }),
         );
       }
 
@@ -177,7 +188,8 @@ export const StoreFrontHome = () => {
             .from("products")
             .select()
             .eq("storefront_id", storeFrontId)
-            .eq("size", size),
+            .eq("size", size)
+            .order("created_at", { ascending: false }),
         );
       }
 
@@ -187,13 +199,18 @@ export const StoreFrontHome = () => {
             .from("products")
             .select()
             .eq("storefront_id", storeFrontId)
-            .eq("category", category),
+            .eq("category", category)
+            .order("created_at", { ascending: false }),
         );
       }
 
       if (size === "" && category === "") {
         return await supabaseFetcher(
-          supabase.from("products").select().eq("storefront_id", storeFrontId),
+          supabase
+            .from("products")
+            .select()
+            .eq("storefront_id", storeFrontId)
+            .order("created_at", { ascending: false }),
         );
       }
       return;
@@ -252,14 +269,27 @@ export const StoreFrontHome = () => {
         </select>
       </div>
 
-      {productsQuery?.data !== undefined && productsQuery.data.length === 0 ? (
+      {productsQuery.isLoading && (
+        <LoadingIndicator
+          heightWidthXs={30}
+          heightWidthMd={40}
+          fillColor="fill-black"
+          styleClasses="mt-20"
+        />
+      )}
+
+      {productsQuery?.data !== undefined &&
+      !productsQuery.isLoading &&
+      productsQuery.data.length === 0 ? (
         <p className="text-center font-bold text-lg  mt-10">
           {" "}
           No products available...{" "}
         </p>
       ) : null}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-7 mx-auto  w-fit">
-        {productsQuery?.data !== undefined && productsQuery.data.length > 0
+        {productsQuery?.data !== undefined &&
+        !productsQuery.isLoading &&
+        productsQuery.data.length > 0
           ? productsQuery.data.map((product) => {
               if (product.product_images.length > 0)
                 return <ProductCard product={product} key={product.id} />;

@@ -13,110 +13,6 @@ import { useAppContext } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
 import { supabase } from "../../supabase.ts";
 
-// const SearchBar = () => {
-//   const { showToast, supabaseFetcher } = useAppContext();
-//   const [name, setName] = useState("");
-//   const { storeFrontId } = useParams();
-//   const [open, setOpen] = useState(true);
-//
-//   const fetchProduct = async () => {
-//     try {
-//       return await supabaseFetcher(
-//         supabase
-//           .from("products")
-//           .select()
-//           .eq("storefront_id", storeFrontId)
-//           .ilike("name", name),
-//       );
-//     } catch (e: any) {
-//       showToast(e.message, SeverityColorEnum.Error);
-//       throw e;
-//     }
-//   };
-//
-//   const productQuery = useQuery(["searchProduct", name], fetchProduct);
-//
-//   const handleSearch = (e: any) => {
-//     setName(e.target.value);
-//   };
-//
-//   const handleCloseOpen = () => {
-//     setName("");
-//     setOpen(false);
-//   };
-//
-//   const handlePopover = () => {
-//     setOpen(!open);
-//   };
-//
-//   return (
-//     <div className=" w-2/3 md:w-1/3 mx-auto  ">
-//       <Popover.Root
-//         defaultOpen={false}
-//         open={name !== ""}
-//         onOpenChange={handlePopover}
-//       >
-//         <Popover.Trigger className="w-full ">
-//           <input
-//             onChange={handleSearch}
-//             type="search"
-//             value={name}
-//             className="border outline-none rounded-full pl-2
-//           w-full "
-//           />
-//         </Popover.Trigger>
-//         <Popover.Portal>
-//           <Popover.Content
-//             className="flex flex-col bg-[#fff]
-//             rounded-lg  mt-4 shadow-lg mr-2  w-44 md:w-60 outline-none  "
-//           >
-//             {name !== "" &&
-//             productQuery?.data?.length !== undefined &&
-//             productQuery.data?.length > 0
-//               ? productQuery.data?.map(({ name, id, product_images }) => (
-//                   <Link
-//                     to={`/${storeFrontId}/product/${id}`}
-//                     onClick={handleCloseOpen}
-//                     className="flex flex-row items-center justify-between hover:bg-lightGrey
-//                      px-2 py-2 rounded-lg "
-//                   >
-//                     <img
-//                       src={product_images[0].url}
-//                       className="h-10 w-10 rounded-md  "
-//                     />{" "}
-//                     <p key={id}> {name} </p>
-//                     <RightOutlined />
-//                   </Link>
-//                 ))
-//               : null}
-//             {name !== "" && productQuery.data?.length === 0 ? (
-//               <p className="text-center font-bold">No products found</p>
-//             ) : null}
-//           </Popover.Content>
-//         </Popover.Portal>
-//       </Popover.Root>
-//
-//       {/*{open && (*/}
-//       {/*  <div className="shadow-lg bg-primary mt-2  w-full absolute  ">*/}
-//       {/*    {name !== "" && productQuery.data?.length > 0*/}
-//       {/*      ? productQuery.data?.map(({ name, id }) => (*/}
-//       {/*          <Link*/}
-//       {/*            to={`/${storeFrontId}/product/${id}`}*/}
-//       {/*            onClick={handleCloseOpen}*/}
-//       {/*          >*/}
-//       {/*            <p key={id}> {name} </p>*/}
-//       {/*          </Link>*/}
-//       {/*        ))*/}
-//       {/*      : null}*/}
-//       {/*    {name !== "" && productQuery.data?.length === 0 ? (*/}
-//       {/*      <p className="text-center font-bold text-lg">No products found</p>*/}
-//       {/*    ) : null}*/}
-//       {/*  </div>*/}
-//       {/*)}*/}
-//     </div>
-//   );
-// };
-
 export const StoreFrontLayout = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { storeFrontId } = useParams();
@@ -133,16 +29,20 @@ export const StoreFrontLayout = () => {
   useEffect(() => {
     const verifyStoreId = async () => {
       try {
-        const retailer = await supabaseFetcher(
-          supabase.from("retailers").select().eq("business_name", storeFrontId),
+        await supabaseFetcher(
+          supabase
+            .from("retailers")
+            .select()
+            .eq("business_name", storeFrontId)
+            .single(),
         );
-        if (retailer) {
-          setVerifyLoading(false);
-        } else {
-          navigate("/market-place");
-        }
+        setVerifyLoading(false);
       } catch (e: any) {
-        showToast(e.message, SeverityColorEnum.Error);
+        showToast(
+          "The Store you requested does not exist",
+          SeverityColorEnum.Error,
+        );
+        navigate("/market-place");
         throw e;
       }
     };

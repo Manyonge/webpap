@@ -7,7 +7,6 @@ import { useQuery } from "react-query";
 import { useLoadingImage } from "../common/hooks";
 import { LoadingIndicator } from "./LoadingIndicator.tsx";
 import { Link } from "react-router-dom";
-import { RightOutlined } from "@ant-design/icons";
 
 export const ProductSearch = (props: {
   resultRoute: string;
@@ -37,6 +36,10 @@ export const ProductSearch = (props: {
     setSearchString(e.target.value);
   };
 
+  const handleLinkClick = () => {
+    dialog?.close();
+  };
+
   document.addEventListener("click", (event) => {
     if (!dialog?.contains(event.target as Node) && dialog?.open) {
       setSearchString("");
@@ -56,12 +59,12 @@ export const ProductSearch = (props: {
         onChange={handleSearchChange}
         value={searchString}
         placeholder="Search product by name"
-        className=" "
+        className="pl-2"
       />
       {searchString !== "" && (
         <dialog
           open={searchString.length > 0}
-          className="w-full py-2 shadow-2xl rounded-lg "
+          className="w-full rounded-lg shadow-2xl "
         >
           {searchQuery.isLoading && (
             <LoadingIndicator
@@ -71,7 +74,7 @@ export const ProductSearch = (props: {
             />
           )}
           {searchQuery.data && searchQuery.data.length === 0 ? (
-            <p className="text-error text-center">No products found...</p>
+            <p className="text-error text-center py-2">No products found...</p>
           ) : null}
           {searchQuery.data && searchQuery.data.length > 0
             ? searchQuery.data.map(
@@ -79,7 +82,9 @@ export const ProductSearch = (props: {
                   <Link
                     key={id}
                     to={`${resultRoute}${id}`}
-                    className="flex flex-row items-center justify-evenly my-2"
+                    className="flex flex-row items-center justify-between
+                    px-2 py-1"
+                    onClick={handleLinkClick}
                   >
                     <div className="pulse-loading rounded-md ">
                       <img
@@ -89,21 +94,20 @@ export const ProductSearch = (props: {
                         className=" rounded-md loading-image object-cover h-14 w-14 "
                       />
                     </div>
-                    <p> {name} </p>
-                    <p> {size} </p>
+                    <p className="text-xs md:text-base lowercase"> {name} </p>
+                    <p className="text-xs md:text-base lowercase"> {size} </p>
                     {stock === 0 && (
-                      <p className="text-white rounded-full bg-error text-sm px-2 ">
+                      <p className="text-error lowercase text-xs md:text-base ">
                         {" "}
                         Sold out{" "}
                       </p>
                     )}
                     {stock > 0 && (
-                      <p className="text-white rounded-full bg-success text-sm px-2 ">
+                      <p className="text-success lowercase text-xs md:text-base ">
                         {" "}
                         In stock{" "}
                       </p>
                     )}
-                    <RightOutlined />
                   </Link>
                 ),
               )
