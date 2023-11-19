@@ -49,9 +49,8 @@ const Carousel = (props: {
 };
 
 export const ProductView = () => {
-  const params = useParams();
-  const storeFrontID = params.storeFrontID as string;
-  const productID = params.productID as string;
+  const { storeFrontId, productID } = useParams();
+
   const { showToast, supabaseFetcher } = useAppContext();
   const [isInCart, setIsInCart] = useState(false);
   const [currentCart, setCurrentCart] = useState<ShoppingCart>();
@@ -62,7 +61,7 @@ export const ProductView = () => {
       const cart: ShoppingCart = JSON.parse(storageCart);
       setCurrentCart(cart);
       const product = cart.products.find(
-        (product) => product.id === parseInt(productID),
+        (product) => product.id === parseInt(productID as string),
       );
       if (product) {
         setIsInCart(true);
@@ -110,7 +109,7 @@ export const ProductView = () => {
     if (currentCart) {
       const temp = JSON.parse(JSON.stringify(currentCart));
       temp.products = temp.products.filter(
-        (product: Product) => product.id !== parseInt(productID),
+        (product: Product) => product.id !== parseInt(productID as string),
       );
       if (product?.price) {
         temp.totalPrice = temp.totalPrice - product?.price;
@@ -132,7 +131,7 @@ export const ProductView = () => {
   return (
     <div className="px-2 pt-6 pb-40 md:w-8/12 mx-auto">
       <Link
-        to={`/${storeFrontID}`}
+        to={`/${storeFrontId}`}
         className="flex flex-row items-center justify-start
        font-bold mb-4
       "

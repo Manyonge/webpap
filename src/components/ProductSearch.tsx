@@ -36,6 +36,10 @@ export const ProductSearch = (props: {
     setSearchString(e.target.value);
   };
 
+  const handleLinkClick = () => {
+    dialog?.close();
+  };
+
   document.addEventListener("click", (event) => {
     if (!dialog?.contains(event.target as Node) && dialog?.open) {
       setSearchString("");
@@ -80,6 +84,7 @@ export const ProductSearch = (props: {
                     to={`${resultRoute}${id}`}
                     className="flex flex-row items-center justify-between
                     px-2 py-1"
+                    onClick={handleLinkClick}
                   >
                     <div className="pulse-loading rounded-md ">
                       <img
