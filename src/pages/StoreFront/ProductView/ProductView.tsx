@@ -48,7 +48,7 @@ const Carousel = (props: {
   );
 };
 
-export const ProductView = () => {
+const ProductView = () => {
   const params = useParams();
   const storeFrontID = params.storeFrontID as string;
   const productID = params.productID as string;
@@ -204,3 +204,5 @@ export const ProductView = () => {
     </div>
   );
 };
+
+export default ProductView;

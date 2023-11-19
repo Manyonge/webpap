@@ -123,7 +123,7 @@ const ProductCard = (props: { product: Product }) => {
   );
 };
 
-export const StoreFrontHome = () => {
+const StoreFrontHome = () => {
   const { storeFrontId } = useParams();
 
   const { showToast, supabaseFetcher } = useAppContext();
@@ -272,3 +272,5 @@ export const StoreFrontHome = () => {
     </div>
   );
 };
+
+export default StoreFrontHome;
