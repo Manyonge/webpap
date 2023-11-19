@@ -206,7 +206,11 @@ const StoreFrontHome = () => {
 
       if (size === "" && category === "") {
         return await supabaseFetcher(
-          supabase.from("products").select().eq("storefront_id", storeFrontId),
+          supabase
+            .from("products")
+            .select()
+            .eq("storefront_id", storeFrontId)
+            .order("created_at", { ascending: false }),
         );
       }
       return;
@@ -227,7 +231,6 @@ const StoreFrontHome = () => {
     setSize(e.target.value);
   };
   useLoadingImage();
-
   return (
     <div className="px-4 md:px-6 py-7">
       <div className="pulse-loading rounded-full mx-auto md:mb-4">
