@@ -64,7 +64,7 @@ export const ProductSearch = (props: {
       {searchString !== "" && (
         <dialog
           open={searchString.length > 0}
-          className="w-full rounded-lg shadow-2xl "
+          className="w-fit rounded-lg shadow-2xl "
         >
           {searchQuery.isLoading && (
             <LoadingIndicator
@@ -86,7 +86,7 @@ export const ProductSearch = (props: {
                     px-2 py-1"
                     onClick={handleLinkClick}
                   >
-                    <div className="pulse-loading rounded-md ">
+                    <div className="pulse-loading rounded-md w-14 ">
                       <img
                         loading="lazy"
                         alt={`${name}-image-1`}
@@ -94,7 +94,10 @@ export const ProductSearch = (props: {
                         className=" rounded-md loading-image object-cover h-14 w-14 "
                       />
                     </div>
-                    <p className="mx-auto lowercase text-xs md:text-base text-center ">
+                    <p
+                      className=" lowercase text-xs md:text-base text-justify
+                       w-1/2 ml-3"
+                    >
                       {" "}
                       <span> {name} </span>
                       <span> {size} </span>
