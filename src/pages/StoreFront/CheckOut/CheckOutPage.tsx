@@ -164,7 +164,7 @@ export const CheckOutPage = () => {
   const { showToast } = useAppContext();
 
   const [deliveryOption, setDeliveryOption] = useState<
-    "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi"
+    "Nairobi Agents" | "Outside Nairobi"
   >("Nairobi Agents");
 
   const tabs = [
@@ -179,11 +179,6 @@ export const CheckOutPage = () => {
           setAgentName={setAgentName}
         />
       ),
-    },
-    {
-      label: "Nairobi Doorstep",
-      value: "Nairobi Doorstep",
-      component: <p className="text-error">Coming soon!!!</p>,
     },
     {
       label: "Outside Nairobi",
@@ -209,9 +204,7 @@ export const CheckOutPage = () => {
     }
   }, []);
 
-  const handleTab = (
-    tab: "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi",
-  ) => {
+  const handleTab = (tab: "Nairobi Agents" | "Outside Nairobi") => {
     setDeliveryOption(tab);
   };
 
@@ -250,77 +243,68 @@ export const CheckOutPage = () => {
 
   return (
     <div className="px-10 pb-40">
-      <div className="mt-3   mb-4 ">
-        <Link
-          to={`/${storeFrontId}`}
-          className="font-bold flex flex-row items-center justiify-start"
-        >
-          <LeftOutlined />
-          Cancel
-        </Link>
-      </div>
+      <Link
+        to={`/${storeFrontId}`}
+        className="flex flex-row items-center justiify-start
+          my-2"
+      >
+        <LeftOutlined />
+        Cancel
+      </Link>
 
       <div
-        className=" border-grey border-y-2
-      py-2"
+        className=" border-grey border-b-2
+      pb-4 "
       >
-        <p className="font-bold text-lg">Order summary</p>
-        <p className="inline-block mr-auto w-1/2  "> Number of Items </p>
-        <p className="inline-block text-right ml-auto w-1/2  ">
+        <p className="font-semibold text-lg">Order summary</p>
+        <p className="flex flex-row items-center justify-between ">
           {" "}
-          {`${shoppingCart.products.length}`}{" "}
+          <span>Number of Items</span>
+          <span> {`${shoppingCart.products.length}`} </span>{" "}
         </p>
 
-        <p className="inline-block mr-auto w-1/2  "> Delivery Option</p>
-        <p className="inline-block text-right ml-auto w-1/2  ">
+        <p className="flex flex-row items-center justify-between ">
           {" "}
-          {`${deliveryOption}`}{" "}
+          <span>Delivery Option</span>
+          <span> {deliveryOption} </span>{" "}
         </p>
 
         {deliveryOption === "Nairobi Agents" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Agent Location</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${agentLocation}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Agent Location</span>
+            <span> {agentLocation} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Nairobi Agents" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Agent Name</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${agentName}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Agent Name</span>
+            <span> {agentName} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Outside Nairobi" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Location</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${outsideLocation}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Location</span>
+            <span> {outsideLocation} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Outside Nairobi" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Courier Service</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${outsideCourier}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Courier Service</span>
+            <span> {outsideCourier} </span>{" "}
+          </p>
         )}
 
-        <Link to={`/${storeFrontId}/shopping-cart`}>
+        <Link to={`/${storeFrontId}/shopping-cart`} className="">
           <button
-            className="block border-2 border-primary
-        rounded-lg text-primary mx-auto px-10
+            className="border-2 border-primary
+        rounded-lg text-primary  px-10 mx-auto
         flex items-center justify-center"
           >
             {" "}
@@ -331,9 +315,9 @@ export const CheckOutPage = () => {
 
       <div
         className=" border-grey border-b-2
-      py-2"
+      pb-4 h-52"
       >
-        <p className="font-bold text-lg">Delivery</p>
+        <p className="font-semibold text-lg">Delivery</p>
 
         <Tabs.Root className="TabsRoot" defaultValue="Nairobi Agents">
           <Tabs.List className="shrink-0  flex" defaultValue="Nairobi Agents">
@@ -342,17 +326,12 @@ export const CheckOutPage = () => {
                 key={index}
                 className={`${
                   deliveryOption === value
-                    ? "font-bold bg-primary text-[#fff] rounded-full"
+                    ? " bg-primary text-[#fff] rounded-lg"
                     : ""
                 } select-none px-4 py-0.5`}
                 value={value}
                 onClick={() =>
-                  handleTab(
-                    value as
-                      | "Nairobi Agents"
-                      | "Nairobi Doorstep"
-                      | "Outside Nairobi",
-                  )
+                  handleTab(value as "Nairobi Agents" | "Outside Nairobi")
                 }
               >
                 {" "}

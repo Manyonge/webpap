@@ -43,7 +43,7 @@ const CartItem = (props: {
         w-1/3"
       >
         <button
-          className="bg-error text-white py- w-full shadow-lg rounded-full"
+          className="bg-error text-white py- w-full shadow-lg rounded-lg"
           onClick={() => handleRemoveFromCart(product)}
         >
           {" "}
