@@ -95,7 +95,11 @@ export const Login = () => {
             </label>
           </div>
 
-          <button disabled={loading} type="submit" className="btn-primary">
+          <button
+            disabled={loading}
+            type="submit"
+            className="btn-primary w-full"
+          >
             {loading && (
               <LoadingIndicator heightWidthMd={25} heightWidthXs={20} />
             )}

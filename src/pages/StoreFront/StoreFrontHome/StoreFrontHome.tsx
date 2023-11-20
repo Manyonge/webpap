@@ -72,7 +72,7 @@ const ProductCard = (props: { product: Product }) => {
   if (product.is_hidden) return <></>;
 
   return (
-    <div className="w-fit relative ">
+    <div className="relative ">
       {product.stock < 1 && !isInCart ? (
         <button className="text-sm bg-error text-white absolute ">
           SOLD OUT
