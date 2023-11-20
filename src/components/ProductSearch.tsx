@@ -82,7 +82,7 @@ export const ProductSearch = (props: {
                   <Link
                     key={id}
                     to={`${resultRoute}${id}`}
-                    className="flex flex-row items-center justify-between
+                    className="flex flex-row items-center justify-start
                     px-2 py-1"
                     onClick={handleLinkClick}
                   >
@@ -94,20 +94,17 @@ export const ProductSearch = (props: {
                         className=" rounded-md loading-image object-cover h-14 w-14 "
                       />
                     </div>
-                    <p className="text-xs md:text-base lowercase"> {name} </p>
-                    <p className="text-xs md:text-base lowercase"> {size} </p>
-                    {stock === 0 && (
-                      <p className="text-error lowercase text-xs md:text-base ">
-                        {" "}
-                        Sold out{" "}
-                      </p>
-                    )}
-                    {stock > 0 && (
-                      <p className="text-success lowercase text-xs md:text-base ">
-                        {" "}
-                        In stock{" "}
-                      </p>
-                    )}
+                    <p className="mx-auto lowercase text-xs md:text-base text-center ">
+                      {" "}
+                      <span> {name} </span>
+                      <span> {size} </span>
+                      {stock < 1 && (
+                        <span className="text-error"> Sold out </span>
+                      )}
+                      {stock > 0 && (
+                        <span className="text-success"> In stock </span>
+                      )}
+                    </p>
                   </Link>
                 ),
               )

@@ -165,7 +165,7 @@ export const ProductView = () => {
   return (
     <div
       className=" flex flex-col md:flex-row items-start justify-center md:w-10/12 mx-auto
-    pt-10"
+    pt-5 md:pt-10"
     >
       <Carousel images={productQuery.data?.product_images} />
       <div className="w-full md:w-1/2 md:my-auto  ">
@@ -173,14 +173,14 @@ export const ProductView = () => {
           {" "}
           {`${productQuery.data?.name}`}{" "}
         </h1>
-        <h2 className="text-xl  text-center mb-5 ">
+        <h2 className="text-xl  text-center mb-2 md:mb-5 ">
           {" "}
           {`KSH ${productQuery.data?.price}`}{" "}
         </h2>
         {!isInCart && productQuery.data?.stock > 0 ? (
           <button
             onClick={handleAddToCart}
-            className="btn-primary shadow-xl w-full mb-3 "
+            className="btn-primary shadow-xl w-9/12 mx-auto md:w-full  "
           >
             {" "}
             ADD TO CART <ShoppingCartOutlined className="ml-1" />{" "}
@@ -189,7 +189,7 @@ export const ProductView = () => {
         {isInCart && (
           <button
             onClick={handleRemoveFromCart}
-            className="bg-error text-white rounded-md py-0.5 w-full shadow-xl  uppercase"
+            className="bg-error text-white rounded-md py-0.5 w-9/12 mx-auto md:w-full shadow-xl  uppercase"
           >
             {" "}
             REMOVE FROM CART <ShoppingCartOutlined className="ml-1" />{" "}
@@ -197,7 +197,7 @@ export const ProductView = () => {
         )}
 
         {productQuery.data?.stock < 1 && (
-          <button className=" bg-error text-white rounded-md py-0.5 w-full shadow-xl  uppercase">
+          <button className=" bg-error text-white rounded-md py-0.5 w-9/12 mx-auto md:w-full shadow-xl  uppercase">
             {" "}
             SOLD OUT <CloseOutlined className="ml-1" />{" "}
           </button>

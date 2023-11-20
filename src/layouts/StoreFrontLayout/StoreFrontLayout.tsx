@@ -108,7 +108,8 @@ export const StoreFrontLayout = () => {
               {isStoreAdmin && (
                 <Link to={`/${storeFrontId}/admin`}>
                   <button
-                    className={`px-5 py-1 inline rounded-md text-sm hover:btn-primary 
+                    className={`outline-none w-full px-5 py-1 inline rounded-md
+                     text-sm hover:btn-primary 
               `}
                   >
                     Admin
