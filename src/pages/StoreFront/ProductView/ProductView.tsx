@@ -1,5 +1,4 @@
-import { Link, useParams } from "react-router-dom";
-import { LeftOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Product, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
@@ -8,25 +7,52 @@ import { useQuery } from "react-query";
 import { useLoadingImage } from "../../../common/hooks";
 import { SeverityColorEnum } from "../../../common/enums";
 import { LoadingIndicator } from "../../../components";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const Carousel = (props: {
   images: { url: string; file_name: string }[] | undefined;
 }) => {
   const { images } = props;
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const [selectedImage, setSelectedImage] = useState(
-    images && images.length > 0 ? images[0].url : null,
+    images && images.length > 0 ? images[selectedIndex].url : null,
   );
-  const handleChooseImage = (url: string) => {
-    setSelectedImage(url);
+
+  const handleChooseImage = (index: number) => {
+    setSelectedIndex(index);
   };
+
+  const handleClickLeft = () => {
+    if (selectedIndex > 0) setSelectedIndex((prevState) => prevState - 1);
+  };
+  const handleClickRight = () => {
+    if (images && selectedIndex < images.length - 1)
+      setSelectedIndex((prevState) => prevState + 1);
+  };
+
   useLoadingImage();
   return (
-    <div className="flex flex-col">
-      <div className="pulse-loading">
+    <div className="flex flex-col w-full md:w-1/2 border">
+      <div className="pulse-loading mx-auto relative ">
+        <button
+          onClick={handleClickLeft}
+          className="absolute rounded-full flex items-center justify-center left-2
+         top-1/2 w-8 h-8 text-white backdrop-blur-2xl "
+        >
+          <LeftOutlined />
+        </button>
+        <button
+          onClick={handleClickRight}
+          className="absolute rounded-full flex items-center justify-center right-2
+         top-1/2 w-8 h-8 text-white backdrop-blur-2xl "
+        >
+          <RightOutlined />
+        </button>
         <img
-          src={selectedImage ? selectedImage : ""}
+          src={images ? images[selectedIndex].url : ""}
           alt="selected-image"
-          className="h-72  w-72 object-cover mx-auto loading-image"
+          className="h-96  w-80 object-cover mx-auto loading-image"
         />
       </div>
       <div
@@ -38,7 +64,7 @@ const Carousel = (props: {
             <img
               alt={`product-image-${index}`}
               src={url}
-              onClick={() => handleChooseImage(url)}
+              onClick={() => handleChooseImage(index)}
               className="object-cover h-14 w-14 mr-2 loading-image "
             />
           </div>
@@ -129,77 +155,12 @@ export const ProductView = () => {
     );
 
   return (
-    <div className="px-2 pt-6 pb-40 md:w-8/12 mx-auto">
-      <Link
-        to={`/${storeFrontId}`}
-        className="flex flex-row items-center justify-start
-       font-bold mb-4
-      "
-      >
-        <LeftOutlined />
-        <p>Back</p>
-      </Link>
-
-      <div
-        className="px-2 py-2 rounded-lg shadow-xl 
-       "
-      >
-        <p className="text-center font-bold"> {productQuery.data?.name} </p>
-        <p className="text-center font-bold">
-          {" "}
-          {`Category: ${productQuery.data?.category}`}{" "}
-        </p>
-
-        {productQuery.data !== undefined && (
-          <Carousel images={productQuery.data?.product_images} />
-        )}
-
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <p className="text-center font-bold">
-            {" "}
-            {`Size: ${productQuery.data?.size}`}{" "}
-          </p>
-          <p className="text-center font-bold ">
-            {" "}
-            {`Condition: ${productQuery.data?.condition}`}{" "}
-          </p>
-        </div>
-
-        <p className="text-center"> {productQuery.data?.description} </p>
-
-        <div className="flex flex-row items-center justify-between">
-          <p className="font-bold "> {`${productQuery.data?.price} KSH`} </p>
-
-          {productQuery.data?.stock < 1 && (
-            <button
-              className=" mx-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-            >
-              SOLD OUT
-            </button>
-          )}
-
-          {isInCart && (
-            <button
-              className=" ml-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-              onClick={() => handleRemoveFromCart(productQuery?.data)}
-            >
-              Remove from cart
-            </button>
-          )}
-
-          {productQuery.data?.stock > 0 && !isInCart ? (
-            <button
-              className="  rounded-full py-1 px-3
-        bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
-              onClick={() => handleAddToCart(productQuery.data)}
-            >
-              ADD TO BAG
-            </button>
-          ) : null}
-        </div>
-      </div>
+    <div
+      className=" flex flex-col md:flex-row items-center justify-center md:w-10/12 mx-auto
+    pt-24"
+    >
+      <Carousel images={productQuery.data?.product_images} />
+      <div className="w-full md:w-1/2 border"></div>
     </div>
   );
 };
