@@ -12,11 +12,13 @@ import { LoadingIndicator, ProductSearch } from "../../components";
 import { useAppContext } from "../../contexts";
 import { SeverityColorEnum } from "../../common/enums";
 import { supabase } from "../../supabase.ts";
+import { useCheckStoreAdmin } from "../../common/hooks";
 
 export const StoreFrontLayout = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { storeFrontId } = useParams();
   const { pathname } = useLocation();
+  const { isStoreAdmin } = useCheckStoreAdmin();
   const { supabaseFetcher, showToast } = useAppContext();
   const navigate = useNavigate();
   const [verifyLoading, setVerifyLoading] = useState(true);
@@ -103,6 +105,17 @@ export const StoreFrontLayout = () => {
                   </div>
                 </Link>
               ))}
+              {isStoreAdmin && (
+                <Link to={`/${storeFrontId}/admin`}>
+                  <button
+                    className={`outline-none w-full px-5 py-1 inline rounded-md
+                     text-sm hover:btn-primary 
+              `}
+                  >
+                    Admin
+                  </button>
+                </Link>
+              )}
             </Popover.Content>
           </Popover.Portal>
         </Popover.Root>
@@ -124,6 +137,17 @@ export const StoreFrontLayout = () => {
               </button>
             </Link>
           ))}
+
+          {isStoreAdmin && (
+            <Link to={`/${storeFrontId}/admin`}>
+              <button
+                className={`px-5 py-1 inline rounded-md text-sm hover:btn-primary 
+              `}
+              >
+                Admin
+              </button>
+            </Link>
+          )}
         </div>
 
         <Link to={`/${storeFrontId}/shopping-cart`} className="md:hidden">

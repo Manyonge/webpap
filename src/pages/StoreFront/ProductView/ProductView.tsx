@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import { LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { Product, ShoppingCart } from "../../../common/interfaces";
 import { supabase } from "../../../supabase.ts";
@@ -8,25 +7,60 @@ import { useQuery } from "react-query";
 import { useLoadingImage } from "../../../common/hooks";
 import { SeverityColorEnum } from "../../../common/enums";
 import { LoadingIndicator } from "../../../components";
+import {
+  CloseOutlined,
+  LeftOutlined,
+  RightOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 
 const Carousel = (props: {
   images: { url: string; file_name: string }[] | undefined;
 }) => {
   const { images } = props;
-  const [selectedImage, setSelectedImage] = useState(
-    images && images.length > 0 ? images[0].url : null,
-  );
-  const handleChooseImage = (url: string) => {
-    setSelectedImage(url);
+  const { storeFrontId } = useParams();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const handleChooseImage = (index: number) => {
+    setSelectedIndex(index);
   };
+
+  const handleClickLeft = () => {
+    if (selectedIndex > 0) setSelectedIndex((prevState) => prevState - 1);
+  };
+  const handleClickRight = () => {
+    if (images && selectedIndex < images.length - 1)
+      setSelectedIndex((prevState) => prevState + 1);
+  };
+
   useLoadingImage();
   return (
-    <div className="flex flex-col">
-      <div className="pulse-loading">
+    <div className="flex flex-col w-full md:w-1/2 ">
+      <Link
+        to={`/${storeFrontId}`}
+        className="w-80 mx-auto flex flex-row items-center justify-start mb-4"
+      >
+        {" "}
+        <LeftOutlined /> Back{" "}
+      </Link>
+      <div className="pulse-loading mx-auto relative ">
+        <button
+          onClick={handleClickLeft}
+          className="absolute rounded-full flex items-center justify-center left-2
+         top-1/2 w-8 h-8 text-white backdrop-blur-2xl "
+        >
+          <LeftOutlined />
+        </button>
+        <button
+          onClick={handleClickRight}
+          className="absolute rounded-full flex items-center justify-center right-2
+         top-1/2 w-8 h-8 text-white backdrop-blur-2xl "
+        >
+          <RightOutlined />
+        </button>
         <img
-          src={selectedImage ? selectedImage : ""}
+          src={images ? images[selectedIndex].url : ""}
           alt="selected-image"
-          className="h-72  w-72 object-cover mx-auto loading-image"
+          className="h-96  w-80 object-cover mx-auto loading-image"
         />
       </div>
       <div
@@ -34,12 +68,12 @@ const Carousel = (props: {
       mt-3 mx-auto "
       >
         {images?.map(({ url }, index) => (
-          <div key={index} className="pulse-loading">
+          <div key={index} className="pulse-loading mr-2">
             <img
               alt={`product-image-${index}`}
               src={url}
-              onClick={() => handleChooseImage(url)}
-              className="object-cover h-14 w-14 mr-2 loading-image "
+              onClick={() => handleChooseImage(index)}
+              className="object-cover h-16 w-16  loading-image "
             />
           </div>
         ))}
@@ -49,7 +83,7 @@ const Carousel = (props: {
 };
 
 export const ProductView = () => {
-  const { storeFrontId, productID } = useParams();
+  const { productID } = useParams();
 
   const { showToast, supabaseFetcher } = useAppContext();
   const [isInCart, setIsInCart] = useState(false);
@@ -89,30 +123,30 @@ export const ProductView = () => {
   };
   const productQuery = useQuery(["product", productID], fetchProduct);
 
-  const handleAddToCart = async (product: Product | undefined | null) => {
+  const handleAddToCart = async () => {
     if (currentCart) {
       const temp: ShoppingCart = JSON.parse(JSON.stringify(currentCart));
-      temp.products.push(product as Product);
-      temp.totalPrice += product?.price as number;
+      temp.products.push(productQuery.data as Product);
+      temp.totalPrice += productQuery.data?.price as number;
       setCurrentCart(temp);
       setIsInCart(true);
     } else {
       setCurrentCart({
-        totalPrice: product?.price as number,
-        products: [product as Product],
+        totalPrice: productQuery.data?.price as number,
+        products: [productQuery.data as Product],
       });
       setIsInCart(true);
     }
   };
 
-  const handleRemoveFromCart = async (product: Product | undefined | null) => {
+  const handleRemoveFromCart = async () => {
     if (currentCart) {
       const temp = JSON.parse(JSON.stringify(currentCart));
       temp.products = temp.products.filter(
         (product: Product) => product.id !== parseInt(productID as string),
       );
-      if (product?.price) {
-        temp.totalPrice = temp.totalPrice - product?.price;
+      if (productQuery.data) {
+        temp.totalPrice = temp.totalPrice - productQuery.data?.price;
       }
       setCurrentCart(temp);
       setIsInCart(false);
@@ -129,76 +163,71 @@ export const ProductView = () => {
     );
 
   return (
-    <div className="px-2 pt-6 pb-40 md:w-8/12 mx-auto">
-      <Link
-        to={`/${storeFrontId}`}
-        className="flex flex-row items-center justify-start
-       font-bold mb-4
-      "
-      >
-        <LeftOutlined />
-        <p>Back</p>
-      </Link>
-
-      <div
-        className="px-2 py-2 rounded-lg shadow-xl 
-       "
-      >
-        <p className="text-center font-bold"> {productQuery.data?.name} </p>
-        <p className="text-center font-bold">
+    <div
+      className=" flex flex-col md:flex-row items-start justify-center md:w-10/12 mx-auto
+    pt-5 md:pt-10"
+    >
+      <Carousel images={productQuery.data?.product_images} />
+      <div className="w-full md:w-1/2 md:my-auto  ">
+        <h1 className="text-2xl text-center capitalize ">
           {" "}
-          {`Category: ${productQuery.data?.category}`}{" "}
-        </p>
-
-        {productQuery.data !== undefined && (
-          <Carousel images={productQuery.data?.product_images} />
+          {`${productQuery.data?.name}`}{" "}
+        </h1>
+        <h2 className="text-xl  text-center mb-2 md:mb-5 ">
+          {" "}
+          {`KSH ${productQuery.data?.price}`}{" "}
+        </h2>
+        {!isInCart && productQuery.data?.stock > 0 ? (
+          <button
+            onClick={handleAddToCart}
+            className="btn-primary shadow-xl w-9/12 mx-auto md:w-full  "
+          >
+            {" "}
+            ADD TO CART <ShoppingCartOutlined className="ml-1" />{" "}
+          </button>
+        ) : null}
+        {isInCart && (
+          <button
+            onClick={handleRemoveFromCart}
+            className="bg-error text-white rounded-md py-0.5 w-9/12 mx-auto md:w-full shadow-xl  uppercase"
+          >
+            {" "}
+            REMOVE FROM CART <ShoppingCartOutlined className="ml-1" />{" "}
+          </button>
         )}
 
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <p className="text-center font-bold">
+        {productQuery.data?.stock < 1 && (
+          <button className=" bg-error text-white rounded-md py-0.5 w-9/12 mx-auto md:w-full shadow-xl  uppercase">
             {" "}
-            {`Size: ${productQuery.data?.size}`}{" "}
-          </p>
-          <p className="text-center font-bold ">
-            {" "}
-            {`Condition: ${productQuery.data?.condition}`}{" "}
-          </p>
-        </div>
+            SOLD OUT <CloseOutlined className="ml-1" />{" "}
+          </button>
+        )}
 
-        <p className="text-center"> {productQuery.data?.description} </p>
+        <p className="text-center mb-1"> {productQuery.data?.description} </p>
 
-        <div className="flex flex-row items-center justify-between">
-          <p className="font-bold "> {`${productQuery.data?.price} KSH`} </p>
+        <p className="flex flex-row items-center justify-between w-1/2 mx-auto ">
+          {" "}
+          <span className="mr-auto">Size</span>{" "}
+          <span className="ml-auto">{`${productQuery.data?.size}`}</span>{" "}
+        </p>
 
-          {productQuery.data?.stock < 1 && (
-            <button
-              className=" mx-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-            >
-              SOLD OUT
-            </button>
-          )}
+        <p className="flex flex-row items-center justify-between w-1/2 mx-auto ">
+          {" "}
+          <span className="mr-auto">Category</span>{" "}
+          <span className="ml-auto">{`${productQuery.data?.category}`}</span>{" "}
+        </p>
 
-          {isInCart && (
-            <button
-              className=" ml-auto rounded-full py-1 px-3
-        bg-error text-white text-sm mb-2 "
-              onClick={() => handleRemoveFromCart(productQuery?.data)}
-            >
-              Remove from cart
-            </button>
-          )}
+        <p className="flex flex-row items-center justify-between w-1/2 mx-auto ">
+          {" "}
+          <span className="mr-auto">Condition</span>{" "}
+          <span className="ml-auto">{`${productQuery.data?.condition}`}</span>{" "}
+        </p>
 
-          {productQuery.data?.stock > 0 && !isInCart ? (
-            <button
-              className="  rounded-full py-1 px-3
-        bg-primary text-white text-sm mb-2 shadow-lg hover:shadow-xl "
-              onClick={() => handleAddToCart(productQuery.data)}
-            >
-              ADD TO BAG
-            </button>
-          ) : null}
-        </div>
+        <p className="flex flex-row items-center justify-between w-1/2 mx-auto ">
+          {" "}
+          <span className="mr-auto">Number of items left</span>{" "}
+          <span className="ml-auto">{`${productQuery.data?.stock}`}</span>{" "}
+        </p>
       </div>
     </div>
   );

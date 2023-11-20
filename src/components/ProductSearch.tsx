@@ -64,7 +64,7 @@ export const ProductSearch = (props: {
       {searchString !== "" && (
         <dialog
           open={searchString.length > 0}
-          className="w-full rounded-lg shadow-2xl "
+          className="w-fit rounded-lg shadow-2xl "
         >
           {searchQuery.isLoading && (
             <LoadingIndicator
@@ -82,11 +82,11 @@ export const ProductSearch = (props: {
                   <Link
                     key={id}
                     to={`${resultRoute}${id}`}
-                    className="flex flex-row items-center justify-between
+                    className="flex flex-row items-center justify-start
                     px-2 py-1"
                     onClick={handleLinkClick}
                   >
-                    <div className="pulse-loading rounded-md ">
+                    <div className="pulse-loading rounded-md w-14 ">
                       <img
                         loading="lazy"
                         alt={`${name}-image-1`}
@@ -94,20 +94,20 @@ export const ProductSearch = (props: {
                         className=" rounded-md loading-image object-cover h-14 w-14 "
                       />
                     </div>
-                    <p className="text-xs md:text-base lowercase"> {name} </p>
-                    <p className="text-xs md:text-base lowercase"> {size} </p>
-                    {stock === 0 && (
-                      <p className="text-error lowercase text-xs md:text-base ">
-                        {" "}
-                        Sold out{" "}
-                      </p>
-                    )}
-                    {stock > 0 && (
-                      <p className="text-success lowercase text-xs md:text-base ">
-                        {" "}
-                        In stock{" "}
-                      </p>
-                    )}
+                    <p
+                      className=" lowercase text-xs md:text-base text-justify
+                       w-1/2 ml-3"
+                    >
+                      {" "}
+                      <span> {name} </span>
+                      <span> {size} </span>
+                      {stock < 1 && (
+                        <span className="text-error"> Sold out </span>
+                      )}
+                      {stock > 0 && (
+                        <span className="text-success"> In stock </span>
+                      )}
+                    </p>
                   </Link>
                 ),
               )
