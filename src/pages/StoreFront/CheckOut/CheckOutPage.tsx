@@ -44,7 +44,7 @@ const NairobiAgentForm = (props: {
   const locationsQuery = useQuery(["locations"], { queryFn: fetchLocations });
   const agentsQuery = useQuery(["agents", agentLocation], {
     queryFn: fetchAgents,
-    enabled: agentLocation !== "...",
+    enabled: agentLocation !== "",
   });
 
   const handleName = (e: any) => {
@@ -53,22 +53,22 @@ const NairobiAgentForm = (props: {
 
   const handleLocation = (e: any) => {
     setAgentLocation(e.target.value);
-    setAgentName("...");
+    setAgentName("");
   };
 
   return (
     <div>
       {" "}
-      <label className="">
+      <label>
         Location <span className="text-error">*</span>{" "}
       </label>
       <select
         placeholder="Location"
         value={agentLocation}
         onChange={handleLocation}
-        className=""
+        className="mb-3"
       >
-        <option defaultChecked value="...">
+        <option defaultChecked value="">
           {" "}
           Select a location{" "}
         </option>
@@ -80,11 +80,11 @@ const NairobiAgentForm = (props: {
             </option>
           ))}
       </select>
-      <label className="">
+      <label>
         Mtaani agent <span className="text-error">*</span>{" "}
       </label>
-      <select value={agentName} onChange={handleName} className="">
-        <option defaultChecked value="...">
+      <select value={agentName} onChange={handleName}>
+        <option defaultChecked value="">
           {" "}
           Select an agent{" "}
         </option>
@@ -124,27 +124,23 @@ const OutOfNairobiForm = (props: {
   return (
     <div>
       {" "}
-      <label className="">
+      <label>
         Location <span className="text-error">*</span>{" "}
       </label>
-      <select
+      <input
         placeholder="Location"
         value={outsideLocation}
         onChange={handleLocation}
-        className=""
-      >
-        <option value="Moyale">Moyale</option>
-        <option value="Kisumu">Kisumu</option>
-        <option value="Kisii">Kisii</option>
-      </select>
-      <label className="">
+        className="mb-3"
+      />
+      <label>
         Courier service <span className="text-error">*</span>{" "}
       </label>
-      <select value={outsideCourier} onChange={handleCourier} className="">
-        <option value="Easy coach">Easy coach</option>
-        <option value="2NK">2NK</option>
-        <option value="Molo line">Molo line</option>
-      </select>
+      <input
+        value={outsideCourier}
+        onChange={handleCourier}
+        placeholder="Courier Service"
+      />
     </div>
   );
 };
@@ -155,17 +151,18 @@ export const CheckOutPage = () => {
     totalPrice: 0,
     products: [],
   });
-  const [agentLocation, setAgentLocation] = useState("...");
-  const [agentName, setAgentName] = useState("...");
-  const [outsideLocation, setOutsideLocation] = useState("...");
-  const [outsideCourier, setOutsideCourier] = useState("...");
+  const [agentLocation, setAgentLocation] = useState("");
+  const [agentName, setAgentName] = useState("");
+  const [outsideLocation, setOutsideLocation] = useState("");
+  const [outsideCourier, setOutsideCourier] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { showToast } = useAppContext();
 
   const [deliveryOption, setDeliveryOption] = useState<
-    "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi"
+    "Nairobi Agents" | "Outside Nairobi"
   >("Nairobi Agents");
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   const tabs = [
     {
@@ -179,11 +176,6 @@ export const CheckOutPage = () => {
           setAgentName={setAgentName}
         />
       ),
-    },
-    {
-      label: "Nairobi Doorstep",
-      value: "Nairobi Doorstep",
-      component: <p className="text-error">Coming soon!!!</p>,
     },
     {
       label: "Outside Nairobi",
@@ -209,16 +201,19 @@ export const CheckOutPage = () => {
     }
   }, []);
 
-  const handleTab = (
-    tab: "Nairobi Agents" | "Nairobi Doorstep" | "Outside Nairobi",
-  ) => {
+  useEffect(() => {
+    if (deliveryOption === "Nairobi Agents") setDeliveryFee(210);
+    if (deliveryOption === "Outside Nairobi") setDeliveryFee(420);
+  }, [deliveryOption]);
+
+  const handleTab = (tab: "Nairobi Agents" | "Outside Nairobi") => {
     setDeliveryOption(tab);
   };
 
   const handlePlaceOrder = () => {
     switch (deliveryOption) {
       case "Nairobi Agents":
-        if (agentName === "..." || agentLocation === "...") {
+        if (agentName === "" || agentLocation === "") {
           showToast(
             "Please fill in all Nairobi agent delivery fields",
             SeverityColorEnum.Error,
@@ -230,7 +225,7 @@ export const CheckOutPage = () => {
         break;
 
       case "Outside Nairobi":
-        if (outsideCourier === "..." || outsideLocation === "...") {
+        if (outsideCourier === "" || outsideLocation === "") {
           showToast(
             "Please fill in all Outside Nairobi delivery fields",
             SeverityColorEnum.Error,
@@ -249,78 +244,75 @@ export const CheckOutPage = () => {
   // });
 
   return (
-    <div className="px-10 pb-40">
-      <div className="mt-3   mb-4 ">
-        <Link
-          to={`/${storeFrontId}`}
-          className="font-bold flex flex-row items-center justiify-start"
-        >
-          <LeftOutlined />
-          Cancel
-        </Link>
-      </div>
+    <div className="w-11/12 md:w-3/4 mx-auto">
+      <Link
+        to={`/${storeFrontId}`}
+        className="flex flex-row items-center justiify-start
+          my-2"
+      >
+        <LeftOutlined />
+        Cancel
+      </Link>
 
       <div
-        className=" border-grey border-y-2
-      py-2"
+        className=" border-grey border-b-2
+      pb-4 "
       >
-        <p className="font-bold text-lg">Order summary</p>
-        <p className="inline-block mr-auto w-1/2  "> Number of Items </p>
-        <p className="inline-block text-right ml-auto w-1/2  ">
+        <p className="font-semibold text-lg">Order summary</p>
+        <p className="flex flex-row items-center justify-between ">
           {" "}
-          {`${shoppingCart.products.length}`}{" "}
+          <span>Number of Items</span>
+          <span> {`${shoppingCart.products.length}`} </span>{" "}
         </p>
 
-        <p className="inline-block mr-auto w-1/2  "> Delivery Option</p>
-        <p className="inline-block text-right ml-auto w-1/2  ">
+        <p className="flex flex-row items-center justify-between ">
           {" "}
-          {`${deliveryOption}`}{" "}
+          <span>Delivery Option</span>
+          <span> {deliveryOption} </span>{" "}
+        </p>
+
+        <p className="flex flex-row items-center justify-between ">
+          {" "}
+          <span>Delivery Fee</span>
+          <span> {`KSH ${deliveryFee}`} </span>{" "}
         </p>
 
         {deliveryOption === "Nairobi Agents" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Agent Location</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${agentLocation}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Agent Location</span>
+            <span> {agentLocation} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Nairobi Agents" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Agent Name</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${agentName}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Agent Name</span>
+            <span> {agentName} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Outside Nairobi" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Location</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${outsideLocation}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Location</span>
+            <span> {outsideLocation} </span>{" "}
+          </p>
         )}
 
         {deliveryOption === "Outside Nairobi" && (
-          <>
-            <p className="inline-block mr-auto w-1/2  "> Courier Service</p>
-            <p className="inline-block text-right ml-auto w-1/2  ">
-              {" "}
-              {`${outsideCourier}`}{" "}
-            </p>
-          </>
+          <p className="flex flex-row items-center justify-between ">
+            {" "}
+            <span>Courier Service</span>
+            <span> {outsideCourier} </span>{" "}
+          </p>
         )}
 
         <Link to={`/${storeFrontId}/shopping-cart`}>
           <button
-            className="block border-2 border-primary
-        rounded-lg text-primary mx-auto px-10
+            className="border-2 border-primary
+        rounded-lg text-primary  px-10 mx-auto
         flex items-center justify-center"
           >
             {" "}
@@ -331,28 +323,26 @@ export const CheckOutPage = () => {
 
       <div
         className=" border-grey border-b-2
-      py-2"
+      pb-4 h-52"
       >
-        <p className="font-bold text-lg">Delivery</p>
+        <p className="font-semibold text-lg">Delivery</p>
 
         <Tabs.Root className="TabsRoot" defaultValue="Nairobi Agents">
-          <Tabs.List className="shrink-0  flex" defaultValue="Nairobi Agents">
+          <Tabs.List
+            className="shrink-0 mb-3 flex"
+            defaultValue="Nairobi Agents"
+          >
             {tabs.map(({ label, value }, index) => (
               <Tabs.Trigger
                 key={index}
                 className={`${
                   deliveryOption === value
-                    ? "font-bold bg-primary text-[#fff] rounded-full"
+                    ? " bg-primary text-[#fff] rounded-lg"
                     : ""
                 } select-none px-4 py-0.5`}
                 value={value}
                 onClick={() =>
-                  handleTab(
-                    value as
-                      | "Nairobi Agents"
-                      | "Nairobi Doorstep"
-                      | "Outside Nairobi",
-                  )
+                  handleTab(value as "Nairobi Agents" | "Outside Nairobi")
                 }
               >
                 {" "}
@@ -374,23 +364,23 @@ export const CheckOutPage = () => {
       py-2"
       >
         <p className="font-bold text-lg">Contact details</p>
-        <label className="">
+        <label>
           Name <span className="text-error">*</span>{" "}
         </label>
-        <input className="" />
+        <input />
 
-        <label className="">
+        <label>
           Phone number <span className="text-error">*</span>{" "}
         </label>
-        <input className="" />
+        <input />
 
-        <label className="">
+        <label>
           Email <span className="text-error">*</span>{" "}
         </label>
-        <input className="" />
+        <input />
 
-        <label className="">Instagram Handle</label>
-        <input className="" />
+        <label>Instagram Handle</label>
+        <input />
       </div>
 
       <button

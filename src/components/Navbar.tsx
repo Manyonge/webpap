@@ -43,6 +43,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
   const adminRoutes = [
     { label: "customers", path: `/${storeFrontId}/admin/customers` },
     { label: "orders", path: `/${storeFrontId}/admin/orders` },
+    { label: "store front", path: `/${storeFrontId}/` },
     { label: "wallet", path: `/${storeFrontId}/admin/wallet` },
     { label: "products", path: `/${storeFrontId}/admin/products` },
   ];
@@ -102,7 +103,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
           {adminRoutes.map(({ label, path }) => (
             <Link to={path} key={path}>
               <button
-                className={`px-5 py-1 rounded-md text-sm  ${
+                className={`px-5 py-1 rounded-md text-sm capitalize ${
                   pathname.includes(label) ? "btn-primary" : ""
                 }`}
               >
@@ -160,7 +161,7 @@ export const Navbar = (props: { routesRole: "app" | "admin" }) => {
                 ))}
                 <button
                   onClick={handleLogOut}
-                  className={`px-5 py-1 w- rounded-md text-sm w-full text-center hover:bg-error hover:text-white`}
+                  className={`px-5 py-1 capitalize rounded-md text-sm w-full text-center hover:bg-error hover:text-white`}
                 >
                   {" "}
                   Log out{" "}

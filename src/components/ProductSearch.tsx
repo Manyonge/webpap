@@ -31,6 +31,7 @@ export const ProductSearch = (props: {
 
   const searchQuery = useQuery(["searchQuery", searchString], {
     queryFn: fetchProducts,
+    enabled: searchString !== "",
   });
   const handleSearchChange = (e: any) => {
     setSearchString(e.target.value);
