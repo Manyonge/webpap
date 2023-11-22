@@ -1,12 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import { EditOutlined, LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { ShoppingCart } from "../../../common/interfaces";
+import { CheckOut, ShoppingCart } from "../../../common/interfaces";
 import { useAppContext } from "../../../contexts";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SeverityColorEnum } from "../../../common/enums";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
+import { useForm } from "react-hook-form";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -158,6 +159,7 @@ export const CheckOutPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { showToast } = useAppContext();
+  const { register, watch } = useForm<CheckOut>();
 
   const [deliveryOption, setDeliveryOption] = useState<
     "Nairobi Agents" | "Outside Nairobi"
@@ -211,6 +213,12 @@ export const CheckOutPage = () => {
   };
 
   const handlePlaceOrder = () => {
+    const data = watch();
+    if (data.name === "" || data.email === "" || data.phoneNumber === "") {
+      showToast("Please fill in all fields", SeverityColorEnum.Error);
+      return;
+    }
+
     switch (deliveryOption) {
       case "Nairobi Agents":
         if (agentName === "" || agentLocation === "") {
@@ -220,7 +228,6 @@ export const CheckOutPage = () => {
           );
         } else {
           setDialogOpen(true);
-          showToast("hello", SeverityColorEnum.Success);
         }
         break;
 
@@ -244,7 +251,13 @@ export const CheckOutPage = () => {
   // });
 
   return (
-    <div className="w-11/12 md:w-3/4 mx-auto">
+    <div className="w-11/12 md:w-3/4 mx-auto mb-14">
+      <dialog
+        open={dialogOpen}
+        className="border-error border-2 top-1/2 bg-primary"
+      >
+        <p className="text-xl">hello world </p>
+      </dialog>
       <Link
         to={`/${storeFrontId}`}
         className="flex flex-row items-center justiify-start
@@ -360,41 +373,42 @@ export const CheckOutPage = () => {
       </div>
 
       <div
-        className=" border-grey border-b-2
+        className="
       py-2"
       >
-        <p className="font-bold text-lg">Contact details</p>
+        <p className="font-semibold text-lg">Contact details</p>
         <label>
           Name <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("name")} className="mb-2" />
 
         <label>
           Phone number <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("phoneNumber")} />
+        <p className="mb-2 text-center text-xs text-grey">
+          *This number will be prompted for lipa na mpesa
+        </p>
 
         <label>
           Email <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("email")} className="mb-2" />
 
         <label>Instagram Handle</label>
-        <input />
+        <input {...register("instagramHandle")} className="mb-2" />
+
+        <label>Delivery Notes</label>
+        <input {...register("deliveryNotes")} className="mb-2" />
       </div>
 
       <button
         onClick={handlePlaceOrder}
-        className="block mx-auto bg-primary text-white
-      rounded-lg
+        className="btn-primary w-full mt-5
       "
       >
         Place Order
       </button>
-
-      <dialog open={dialogOpen} className="border-error border-2">
-        <p>hello world </p>
-      </dialog>
     </div>
   );
 };
