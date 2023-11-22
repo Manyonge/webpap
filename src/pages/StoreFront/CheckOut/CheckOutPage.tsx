@@ -7,6 +7,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { SeverityColorEnum } from "../../../common/enums";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
+import { useForm } from "react-hook-form";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -158,6 +159,7 @@ export const CheckOutPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { showToast } = useAppContext();
+  const { register, watch } = useForm();
 
   const [deliveryOption, setDeliveryOption] = useState<
     "Nairobi Agents" | "Outside Nairobi"
@@ -211,6 +213,15 @@ export const CheckOutPage = () => {
   };
 
   const handlePlaceOrder = () => {
+    const data = watch();
+    console.log({
+      ...data,
+      agentLocation,
+      agentName,
+      deliveryOption,
+      outsideLocation,
+      outsideCourier,
+    });
     switch (deliveryOption) {
       case "Nairobi Agents":
         if (agentName === "" || agentLocation === "") {
@@ -244,7 +255,7 @@ export const CheckOutPage = () => {
   // });
 
   return (
-    <div className="w-11/12 md:w-3/4 mx-auto">
+    <div className="w-11/12 md:w-3/4 mx-auto mb-14">
       <Link
         to={`/${storeFrontId}`}
         className="flex flex-row items-center justiify-start
@@ -360,33 +371,32 @@ export const CheckOutPage = () => {
       </div>
 
       <div
-        className=" border-grey border-b-2
+        className="
       py-2"
       >
-        <p className="font-bold text-lg">Contact details</p>
+        <p className="font-semibold text-lg">Contact details</p>
         <label>
           Name <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("name")} className="mb-2" />
 
         <label>
           Phone number <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("phoneNumber")} className="mb-2" />
 
         <label>
           Email <span className="text-error">*</span>{" "}
         </label>
-        <input />
+        <input {...register("email")} className="mb-2" />
 
         <label>Instagram Handle</label>
-        <input />
+        <input {...register("instagramHandle")} className="mb-2" />
       </div>
 
       <button
         onClick={handlePlaceOrder}
-        className="block mx-auto bg-primary text-white
-      rounded-lg
+        className="btn-primary w-full mt-5
       "
       >
         Place Order
