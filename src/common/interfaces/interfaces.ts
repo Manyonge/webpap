@@ -74,13 +74,15 @@ export interface ShoppingCart {
 }
 
 export interface CheckOut {
-  customerName: string;
-  customerPhoneNumber: string;
-  customerEmailAddress: string;
-  mpesaNumber: string;
-  deliveryNotes: string;
-  pickupAgent: string;
-  pickupLocation: string;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  instagramHandle?: string;
+  deliveryNotes?: string;
+  agentName?: string;
+  agentLocation?: string;
+  outsideLocation?: string;
+  outsideCourier?: string;
 }
 export interface Order {
   id?: number;
