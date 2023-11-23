@@ -77,12 +77,17 @@ export interface CheckOut {
   name: string;
   phoneNumber: string;
   email: string;
+  deliveryFee: number;
   instagramHandle?: string;
   deliveryNotes?: string;
   agentName?: string;
   agentLocation?: string;
   outsideLocation?: string;
   outsideCourier?: string;
+  products: Product;
+  totalPrice: number;
+  retailerId: string;
+  storeFrontId: string;
 }
 export interface Order {
   id?: number;

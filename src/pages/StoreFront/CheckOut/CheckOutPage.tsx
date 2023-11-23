@@ -8,6 +8,8 @@ import { SeverityColorEnum } from "../../../common/enums";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 import { useForm } from "react-hook-form";
+import { useGetRetailer } from "../../../common/hooks/index.ts";
+import * as Dialog from "@radix-ui/react-dialog";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -157,6 +159,7 @@ export const CheckOutPage = () => {
   const [outsideLocation, setOutsideLocation] = useState("");
   const [outsideCourier, setOutsideCourier] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { retailer } = useGetRetailer();
 
   const { showToast } = useAppContext();
   const { register, watch } = useForm<CheckOut>();
@@ -214,10 +217,24 @@ export const CheckOutPage = () => {
 
   const handlePlaceOrder = () => {
     const data = watch();
+    data.deliveryFee = deliveryFee;
+
     if (data.name === "" || data.email === "" || data.phoneNumber === "") {
       showToast("Please fill in all fields", SeverityColorEnum.Error);
       return;
     }
+    if (data.phoneNumber.length > 9) {
+      showToast("phone number must be 9 digits long", SeverityColorEnum.Error);
+      return;
+    }
+    data.phoneNumber = `254${data.phoneNumber}`;
+    if (data.instagramHandle === "") data.instagramHandle = null;
+    if (data.deliveryNotes === "") data.deliveryNotes = null;
+    data.products = shoppingCart.products;
+    data.totalPrice = shoppingCart.totalPrice + deliveryFee;
+    data.retailerId = retailer.id;
+    data.storeFrontId = storeFrontId;
+    console.log(data);
 
     switch (deliveryOption) {
       case "Nairobi Agents":
@@ -226,9 +243,8 @@ export const CheckOutPage = () => {
             "Please fill in all Nairobi agent delivery fields",
             SeverityColorEnum.Error,
           );
-        } else {
-          setDialogOpen(true);
         }
+        setDialogOpen(true);
         break;
 
       case "Outside Nairobi":
@@ -252,12 +268,17 @@ export const CheckOutPage = () => {
 
   return (
     <div className="w-11/12 md:w-3/4 mx-auto mb-14">
-      <dialog
+      <Dialog.Root
         open={dialogOpen}
-        className="border-error border-2 top-1/2 bg-primary"
+        className="border-error border-2 top-1/2 bg-primary backdrop-blur-2xl relative "
       >
-        <p className="text-xl">hello world </p>
-      </dialog>
+        <Dialog.Portal>
+          <Dialog.Content className="border-error border-2 my-auto top-1/2 right-1/2  absolute">
+            <Dialog.Overlay className="bg-black" />
+            <Dialog.Title>Hello world</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
       <Link
         to={`/${storeFrontId}`}
         className="flex flex-row items-center justiify-start
@@ -385,15 +406,28 @@ export const CheckOutPage = () => {
         <label>
           Phone number <span className="text-error">*</span>{" "}
         </label>
-        <input {...register("phoneNumber")} />
+        <input
+          value="254"
+          placeholder="254"
+          disabled
+          className="inline w-1/12 text-center opacity-60"
+        />
+
+        <input
+          type="number"
+          {...register("phoneNumber")}
+          className="inline w-11/12 "
+        />
         <p className="mb-2 text-center text-xs text-grey">
           *This number will be prompted for lipa na mpesa
+          <br />
+          Ensure your input starts with 7 and is 9 digits long
         </p>
 
         <label>
           Email <span className="text-error">*</span>{" "}
         </label>
-        <input {...register("email")} className="mb-2" />
+        <input {...register("email")} className="mb-2 " />
 
         <label>Instagram Handle</label>
         <input {...register("instagramHandle")} className="mb-2" />
