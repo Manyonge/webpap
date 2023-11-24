@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
 
     const initiateJSON = await initiateResponse.json();
 
-    console.log(initiateJSON);
+    console.log({ initiateJSON, status: initiateResponse.status });
 
     return new Response(JSON.stringify({ name: data.name }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
