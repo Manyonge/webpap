@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       PartyA: Deno.env.get("MPESA_PHONE_NUMBER"),
       PartyB: BusinessShortCode,
       PhoneNumber: data.phoneNumber,
-      CallBackURL: "https://mydomain.com/pat",
+      CallBackURL: `${Deno.env.get("PAYMENT_CALLBACK_URL")}`,
       AccountReference: "Webpap For dripventory",
       TransactionDesc: "Payment for order",
     };
