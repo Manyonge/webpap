@@ -10,6 +10,8 @@ import { useQuery } from "react-query";
 import { useForm } from "react-hook-form";
 import { useGetRetailer } from "../../../common/hooks/index.ts";
 import * as Dialog from "@radix-ui/react-dialog";
+import { LoadingIndicator } from "../../../components/index.ts";
+import axios from "axios";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -168,6 +170,8 @@ export const CheckOutPage = () => {
     "Nairobi Agents" | "Outside Nairobi"
   >("Nairobi Agents");
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [newOrder, setNewOrder] = useState();
+  const [loading, setLoading] = useState(false);
 
   const tabs = [
     {
@@ -215,6 +219,10 @@ export const CheckOutPage = () => {
     setDeliveryOption(tab);
   };
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
   const handlePlaceOrder = () => {
     const data = watch();
     data.deliveryFee = deliveryFee;
@@ -234,7 +242,6 @@ export const CheckOutPage = () => {
     data.totalPrice = shoppingCart.totalPrice + deliveryFee;
     data.retailerId = retailer.id;
     data.storeFrontId = storeFrontId;
-    console.log(data);
 
     switch (deliveryOption) {
       case "Nairobi Agents":
@@ -243,8 +250,10 @@ export const CheckOutPage = () => {
             "Please fill in all Nairobi agent delivery fields",
             SeverityColorEnum.Error,
           );
+        } else {
+          setNewOrder(data);
+          setDialogOpen(true);
         }
-        setDialogOpen(true);
         break;
 
       case "Outside Nairobi":
@@ -254,28 +263,131 @@ export const CheckOutPage = () => {
             SeverityColorEnum.Error,
           );
         } else {
+          setNewOrder(data);
           setDialogOpen(true);
         }
         break;
     }
   };
 
-  // document.addEventListener("click", (event) => {
-  //   if (!dialog?.contains(event.target as Node) && dialogOpen) {
-  //     setDialogOpen(false);
-  //   }
-  // });
+  const handleSubmitOrder = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "https://jzpyrpbertczzhpzqlko.supabase.co/functions/v1/process_payment",
+        newOrder,
+        {
+          headers: { Authorization: `Bearer ${import.meta.env.VITE_API_KEY}` },
+        },
+      );
+      console.log(response);
+      showToast(response.data.message, SeverityColorEnum.Success);
+      setLoading(false);
+    } catch (e: any) {
+      if (e.message === "Network Error") {
+        showToast(
+          "You seem to have lost your connection",
+          SeverityColorEnum.Error,
+        );
+        setLoading(false);
+      }
+      showToast(e.message, SeverityColorEnum.Error);
+    }
+  };
 
   return (
     <div className="w-11/12 md:w-3/4 mx-auto mb-14">
-      <Dialog.Root
-        open={dialogOpen}
-        className="border-error border-2 top-1/2 bg-primary backdrop-blur-2xl relative "
-      >
+      <Dialog.Root open={dialogOpen}>
         <Dialog.Portal>
-          <Dialog.Content className="border-error border-2 my-auto top-1/2 right-1/2  absolute">
-            <Dialog.Overlay className="bg-black" />
-            <Dialog.Title>Hello world</Dialog.Title>
+          <Dialog.Overlay
+            className="DialogOverlay opacity-30
+            fixed inset-0 bg-black "
+          />
+          <Dialog.Content
+            className="DialogContent w-2/3 bg-white rounded-lg shadow-lg
+           fixed top-1/2 left-1/2 focus:outline-none
+            py-4 px-7
+            "
+          >
+            <Dialog.Title className="text-center text-lg mb-3">
+              Confirm Your Order
+            </Dialog.Title>
+
+            <p className="flex flex-row items-center justify-between ">
+              {" "}
+              <span>M-PESA Number</span>
+              <span> {`254${watch().phoneNumber}`} </span>{" "}
+            </p>
+
+            <p className="flex flex-row items-center justify-between ">
+              {" "}
+              <span>Number of Items</span>
+              <span> {`${shoppingCart.products.length}`} </span>{" "}
+            </p>
+
+            <p className="flex flex-row items-center justify-between ">
+              {" "}
+              <span>Delivery Option</span>
+              <span> {deliveryOption} </span>{" "}
+            </p>
+
+            <p className="flex flex-row items-center justify-between ">
+              {" "}
+              <span>Delivery Fee</span>
+              <span> {`KSH ${deliveryFee}`} </span>{" "}
+            </p>
+
+            {deliveryOption === "Nairobi Agents" && (
+              <p className="flex flex-row items-center justify-between ">
+                {" "}
+                <span>Agent Location</span>
+                <span> {agentLocation} </span>{" "}
+              </p>
+            )}
+
+            {deliveryOption === "Nairobi Agents" && (
+              <p className="flex flex-row items-center justify-between ">
+                {" "}
+                <span>Agent Name</span>
+                <span> {agentName} </span>{" "}
+              </p>
+            )}
+
+            {deliveryOption === "Outside Nairobi" && (
+              <p className="flex flex-row items-center justify-between ">
+                {" "}
+                <span>Location</span>
+                <span> {outsideLocation} </span>{" "}
+              </p>
+            )}
+
+            {deliveryOption === "Outside Nairobi" && (
+              <p className="flex flex-row items-center justify-between ">
+                {" "}
+                <span>Courier Service</span>
+                <span> {outsideCourier} </span>{" "}
+              </p>
+            )}
+
+            <div className="flex flex-row items-center justify-evenly mt-2">
+              <button
+                disabled={loading}
+                onClick={handleCloseDialog}
+                className="text-white bg-error px-2 rounded-lg disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={loading}
+                onClick={handleSubmitOrder}
+                className="text-white bg-success px-2 rounded-lg disabled:opacity-40"
+              >
+                {!loading && "Confirm"}
+                {loading && (
+                  <LoadingIndicator heightWidthXs={20} heightWidthMd={30} />
+                )}
+              </button>
+            </div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

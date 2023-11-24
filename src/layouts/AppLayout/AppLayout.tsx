@@ -34,7 +34,7 @@ export const AppLayout = () => {
     } catch (e: any) {
       if (!navigator.onLine) {
         showToast(
-          "You seem you have lost your connection",
+          "You seem to have lost your connection",
           SeverityColorEnum.Error,
         );
         return;
