@@ -272,6 +272,7 @@ export const CheckOutPage = () => {
 
   const handleSubmitOrder = async () => {
     setLoading(true);
+    console.log(newOrder);
     try {
       const response = await axios.post(
         "https://jzpyrpbertczzhpzqlko.supabase.co/functions/v1/process_payment",
@@ -290,10 +291,8 @@ export const CheckOutPage = () => {
           SeverityColorEnum.Error,
         );
         setLoading(false);
-        throw e;
       }
       showToast(e.message, SeverityColorEnum.Error);
-      throw e;
     }
   };
 
