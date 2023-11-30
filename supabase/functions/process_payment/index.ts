@@ -1,10 +1,14 @@
 import { CheckOut } from "../../../src/common/interfaces/index.ts";
 import { corsHeaders } from "../../_shared/cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const username = Deno.env.get("MPESA_CONSUMER_KEY");
 const password = Deno.env.get("MPESA_CONSUMER_SECRET");
 const BusinessShortCode = Number(Deno.env.get("MPESA_SHORTCODE"));
-// Replace 'https://api.example.com/data' with the actual API endpoint
+const supabase = createClient(
+  Deno.env.get("VITE_PROJECT_URL"),
+  Deno.env.get("VITE_API_KEY"),
+);
 const tokenUrl =
   "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
 
@@ -67,7 +71,10 @@ Deno.serve(async (req) => {
 
     const initiateJSON = await initiateResponse.json();
 
-    console.log({ initiateJSON, status: initiateResponse.status });
+    if (initiateJSON.status === 200) {
+      console.log(initiateJSON.initiateJSON.MerchantRequestID, access_token);
+      supabase.from("stk_callbacks").insert(initiateJSON.Body.stkCallback);
+    }
 
     return new Response(JSON.stringify({ name: data.name }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

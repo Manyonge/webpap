@@ -3,6 +3,7 @@ import { useGetRetailer, useLoadingImage } from "../../../common/hooks";
 import { supabase } from "../../../supabase.ts";
 import { useQuery } from "react-query";
 import { useAppContext } from "../../../contexts";
+import { useEffect } from "react";
 
 export const AdminDashboard = () => {
   useLoadingImage();
@@ -43,6 +44,8 @@ export const AdminDashboard = () => {
 
     return { revenue, products, orders, customers };
   };
+
+  useEffect(() => {}, []);
 
   const statsQuery = useQuery("stats", fetchStats);
 
