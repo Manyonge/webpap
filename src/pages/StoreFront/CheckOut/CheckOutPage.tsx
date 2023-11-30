@@ -274,7 +274,7 @@ export const CheckOutPage = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://jzpyrpbertczzhpzqlko.supabase.co/functions/v1/process_payment",
+        "https://webpap-f8025.uc.r.appspot.com/payments/initiate",
         newOrder,
         {
           headers: { Authorization: `Bearer ${import.meta.env.VITE_API_KEY}` },
