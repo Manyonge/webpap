@@ -12,6 +12,7 @@ import { useGetRetailer } from "../../../common/hooks/index.ts";
 import * as Dialog from "@radix-ui/react-dialog";
 import { LoadingIndicator } from "../../../components/index.ts";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -273,16 +274,31 @@ export const CheckOutPage = () => {
   const handleSubmitOrder = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      const initiateResponse = await axios.post(
         "https://webpap-f8025.uc.r.appspot.com/payments/initiate",
         newOrder,
         {
           headers: { Authorization: `Bearer ${import.meta.env.VITE_API_KEY}` },
         },
       );
-      console.log(response);
-      showToast(response.data.message, SeverityColorEnum.Success);
-      setLoading(false);
+
+      const socket = io("https://webpap-f8025.uc.r.appspot.com");
+      socket.on("message", (payload) => {
+        if (
+          payload.CheckoutRequestID === initiateResponse.data.CheckoutRequestID
+        ) {
+          if (payload.ResponseCode !== 0) {
+            showToast(`${payload.ResultDesc}, Please try again`);
+            setLoading(false);
+            setDialogOpen(false);
+            return;
+          }
+          showToast("Order placed successfully");
+
+          setLoading(false);
+          setDialogOpen(false);
+        }
+      });
     } catch (e: any) {
       if (e.message === "Network Error") {
         showToast(
