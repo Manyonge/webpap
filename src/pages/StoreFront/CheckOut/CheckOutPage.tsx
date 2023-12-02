@@ -281,20 +281,21 @@ export const CheckOutPage = () => {
           headers: { Authorization: `Bearer ${import.meta.env.VITE_API_KEY}` },
         },
       );
-
       const socket = io("https://webpap-f8025.uc.r.appspot.com");
       socket.on("message", (payload) => {
         if (
           payload.CheckoutRequestID === initiateResponse.data.CheckoutRequestID
         ) {
-          if (payload.ResponseCode !== 0) {
-            showToast(`${payload.ResultDesc}, Please try again`);
+          if (payload.ResultCode === 0) {
+            showToast("Order placed successfully", SeverityColorEnum.Success);
             setLoading(false);
             setDialogOpen(false);
             return;
           }
-          showToast("Order placed successfully");
-
+          showToast(
+            `${payload.ResultDesc}, Please try again`,
+            SeverityColorEnum.Error,
+          );
           setLoading(false);
           setDialogOpen(false);
         }
