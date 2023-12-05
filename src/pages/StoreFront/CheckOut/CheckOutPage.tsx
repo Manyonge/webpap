@@ -278,7 +278,7 @@ export const CheckOutPage = () => {
       payload.ResultCode === 0
     ) {
       for (const i in shoppingCart.products) {
-        await supabaseFetcher(
+        supabaseFetcher(
           supabase
             .from("products")
             .update({ stock: 0 })
@@ -320,7 +320,11 @@ export const CheckOutPage = () => {
           },
         ]),
       );
-
+      const newBalance =
+        retailer?.wallet_balance + shoppingCart.totalPrice * 0.95;
+      await supabaseFetcher(
+        supabase.from("retailers").update({ wallet_balance: newBalance }),
+      );
       showToast("Order placed successfully", SeverityColorEnum.Success);
       navigate(`/${storeFrontId}`);
     } else {
