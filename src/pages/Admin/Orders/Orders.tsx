@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { RightOutlined, UpOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { supabase } from "../../../supabase.ts";
-import { useAppContext } from "../../../contexts/AppContext.tsx";
+import { useAppContext } from "../../../contexts";
 import { useQuery } from "react-query";
 import { stringToDate } from "../../../common/utils";
 
@@ -30,10 +30,6 @@ const OrderPaper = (props: { order: Order }) => {
             {order.is_fulfilled ? "Fulfilled" : "New"}{" "}
           </p>
 
-          <p className="ml-6 font-bold text-sm text-center ">
-            {" "}
-            {order.product.name}{" "}
-          </p>
           <p className="font-bold text-sm text-center ">
             {" "}
             {stringToDate(order.created_at as string).toLocaleString()}
@@ -41,21 +37,8 @@ const OrderPaper = (props: { order: Order }) => {
         </div>
 
         <div className="flex flex-row items-center justify-between mb-3 ">
-          <img
-            src={order.product.product_images[0].url}
-            alt={`${order.product.name}`}
-            className="h-14 md:h-20 w-14 md:w-20 rounded-md "
-          />
+          <p className="text-center text-sm  "> {" KSH"}</p>
 
-          <p className="text-center text-sm  ">
-            {" "}
-            {order.product.price.toLocaleString()}
-            {" KSH"}
-          </p>
-          <p className="text-center text-sm ">
-            {" "}
-            {`Ordered by ${order.customer.name} `}{" "}
-          </p>
           <RightOutlined />
         </div>
       </div>

@@ -74,30 +74,39 @@ export interface ShoppingCart {
 }
 
 export interface CheckOut {
-  name: string;
-  phoneNumber: string;
-  email: string;
-  deliveryFee: number;
-  instagramHandle?: string;
-  deliveryNotes?: string;
-  agentName?: string;
-  agentLocation?: string;
-  outsideLocation?: string;
-  outsideCourier?: string;
-  products: Product;
-  totalPrice: number;
-  retailerId: string;
-  storeFrontId: string;
+  name: string | null | undefined;
+  phoneNumber: string | null | undefined;
+  email: string | null | undefined;
+  deliveryFee: number | null | undefined;
+  instagramHandle?: string | null | undefined;
+  deliveryNotes?: string | null | undefined;
+  agentName?: string | null | undefined;
+  agentLocation?: string | null | undefined;
+  outsideLocation?: string | null | undefined;
+  outsideCourier?: string | null | undefined;
+  products: Product[] | null | undefined;
+  totalPrice: number | null | undefined;
+  retailerId: string | null | undefined;
+  storeFrontId: string | null | undefined;
 }
 export interface Order {
-  id?: number;
-  storefront_id?: string;
-  retailer_id?: string;
-  product: Product;
-  customer: Customer;
-  delivery: Delivery;
+  id: number;
+  created_at: string;
+  retailer_id: string;
+  storefront_id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
+  customer_instagram: string;
   is_fulfilled: boolean;
-  created_at?: string;
+  products: any[];
+  delivery_option: string;
+  agent_name: string;
+  agent_location: string;
+  outside_location: string;
+  outside_courier: string;
+  delivery_fee: number;
+  total_price: number;
 }
 
 export interface Transaction {

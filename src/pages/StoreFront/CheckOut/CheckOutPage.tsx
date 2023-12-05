@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { EditOutlined, LeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { CheckOut, ShoppingCart } from "../../../common/interfaces";
@@ -12,6 +12,7 @@ import { useGetRetailer } from "../../../common/hooks/index.ts";
 import * as Dialog from "@radix-ui/react-dialog";
 import { LoadingIndicator } from "../../../components/index.ts";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 const NairobiAgentForm = (props: {
   agentName: string;
@@ -162,15 +163,16 @@ export const CheckOutPage = () => {
   const [outsideCourier, setOutsideCourier] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const { retailer } = useGetRetailer();
+  const navigate = useNavigate();
 
-  const { showToast } = useAppContext();
+  const { showToast, supabaseFetcher } = useAppContext();
   const { register, watch } = useForm<CheckOut>();
 
   const [deliveryOption, setDeliveryOption] = useState<
     "Nairobi Agents" | "Outside Nairobi"
   >("Nairobi Agents");
   const [deliveryFee, setDeliveryFee] = useState(0);
-  const [newOrder, setNewOrder] = useState();
+  const [newOrder, setNewOrder] = useState<CheckOut | undefined>();
   const [loading, setLoading] = useState(false);
 
   const tabs = [
@@ -231,7 +233,7 @@ export const CheckOutPage = () => {
       showToast("Please fill in all fields", SeverityColorEnum.Error);
       return;
     }
-    if (data.phoneNumber.length > 9) {
+    if (data.phoneNumber && data.phoneNumber?.length > 9) {
       showToast("phone number must be 9 digits long", SeverityColorEnum.Error);
       return;
     }
@@ -240,7 +242,7 @@ export const CheckOutPage = () => {
     if (data.deliveryNotes === "") data.deliveryNotes = null;
     data.products = shoppingCart.products;
     data.totalPrice = shoppingCart.totalPrice + deliveryFee;
-    data.retailerId = retailer.id;
+    data.retailerId = retailer?.id?.toString();
     data.storeFrontId = storeFrontId;
 
     switch (deliveryOption) {
@@ -269,20 +271,86 @@ export const CheckOutPage = () => {
         break;
     }
   };
+  const handlePayload = async (payload: any, initiateResponse: any) => {
+    console.log({ payload, initiateResponse });
+    if (
+      payload.CheckoutRequestID === initiateResponse.data.CheckoutRequestID &&
+      payload.ResultCode === 0
+    ) {
+      for (const i in shoppingCart.products) {
+        supabaseFetcher(
+          supabase
+            .from("products")
+            .update({ stock: 0 })
+            .eq("id", shoppingCart.products[i].id),
+        );
+      }
 
+      await supabaseFetcher(
+        supabase.from("customers").insert([
+          {
+            storefront_id: storeFrontId,
+            retailer_id: retailer?.id,
+            name: watch().name,
+            phone_number: watch().phoneNumber,
+            email_address: watch().email,
+            instagram_handle: watch().instagramHandle,
+          },
+        ]),
+      );
+
+      await supabaseFetcher(
+        supabase.from("orders").insert([
+          {
+            retailer_id: retailer?.id,
+            storefront_id: storeFrontId,
+            customer_name: watch().name,
+            customer_phone: watch().phoneNumber,
+            customer_email: watch().email,
+            customer_instagram: watch().instagramHandle,
+            is_fulfilled: false,
+            products: shoppingCart.products,
+            delivery_option: deliveryOption,
+            agent_name: agentName,
+            agent_location: agentLocation,
+            outside_location: outsideLocation,
+            outside_courier: outsideCourier,
+            delivery_fee: deliveryFee,
+            total_price: deliveryFee + shoppingCart.totalPrice,
+          },
+        ]),
+      );
+      const newBalance =
+        retailer?.wallet_balance + shoppingCart.totalPrice * 0.95;
+      await supabaseFetcher(
+        supabase.from("retailers").update({ wallet_balance: newBalance }),
+      );
+      showToast("Order placed successfully", SeverityColorEnum.Success);
+      navigate(`/${storeFrontId}`);
+    } else {
+      showToast(
+        `${payload.ResultDesc}, Please try again`,
+        SeverityColorEnum.Error,
+      );
+      setLoading(false);
+      setDialogOpen(false);
+    }
+  };
   const handleSubmitOrder = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      const initiateResponse = await axios.post(
         "https://webpap-f8025.uc.r.appspot.com/payments/initiate",
         newOrder,
         {
           headers: { Authorization: `Bearer ${import.meta.env.VITE_API_KEY}` },
         },
       );
-      console.log(response);
-      showToast(response.data.message, SeverityColorEnum.Success);
-      setLoading(false);
+      console.log(initiateResponse);
+      const socket = io("https://webpap-f8025.uc.r.appspot.com");
+      socket.on("message", (payload) => {
+        handlePayload(payload, initiateResponse);
+      });
     } catch (e: any) {
       if (e.message === "Network Error") {
         showToast(
